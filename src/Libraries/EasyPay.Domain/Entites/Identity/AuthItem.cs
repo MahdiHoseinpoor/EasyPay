@@ -1,4 +1,6 @@
-﻿namespace EasyPay.Domain.Identity
+﻿using EasyPay.Domain.Enums.Identity;
+
+namespace EasyPay.Domain.Entites.Identity
 {
     public class AuthItem:EntityBase<int>
     {

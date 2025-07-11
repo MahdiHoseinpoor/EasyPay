@@ -1,10 +1,10 @@
-﻿using EasyPay.Domain.AccountManagement;
+﻿using EasyPay.Domain.Entites.AccountManagement;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace EasyPay.Domain.Identity
+namespace EasyPay.Domain.Entites.Identity
 {
     public class ApplicationUser : IdentityUser, IEntityBase
     {

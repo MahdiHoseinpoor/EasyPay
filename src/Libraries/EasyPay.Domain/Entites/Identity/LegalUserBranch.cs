@@ -1,5 +1,4 @@
-﻿
-namespace EasyPay.Domain.Identity
+﻿namespace EasyPay.Domain.Entites.Identity
 {
     public class LegalUserBranch
     {
