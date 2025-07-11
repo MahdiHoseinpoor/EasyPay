@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EasyPay.Domain.Entites.AccountManagement
 {
-    public class Account : EntityBase
+    public class Account : EntityBase<Guid>
     {
         public int AccountTypeId { get; set; }
         public string Title { get; set; }
