@@ -1,10 +1,11 @@
-﻿using System;
+﻿using EasyPay.Domain.Enums.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EasyPay.Domain.Identity
+namespace EasyPay.Domain.Entites.Identity
 {
     public class AuthItemValue : EntityBase<long>
     {

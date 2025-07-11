@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Payment\" />
-    <Folder Include="Report\" />
-    <Folder Include="DeveloperApi\" />
+    <Folder Include="Entites\Payment\" />
+    <Folder Include="Entites\Report\" />
+    <Folder Include="Entites\DeveloperApi\" />
   </ItemGroup>
 
   <ItemGroup>

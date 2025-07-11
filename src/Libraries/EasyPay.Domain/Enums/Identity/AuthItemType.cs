@@ -1,4 +1,4 @@
-﻿namespace EasyPay.Domain.Identity
+﻿namespace EasyPay.Domain.Enums.Identity
 {
     public enum AuthItemType
     {

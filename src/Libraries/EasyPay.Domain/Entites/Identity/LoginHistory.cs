@@ -1,9 +1,10 @@
 ﻿using EasyPay.Common;
+using EasyPay.Domain.Enums.Identity;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace EasyPay.Domain.Identity
+namespace EasyPay.Domain.Entites.Identity
 {
     public class LoginHistory : EntityBase<long>
     {

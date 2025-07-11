@@ -1,6 +1,6 @@
-﻿using EasyPay.Domain.Identity;
+﻿using EasyPay.Domain.Entites.Identity;
 
-namespace EasyPay.Domain.AccountManagement
+namespace EasyPay.Domain.Entites.AccountManagement
 {
     public class AccountTypeDocumentRequirement : EntityBase<int>
     {

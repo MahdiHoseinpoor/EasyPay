@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EasyPay.Domain.AccountManagement
+namespace EasyPay.Domain.Entites.AccountManagement
 {
     public class BankCard:EntityBase<int>
     {
