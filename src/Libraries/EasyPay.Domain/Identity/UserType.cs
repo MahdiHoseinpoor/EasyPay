@@ -3,8 +3,9 @@ namespace EasyPay.Domain.Identity
 {
     public enum UserType
     {
-        Legal,
-        Natural,
-        Admin
+        Natural, 
+        Legal,   
+        Admin,      
+        System      
     }
 }
