@@ -1,0 +1,11 @@
+﻿using EasyPay.Domain.Enums.Payment;
+
+namespace EasyPay.Domain.Entites.Payment
+{
+    public abstract class BaseBill : EntityBase<Guid>
+    {
+        public decimal Amount { get; set; }
+        public BillType Type { get; set; }
+    }
+
+}
