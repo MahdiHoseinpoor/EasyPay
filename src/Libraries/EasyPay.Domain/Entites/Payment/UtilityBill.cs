@@ -2,7 +2,7 @@
 
 namespace EasyPay.Domain.Entites.Payment
 {
-    public class UtilityBill : BaseBill
+    public class UtilityBill : BillBase
     {
         public UtilityType UtilityType { get; set; }
 

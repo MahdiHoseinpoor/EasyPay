@@ -9,22 +9,13 @@ namespace EasyPay.Domain.Entites.Identity
 {
     public class ApplicationUser : IdentityUser, IEntityBase
     {
-        [Required]
-        [MaxLength(100)]
         public string FirstName { get; set; }
 
-        [Required]
-        [MaxLength(100)]
         public string LastName { get; set; }
 
-        [Required]
         public UserType UserType { get; set; }
 
-        [MaxLength(200)]
         public string Address { get; set; }
-
-        [MaxLength(50)]
-        public string PostalCode { get; set; }
 
         public bool IsActive { get; set; } = true;
         public bool IsAuthorized { get; set; } = true;

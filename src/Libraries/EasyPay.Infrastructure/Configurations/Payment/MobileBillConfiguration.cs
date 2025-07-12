@@ -8,7 +8,9 @@ namespace EasyPay.Infrastructure.Configurations.Payment
     {
         public void Configure(EntityTypeBuilder<MobileBill> builder)
         {
-            builder.Property(p=>p.PhoneNumber).IsRequired();
+            builder.Property(p=>p.PhoneNumber)
+                .IsRequired()
+                .HasMaxLength(11);
         }
     }
 }

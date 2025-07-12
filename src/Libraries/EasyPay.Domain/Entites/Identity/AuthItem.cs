@@ -9,5 +9,6 @@ namespace EasyPay.Domain.Entites.Identity
         public AuthItemType AuthItemType { get; set; }
         public AuthItemValueType AuthItemValueType { get; set; }
 
+        public virtual ICollection<AuthItemValue> AuthItemValues { get; set; }
     }
 }
