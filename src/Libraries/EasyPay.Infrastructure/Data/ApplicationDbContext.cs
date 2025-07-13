@@ -1,7 +1,7 @@
-﻿using EasyPay.Domain.Entites.AccountManagement;
-using EasyPay.Domain.Entites.Identity;
-using EasyPay.Domain.Entites.Payment;
-using EasyPay.Domain.Entites.Report;
+﻿using EasyPay.Domain.Entities.AccountManagement;
+using EasyPay.Domain.Entities.Identity;
+using EasyPay.Domain.Entities.Payment;
+using EasyPay.Domain.Entities.Report;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;

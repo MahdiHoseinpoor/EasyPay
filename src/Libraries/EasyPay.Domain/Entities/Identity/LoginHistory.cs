@@ -4,7 +4,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace EasyPay.Domain.Entites.Identity
+namespace EasyPay.Domain.Entities.Identity
 {
     public class LoginHistory : EntityBase<long>
     {

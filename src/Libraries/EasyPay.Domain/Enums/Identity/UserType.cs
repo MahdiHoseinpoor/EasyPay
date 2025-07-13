@@ -1,4 +1,4 @@
-namespace EasyPay.Domain.Entites.Identity
+namespace EasyPay.Domain.Entities.Identity
 {
     public enum UserType
     {

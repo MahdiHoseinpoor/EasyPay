@@ -1,4 +1,4 @@
-﻿namespace EasyPay.Domain.Entites.Payment
+﻿namespace EasyPay.Domain.Entities.Payment
 {
     public class MobileBill : BillBase
     {

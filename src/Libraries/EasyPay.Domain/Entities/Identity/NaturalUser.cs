@@ -2,7 +2,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace EasyPay.Domain.Entites.Identity
+namespace EasyPay.Domain.Entities.Identity
 {
     public class NaturalUser : ApplicationUser
     {

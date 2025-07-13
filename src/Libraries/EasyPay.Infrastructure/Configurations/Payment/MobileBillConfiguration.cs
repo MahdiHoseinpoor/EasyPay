@@ -1,4 +1,4 @@
-﻿using EasyPay.Domain.Entites.Payment;
+﻿using EasyPay.Domain.Entities.Payment;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

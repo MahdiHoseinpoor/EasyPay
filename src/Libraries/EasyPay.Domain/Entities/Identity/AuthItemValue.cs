@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EasyPay.Domain.Entites.Identity
+namespace EasyPay.Domain.Entities.Identity
 {
     public class AuthItemValue : EntityBase<long>
     {

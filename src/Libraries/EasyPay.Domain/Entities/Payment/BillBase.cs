@@ -1,6 +1,6 @@
 ﻿using EasyPay.Domain.Enums.Payment;
 
-namespace EasyPay.Domain.Entites.Payment
+namespace EasyPay.Domain.Entities.Payment
 {
     public abstract class BillBase : EntityBase<Guid>
     {

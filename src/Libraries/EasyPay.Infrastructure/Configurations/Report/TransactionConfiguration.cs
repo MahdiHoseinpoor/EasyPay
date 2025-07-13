@@ -1,6 +1,6 @@
 ﻿
 using EasyPay.Common;
-using EasyPay.Domain.Entites.Report;
+using EasyPay.Domain.Entities.Report;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

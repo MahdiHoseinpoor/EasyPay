@@ -1,4 +1,4 @@
-﻿namespace EasyPay.Domain.Entites.AccountManagement
+﻿namespace EasyPay.Domain.Entities.AccountManagement
 {
     public class AccountType : EntityBase<int>
     {

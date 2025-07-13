@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Entites\DeveloperApi\" />
+    <Folder Include="Entities\DeveloperApi\" />
   </ItemGroup>
 
   <ItemGroup>

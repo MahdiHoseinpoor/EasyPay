@@ -1,6 +1,6 @@
 ﻿using EasyPay.Domain.Enums.Identity;
 
-namespace EasyPay.Domain.Entites.Identity
+namespace EasyPay.Domain.Entities.Identity
 {
     public class AdminUser : ApplicationUser
     {

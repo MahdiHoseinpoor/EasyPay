@@ -1,10 +1,10 @@
-﻿using EasyPay.Domain.Entites.AccountManagement;
+﻿using EasyPay.Domain.Entities.AccountManagement;
 using EasyPay.Domain.Enums.Report;
 using EasyPay.Domain.ValueObjects.Report;
 using System.Transactions;
 using TransactionStatus = EasyPay.Domain.Enums.Report.TransactionStatus;
 
-namespace EasyPay.Domain.Entites.Report
+namespace EasyPay.Domain.Entities.Report
 {
     public class Transaction:EntityBase<Guid>
     {

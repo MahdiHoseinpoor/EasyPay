@@ -1,10 +1,10 @@
-﻿using EasyPay.Domain.Entites.Identity;
-using EasyPay.Domain.Entites.Report;
+﻿using EasyPay.Domain.Entities.Identity;
+using EasyPay.Domain.Entities.Report;
 using EasyPay.Domain.Enums.AccountManagement;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace EasyPay.Domain.Entites.AccountManagement
+namespace EasyPay.Domain.Entities.AccountManagement
 {
     public class Account : EntityBase<Guid>
     {
