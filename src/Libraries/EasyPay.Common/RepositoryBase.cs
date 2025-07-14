@@ -110,7 +110,7 @@ namespace EasyPay.Common
         #region Specification Pattern
         private Task<IQueryable<TEntity>> ApplySpecificationAsync(ISpecification<TEntity> spec, bool disableTracking = true)
         {
-            IQueryable<TEntity> query = Query(spec.Predicate,spec.OrderBy,spec.OrderByDescending,spec.GroupBy,spec.Includes,disableTracking)
+            IQueryable<TEntity> query = Query(spec.Predicate, spec.OrderBy, spec.OrderByDescending, spec.GroupBy, spec.Includes, disableTracking);
             return Task.FromResult(query);
         }
         public async Task<IEnumerable<TEntity>> GetBySpecificationAsync(ISpecification<TEntity> spec){
