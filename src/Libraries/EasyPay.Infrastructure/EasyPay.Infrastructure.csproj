@@ -19,4 +19,11 @@
     <ProjectReference Include="..\EasyPay.Domain\EasyPay.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Aggregates\AccountManagement\" />
+    <Folder Include="Aggregates\Identity\" />
+    <Folder Include="Aggregates\Report\" />
+    <Folder Include="Aggregates\Payment\" />
+  </ItemGroup>
+
 </Project>

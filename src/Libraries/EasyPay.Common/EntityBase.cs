@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace EasyPay.Common
 {
-    public class EntityBase<TKey> : IEntityBase
+    public class EntityBase<TKey> : IEntityBase<TKey>
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]

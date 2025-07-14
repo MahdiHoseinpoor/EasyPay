@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace EasyPay.Common
 {
-    public interface IEntityBase<TKey> : IEntityBase
+    public interface ISoftDeletable
     {
-    }
-    public interface IEntityBase 
-    {
+        bool IsDeleted { get; set; }
+        DateTime DeletedAt { get; set; }
     }
 }
