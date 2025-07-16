@@ -7,10 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EasyPay.Application.Commands.AccountManagement.AccountTypeEntity.CreateAccountType
+namespace EasyPay.Application.Commands.AccountManagement.AccountTypeEntity.UpdateAccountType
 {
-    public class CreateAccountTypeCommand:IRequest<Result<int>>
+    public class UpdateAccountTypeCommand : IRequest<Result>
     {
+        public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public string Code { get; set; }
