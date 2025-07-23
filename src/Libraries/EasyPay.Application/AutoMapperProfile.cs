@@ -5,7 +5,12 @@ using EasyPay.Application.Commands.AccountManagement.AccountTypeEntity.CreateAcc
 using EasyPay.Application.Commands.AccountManagement.AccountTypeEntity.UpdateAccountType;
 using EasyPay.Application.Commands.AccountManagement.BankCardEntity.CreateBankCard;
 using EasyPay.Application.Commands.AccountManagement.BankCardEntity.UpdateBankCard;
+using EasyPay.Application.Commands.Payment.MobileBillEntity.CreateMobileBill;
+using EasyPay.Application.Commands.Payment.MobileBillEntity.UpdateMobileBill;
+using EasyPay.Application.Commands.Payment.UtilityBillEntity.CreateUtilityBill;
+using EasyPay.Application.Commands.Payment.UtilityBillEntity.UpdateUtilityBill;
 using EasyPay.Domain.Entities.AccountManagement;
+using EasyPay.Domain.Entities.Payment;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +29,10 @@ namespace EasyPay.Application
             CreateMap<UpdateAccountTypeCommand, AccountType>();
             CreateMap<CreateBankCardCommand, BankCard>();
             CreateMap<UpdateBankCardCommand, BankCard>();
+            CreateMap<CreateMobileBillCommand, MobileBill>();
+            CreateMap<UpdateMobileBillCommand, MobileBill>();
+            CreateMap<CreateUtilityBillCommand, UtilityBill>();
+            CreateMap<UpdateUtilityBillCommand, UtilityBill>();
         }
     }
 }

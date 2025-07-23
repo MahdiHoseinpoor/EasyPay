@@ -29,12 +29,6 @@
     <Folder Include="Commands\Identity\NaturalUserEntity\CreateNaturalUser\" />
     <Folder Include="Commands\Identity\NaturalUserEntity\DeleteNaturalUser\" />
     <Folder Include="Commands\Identity\NaturalUserEntity\UpdateNaturalUser\" />
-    <Folder Include="Commands\Payment\MobileBillEntity\CreateMobileBill\" />
-    <Folder Include="Commands\Payment\MobileBillEntity\DeleteMobileBill\" />
-    <Folder Include="Commands\Payment\MobileBillEntity\UpdateMobileBill\" />
-    <Folder Include="Commands\Payment\UtilityBillEntity\CreateUtilityBill\" />
-    <Folder Include="Commands\Payment\UtilityBillEntity\DeleteUtilityBill\" />
-    <Folder Include="Commands\Payment\UtilityBillEntity\UpdateUtilityBill\" />
     <Folder Include="Commands\Report\TransactionEntity\CreateTransaction\" />
     <Folder Include="Commands\Report\TransactionEntity\DeleteTransaction\" />
     <Folder Include="Commands\Report\TransactionEntity\UpdateTransaction\" />

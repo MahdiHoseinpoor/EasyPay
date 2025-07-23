@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace EasyPay.Infrastructure.Aggregates.Payment
 {
-    internal interface IMobileBillRepository : IRepositoryBase<MobileBill , Guid>
+    public interface IMobileBillRepository : IRepositoryBase<MobileBill , Guid>
     {
     }
 }
