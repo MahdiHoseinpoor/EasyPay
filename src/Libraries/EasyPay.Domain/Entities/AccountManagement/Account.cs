@@ -18,7 +18,7 @@ namespace EasyPay.Domain.Entities.AccountManagement
 
         public virtual ApplicationUser OwnerUser { get; set; }
 
-        public AccountStatus Status { get; set; } = AccountStatus.Active;
+        public AccountStatus Status { get; set; }
 
         public decimal CurrentBalance { get; set; } = 0;
 

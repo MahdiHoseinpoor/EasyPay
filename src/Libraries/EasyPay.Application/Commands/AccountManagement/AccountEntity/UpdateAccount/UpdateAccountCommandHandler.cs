@@ -21,6 +21,7 @@ namespace EasyPay.Application.Commands.AccountManagement.AccountEntity.UpdateAcc
         }
         public async Task<Result> Handle(UpdateAccountCommand request, CancellationToken cancellationToken)
         {
+            // Account's does'nt need update
             try
             {
                 var entity = await _accountRepository.GetByIdAsync(request.Id);

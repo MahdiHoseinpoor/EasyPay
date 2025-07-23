@@ -9,5 +9,7 @@ namespace EasyPay.Application.Commands.AccountManagement.AccountEntity.DeleteAcc
 {
     public class DeleteAccountCommand : IRequest<Result>
     {
+        public Guid Id { get; set; }
+        public bool IsHardDelete { get; set; }
     }
 }

@@ -18,6 +18,7 @@
   <ItemGroup>
     <Folder Include="Behaviors\" />
     <Folder Include="Queries\" />
+    <Folder Include="Specification\Identity\" />
   </ItemGroup>
 
   <ItemGroup>
