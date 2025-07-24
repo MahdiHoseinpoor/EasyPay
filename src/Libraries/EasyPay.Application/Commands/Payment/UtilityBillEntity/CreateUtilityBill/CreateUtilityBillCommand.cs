@@ -1,4 +1,6 @@
-﻿using System;
+﻿using EasyPay.Domain.Enums.Payment;
+using MediatR;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +8,10 @@ using System.Threading.Tasks;
 
 namespace EasyPay.Application.Commands.Payment.UtilityBillEntity.CreateUtilityBill
 {
-    internal class CreateUtilityBillCommand
+    public class CreateUtilityBillCommand : IRequest<Result<Guid>>
     {
+        public UtilityType UtilityType { get; set; }
+
+        public string BillNumber { get; set; }
     }
 }

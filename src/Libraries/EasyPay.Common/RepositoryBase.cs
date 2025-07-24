@@ -55,7 +55,7 @@ namespace EasyPay.Common
         }
         public Task DeleteAsync(TEntity entity, bool isHardDelete = false){
             //TODO: replace exeption with result object error
-            if (isHardDelete)
+            if (isHardDelete || entity is not ISoftDeletable)
             {
                 _dbset.Remove(entity);
             }
