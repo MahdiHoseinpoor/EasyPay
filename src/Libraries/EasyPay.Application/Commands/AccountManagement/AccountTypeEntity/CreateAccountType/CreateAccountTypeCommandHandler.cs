@@ -25,7 +25,8 @@ namespace EasyPay.Application.Commands.AccountManagement.AccountTypeEntity.Creat
             {
                 var accountType = _mapper.Map<AccountType>(request);
                 await _accountTypeRepository.AddAsync(accountType);
-                return Result.Success(accountType.Id);
+                await _accountTypeRepository.SaveChangesAsync();
+                return Result<int>.Success(accountType.Id);
             }
             catch (Exception e)
             { 

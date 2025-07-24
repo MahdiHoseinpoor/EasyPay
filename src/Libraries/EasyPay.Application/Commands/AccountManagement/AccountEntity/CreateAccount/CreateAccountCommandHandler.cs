@@ -45,14 +45,13 @@ namespace EasyPay.Application.Commands.AccountManagement.AccountEntity.CreateAcc
                 }
                 if (UserRequirementAuthItems.Count() != 0)
                 {
-                    var account = _mapper.Map<Account>(request);
-                    await _accountRepository.AddAsync(account);
                     return Result<Guid>.Failure(new Error(100,"User not have All AccountTypeRequierments"));
                 }
                 else
                 {
                     var account = _mapper.Map<Account>(request);
                     await _accountRepository.AddAsync(account);
+                    await _accountRepository.SaveChangesAsync();
                     return Result<Guid>.Success(account.Id);
                 }
 

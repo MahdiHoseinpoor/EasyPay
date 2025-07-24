@@ -28,6 +28,7 @@ namespace EasyPay.Application.Commands.AccountManagement.AccountEntity.UpdateAcc
                 if (entity == null)
                     return Result.Failure(new NotFoundError("there is no any entity this id: " + request.Id));
                 await _accountRepository.UpdateAsync(entity);
+                await _accountRepository.SaveChangesAsync();
                 return Result.Success();
             }
             catch (Exception e)
