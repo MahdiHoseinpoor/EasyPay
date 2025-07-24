@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EasyPay.Domain.Entities.Payment;
 using EasyPay.Infrastructure.Aggregates.Payment;
 using MediatR;
 using System;
@@ -26,6 +27,7 @@ namespace EasyPay.Application.Commands.Payment.UtilityBillEntity.UpdateUtilityBi
                 var entity = await _utilityBillRepository.GetByIdAsync(request.Id);
                 if (entity == null)
                     return Result.Failure(new NotFoundError("there is no any entity this id: " + request.Id));
+                entity = _mapper.Map<UtilityBill>(request);
                 await _utilityBillRepository.UpdateAsync(entity);
                 await _utilityBillRepository.SaveChangesAsync();
                 return Result.Success();

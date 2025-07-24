@@ -29,6 +29,7 @@ namespace EasyPay.Application.Commands.AccountManagement.AccountTypeEntity.Updat
                 var entity = await _accountTypeRepository.GetByIdAsync(request.Id);
                 if (entity == null)
                     return Result.Failure(new NotFoundError("there is no any entity this id: " + request.Id));
+                entity = _mapper.Map<AccountType>(request);
                 await _accountTypeRepository.UpdateAsync(entity);
                 await _accountTypeRepository.SaveChangesAsync();
                 return Result.Success();

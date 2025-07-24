@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EasyPay.Common.Errors;
+using EasyPay.Domain.Entities.AccountManagement;
 using EasyPay.Infrastructure.Aggregates.AccountManagement;
 using MediatR;
 using System;
@@ -27,6 +28,7 @@ namespace EasyPay.Application.Commands.AccountManagement.AccountEntity.UpdateAcc
                 var entity = await _accountRepository.GetByIdAsync(request.Id);
                 if (entity == null)
                     return Result.Failure(new NotFoundError("there is no any entity this id: " + request.Id));
+                entity = _mapper.Map<Account>(request);
                 await _accountRepository.UpdateAsync(entity);
                 await _accountRepository.SaveChangesAsync();
                 return Result.Success();
