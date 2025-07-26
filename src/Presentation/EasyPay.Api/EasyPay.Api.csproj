@@ -17,14 +17,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Libraries\EasyPay.Application\EasyPay.Application.csproj" />
     <ProjectReference Include="..\..\Libraries\EasyPay.Common\EasyPay.Common.csproj" />
     <ProjectReference Include="..\..\Libraries\EasyPay.Domain\EasyPay.Domain.csproj" />
     <ProjectReference Include="..\..\Libraries\EasyPay.Infrastructure\EasyPay.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>

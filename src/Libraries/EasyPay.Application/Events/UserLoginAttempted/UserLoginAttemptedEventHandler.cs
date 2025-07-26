@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using EasyPay.Domain.Entities.Identity;
 using EasyPay.Infrastructure.Aggregates.Identity;
 using MediatR;
@@ -8,9 +9,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EasyPay.Application.Commands.Identity.LoginHistoryEntity.CreateLoginHistory
+namespace EasyPay.Application.Events.UserLoginAttempted
 {
-    public class CreateLoginHistoryCommandHandler : IRequestHandler<CreateLoginHistoryCommand, Result<long>>
+    public class CreateLoginHistoryCommandHandler : INotificationHandler<UserLoginAttemptedEvent>
     {
         ILoginHistoryRepository _loginHistoryRepository;
         IMapper _mapper;
@@ -19,14 +20,13 @@ namespace EasyPay.Application.Commands.Identity.LoginHistoryEntity.CreateLoginHi
             _loginHistoryRepository = loginHistoryRepository;
             _mapper = mapper;
         }
-        public async Task<Result<long>> Handle(CreateLoginHistoryCommand request, CancellationToken cancellationToken)
+        async Task INotificationHandler<UserLoginAttemptedEvent>.Handle(UserLoginAttemptedEvent notification, CancellationToken cancellationToken)
         {
             try
             {
-                var entity = _mapper.Map<LoginHistory>(request);
+                var entity = _mapper.Map<LoginHistory>(notification);
                 await _loginHistoryRepository.AddAsync(entity);
                 await _loginHistoryRepository.SaveChangesAsync();
-                return Result<long>.Success(entity.Id);
             }
             catch (Exception)
             {

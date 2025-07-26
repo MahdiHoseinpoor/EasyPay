@@ -9,11 +9,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EasyPay.Application.Commands.Identity.LoginHistoryEntity.CreateLoginHistory
+namespace EasyPay.Application.Events.UserLoginAttempted
 {
-    public class CreateLoginHistoryCommand : IRequest<Result<long>>
+    public class UserLoginAttemptedEvent : INotification
     {
-        public string UserId { get; set; }
+        public string Username { get; set; }
 
         public DateTime LoginTime { get; set; } = DateTime.Now;
 
