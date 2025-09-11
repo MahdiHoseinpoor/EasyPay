@@ -21,7 +21,7 @@ namespace EasyPay.Api.Controllers
         }
 
         /// <summary>
-        /// Gets a paginated list of accounts.
+        /// Gets a paginated list of accounts. 
         /// </summary>
         /// <param name="pageIndex">The page index to retrieve.</param>
         /// <param name="pageSize">The number of records per page.</param>
