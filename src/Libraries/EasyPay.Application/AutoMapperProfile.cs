@@ -16,6 +16,7 @@ using EasyPay.Domain.Entities.AccountManagement;
 using EasyPay.Domain.Entities.Identity;
 using EasyPay.Domain.Entities.Payment;
 using EasyPay.Domain.Entities.Report;
+using Microsoft.AspNetCore.Identity;
 using System.Linq;
 
 namespace EasyPay.Application
@@ -39,8 +40,11 @@ namespace EasyPay.Application
             CreateMap<UpdateMobileBillCommand, MobileBill>();
             CreateMap<CreateUtilityBillCommand, UtilityBill>();
             CreateMap<UpdateUtilityBillCommand, UtilityBill>();
+            CreateMap<IdentityRole, RoleDto>();
 
             // Entities to DTOs
+            CreateMap<Account, AccountDto>()
+             .ForMember(dest => dest.AccountTypeName, opt => opt.MapFrom(src => src.AccountType != null ? src.AccountType.Title : null));
             CreateMap<Account, AccountDto>()
                 .ForMember(dest => dest.AccountTypeName, opt => opt.MapFrom(src => src.AccountType != null ? src.AccountType.Title : null));
             CreateMap<AccountType, AccountTypeDto>();
