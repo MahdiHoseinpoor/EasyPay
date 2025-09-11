@@ -13,6 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             builder.Services.Configure<StorageSettings>(builder.Configuration.GetSection(StorageSettings.SectionName));
             builder.Services.AddScoped<IAccountNumberService, AccountNumberService>();
+            builder.Services.AddScoped<IBillInquiryService, FakeBillInquiryService>();
             builder.Services.AddMediatR(cfg =>
             {
                 cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
