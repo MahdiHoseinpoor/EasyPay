@@ -18,7 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Behaviors\" />
     <Folder Include="Commands\Identity\AdminUserEntity\CreateAdminUser\" />
     <Folder Include="Commands\Identity\AdminUserEntity\DeleteAdminUser\" />
     <Folder Include="Commands\Identity\AdminUserEntity\UpdateAdminUser\" />
