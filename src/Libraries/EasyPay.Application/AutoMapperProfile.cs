@@ -21,7 +21,11 @@ namespace EasyPay.Application
         public AutoMapperProfile()
         {
             // Commands to Entities
-            CreateMap<CreateAccountCommand, Account>();
+            CreateMap<CreateAccountCommand, Account>()
+    .ForMember(dest => dest.Id, opt => opt.Ignore())
+    .ForMember(dest => dest.AccountNumber, opt => opt.Ignore()); 
+            CreateMap<CreateAccountTypeCommand, AccountType>();
+            CreateMap<UpdateAccountTypeCommand, AccountType>();
             CreateMap<UpdateAccountCommand, Account>();
             CreateMap<CreateAccountTypeCommand, AccountType>();
             CreateMap<UpdateAccountTypeCommand, AccountType>();

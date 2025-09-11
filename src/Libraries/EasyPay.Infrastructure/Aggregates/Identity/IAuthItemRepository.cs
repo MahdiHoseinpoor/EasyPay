@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace EasyPay.Infrastructure.Aggregates.Identity
 {
-    internal interface IAuthItemRepository : IRepositoryBase<AuthItem, int>
+    public interface IAuthItemRepository : IRepositoryBase<AuthItem, int>
     {
     }
 }

@@ -5,6 +5,7 @@ using EasyPay.Common;
 using EasyPay.Common.Errors;
 using EasyPay.Domain.Entities.AccountManagement;
 using EasyPay.Domain.Entities.Identity;
+using EasyPay.Domain.Enums.AccountManagement;
 using EasyPay.Infrastructure.Aggregates.AccountManagement;
 using EasyPay.Infrastructure.Aggregates.Identity;
 using MediatR;
@@ -21,21 +22,27 @@ namespace EasyPay.Application.Commands.AccountManagement.AccountEntity.CreateAcc
         private readonly IAccountRepository _accountRepository;
         private readonly IAccountTypeDocumentRequirementRepository _accountTypeDocumentRequirementRepository;
         private readonly IAuthItemValueRepository _authItemValueRepository;
+        private readonly IAuthItemRepository _authItemRepository;
         private readonly IMapper _mapper;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IAccountNumberService _accountNumberService;
 
         public CreateAccountCommandHandler(
             IAccountRepository accountRepository,
             IAccountTypeDocumentRequirementRepository accountTypeDocumentRequirementRepository,
             IAuthItemValueRepository authItemValueRepository,
+            IAuthItemRepository authItemRepository,
             IMapper mapper,
-            ICurrentUserService currentUserService)
+            ICurrentUserService currentUserService,
+            IAccountNumberService accountNumberService)
         {
             _accountRepository = accountRepository;
             _accountTypeDocumentRequirementRepository = accountTypeDocumentRequirementRepository;
             _authItemValueRepository = authItemValueRepository;
+            _authItemRepository = authItemRepository;
             _mapper = mapper;
             _currentUserService = currentUserService;
+            _accountNumberService = accountNumberService;
         }
 
         public async Task<Result<Guid>> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
@@ -43,37 +50,58 @@ namespace EasyPay.Application.Commands.AccountManagement.AccountEntity.CreateAcc
             try
             {
                 var userId = _currentUserService.UserId;
+                var requirements = _accountTypeDocumentRequirementRepository
+                    .Query(p => p.AccountTypeId == request.AccountTypeId)
+                    .ToList();
 
-                var requirments = _accountTypeDocumentRequirementRepository.Query(p => p.AccountTypeId == request.AccountTypeId).ToList();
-                var authItemValues = requirments.Join(_authItemValueRepository.Query(p => p.UserId == userId), p => p.AuthItemId, p => p.AuthItemId, (a, b) => b).ToList();
-
-                var UserRequirementAuthItems = new List<AuthItem>();
-                foreach (var requirment in requirments)
+                if (!requirements.Any())
                 {
-                    if (!authItemValues.Any(p => p.AuthItemId == requirment.AuthItemId && p.Status == Domain.Enums.Identity.VerificationStatus.Approved))
+                    return await CreateAccount(request, userId);
+                }
+
+                var authItemValues = _authItemValueRepository
+                    .Query(p => p.UserId == userId && p.IsLatestVersion)
+                    .ToList();
+
+                var missingRequirements = new List<string>();
+
+                foreach (var requirement in requirements)
+                {
+                    if (!authItemValues.Any(p => p.AuthItemId == requirement.AuthItemId && p.Status == Domain.Enums.Identity.VerificationStatus.Approved))
                     {
-   
-                        UserRequirementAuthItems.Add(requirment.AuthItem);
+                        var authItem = await _authItemRepository.GetByIdAsync(requirement.AuthItemId);
+                        if (authItem != null)
+                        {
+                            missingRequirements.Add(authItem.Title);
+                        }
                     }
                 }
 
-                if (UserRequirementAuthItems.Any())
+                if (missingRequirements.Any())
                 {
-                    return Result<Guid>.Failure(new Error(100, "User not have All AccountTypeRequierments"));
+                    var errorMessage = $"User is missing the following approved documents: {string.Join(", ", missingRequirements)}";
+                    return Result<Guid>.Failure(new Error(400, errorMessage));
                 }
 
-                var account = _mapper.Map<Account>(request);
-                account.OwnerUserId = userId;
-
-                await _accountRepository.AddAsync(account);
-                await _accountRepository.SaveChangesAsync();
-
-                return Result<Guid>.Success(account.Id);
+                return await CreateAccount(request, userId);
             }
             catch (Exception e)
             {
                 throw;
             }
+        }
+        private async Task<Result<Guid>> CreateAccount(CreateAccountCommand request, string userId)
+        {
+            var account = _mapper.Map<Account>(request);
+            account.OwnerUserId = userId;
+            account.AccountNumber = await _accountNumberService.GenerateUniqueAccountNumberAsync();
+            account.Status = AccountStatus.Active;
+            account.OpeningDate = DateTime.UtcNow;
+
+            await _accountRepository.AddAsync(account);
+            await _accountRepository.SaveChangesAsync();
+
+            return Result<Guid>.Success(account.Id);
         }
     }
 }
