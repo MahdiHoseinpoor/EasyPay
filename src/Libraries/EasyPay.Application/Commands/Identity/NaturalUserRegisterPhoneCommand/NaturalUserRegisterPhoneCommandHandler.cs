@@ -2,33 +2,37 @@
 using EasyPay.Domain.ValueObjects.Identity;
 using MediatR;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace EasyPay.Application.Commands.Identity.NaturalUserRegisterPhoneCommand
 {
     public class NaturalUserRegisterPhoneCommandHandler : IRequestHandler<NaturalUserRegisterPhoneCommand, Result>
     {
-        IVerificationCodeCacheService _cache;
-        public NaturalUserRegisterPhoneCommandHandler(IVerificationCodeCacheService cache)
+        private readonly IVerificationCodeCacheService _cache;
+        private readonly ISmsService _smsService;
+
+        public NaturalUserRegisterPhoneCommandHandler(IVerificationCodeCacheService cache, ISmsService smsService)
         {
             _cache = cache;
+            _smsService = smsService;
         }
 
         public async Task<Result> Handle(NaturalUserRegisterPhoneCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                var verificationCode = new VerificationCode(request.Phone,TimeSpan.FromSeconds(90));
+                var verificationCode = new VerificationCode(request.Phone, TimeSpan.FromSeconds(90));
+
                 _cache.Set(verificationCode);
-                //Send verification code with sms
+
+                await _smsService.SendVerificationCodeAsync(verificationCode.Phone, verificationCode.Code);
+
                 return Result.Success();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                return Result.Failure(new Error(500, "An unexpected error occurred while sending the verification code."));
             }
         }
     }

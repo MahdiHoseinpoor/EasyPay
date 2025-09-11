@@ -15,6 +15,8 @@ namespace EasyPay.Application.Events.UserLoginAttempted
     {
         public string Username { get; set; }
 
+        public string UserId { get; set; }
+
         public DateTime LoginTime { get; set; } = DateTime.Now;
 
         public string IPAddress { get; set; }

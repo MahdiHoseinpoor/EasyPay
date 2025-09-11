@@ -1,69 +1,79 @@
-﻿using EasyPay.Domain.Entities.Identity;
-using EasyPay.Domain.Enums.Identity;
+﻿using EasyPay.Domain.Enums.Identity;
 using MediatR;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using EasyPay.Application.Services;
 using Microsoft.AspNetCore.Identity;
 using EasyPay.Application.Events.UserLoginAttempted;
+using EasyPay.Domain.Entities.Identity;
+
 namespace EasyPay.Application.Commands.Identity.LoginCommand
 {
     public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginResponse>>
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IPublisher _publisher;
         private readonly ITokenService _tokenService;
 
         public LoginCommandHandler(
             SignInManager<ApplicationUser> signInManager,
+            UserManager<ApplicationUser> userManager,
             IPublisher publisher,
             ITokenService tokenService)
         {
             _signInManager = signInManager;
+            _userManager = userManager;
             _publisher = publisher;
             _tokenService = tokenService;
         }
 
         public async Task<Result<LoginResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
-            var signInResult = await _signInManager.PasswordSignInAsync(
-                request.Username,
-                request.Password,
-                isPersistent: false,
-                lockoutOnFailure: false);
-
-            var userLoginAttemptedEvent = new UserLoginAttemptedEvent
+            var user = await _userManager.FindByNameAsync(request.Username);
+            if (user == null)
             {
-                Username = request.Username,
-                LoginTime = DateTime.UtcNow,
-                IPAddress = request.IpAddress,
-                UserAgent = request.UserAgent,
-                Status = signInResult.Succeeded ? LoginStatus.Success : LoginStatus.Failed,
-                FailureReason = signInResult.Succeeded ? null : GetFailureReason(signInResult)
-            };
-                
-            await _publisher.Publish(userLoginAttemptedEvent, cancellationToken);
+                await PublishLoginAttemptEvent(request, LoginStatus.Failed, "Invalid username or password");
+                return Result<LoginResponse>.Failure(new Error(401, "Invalid username or password"));
+            }
+
+            var signInResult = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
 
             if (!signInResult.Succeeded)
             {
-                return Result<LoginResponse>.Failure(new Error(0,GetFailureReason(signInResult)));
+                await PublishLoginAttemptEvent(request, LoginStatus.Failed, GetFailureReason(signInResult), user.Id);
+                return Result<LoginResponse>.Failure(new Error(401, GetFailureReason(signInResult)));
             }
 
-            var user = await _signInManager.UserManager.FindByNameAsync(request.Username);
             var token = await _tokenService.GenerateToken(user);
+            await PublishLoginAttemptEvent(request, LoginStatus.Success, userId: user.Id);
 
             return Result<LoginResponse>.Success(new LoginResponse(token.Token, token.Expiry));
         }
 
+        private async Task PublishLoginAttemptEvent(LoginCommand request, LoginStatus status, string failureReason = null, string userId = null)
+        {
+            var userLoginAttemptedEvent = new UserLoginAttemptedEvent
+            {
+                Username = request.Username,
+                UserId = userId,
+                LoginTime = DateTime.UtcNow,
+                IPAddress = request.IpAddress,
+                UserAgent = request.UserAgent,
+                Status = status,
+                FailureReason = failureReason
+            };
+
+            await _publisher.Publish(userLoginAttemptedEvent);
+        }
+
         private string GetFailureReason(SignInResult result)
         {
-            if (result.IsLockedOut) return "Account locked out";
-            if (result.IsNotAllowed) return "Login not allowed";
-            if (result.RequiresTwoFactor) return "Two factor required";
-            return "Invalid username or password";
+            if (result.IsLockedOut) return "Account is locked out.";
+            if (result.IsNotAllowed) return "Login is not allowed for this user.";
+            if (result.RequiresTwoFactor) return "Two-factor authentication is required.";
+            return "Invalid username or password.";
         }
     }
 }
