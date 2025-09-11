@@ -1,4 +1,5 @@
 ﻿using EasyPay.Application.Commands.Identity.LoginCommand;
+using EasyPay.Application.Commands.Identity.NaturalUserEntity.CreateNaturalUser;
 using EasyPay.Application.Commands.Identity.NaturalUserRegisterPhoneCommand;
 using EasyPay.Application.Commands.Identity.NaturalUserRegisterVerifyPhoneCommand;
 using MediatR;
@@ -83,6 +84,26 @@ namespace EasyPay.Api.Controllers
             return result.Match<ActionResult>(
                 response => Ok(response),
                 failure => failure.code == 409 ? Conflict(failure) : BadRequest(failure)
+            );
+        }
+        /// <summary>
+        /// Step 3 of registration: Completes the user profile with personal details.
+        /// This must be called after phone verification using the token provided.
+        /// </summary>
+        /// <param name="command">The user's personal information.</param>
+        /// <returns>An HTTP status code indicating the result.</returns>
+        [HttpPost("register/complete-profile")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult> CompleteProfile([FromBody] CompleteNaturalUserProfileCommand command)
+        {
+            var result = await _mediator.Send(command);
+
+            return result.Match<ActionResult>(
+                () => Ok(new { Message = "User profile completed successfully." }),
+                failure => BadRequest(failure)
             );
         }
     }

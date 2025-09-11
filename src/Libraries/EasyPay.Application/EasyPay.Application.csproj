@@ -28,7 +28,6 @@
     <Folder Include="Commands\Identity\AuthItemValueEntity\CreateAuthItemValue\" />
     <Folder Include="Commands\Identity\AuthItemValueEntity\DeleteAuthItemValue\" />
     <Folder Include="Commands\Identity\AuthItemValueEntity\UpdateAuthItemValue\" />
-    <Folder Include="Commands\Identity\NaturalUserEntity\CreateNaturalUser\" />
     <Folder Include="Commands\Identity\NaturalUserEntity\DeleteNaturalUser\" />
     <Folder Include="Commands\Identity\NaturalUserEntity\UpdateNaturalUser\" />
     <Folder Include="Commands\Report\TransactionEntity\CreateTransaction\" />
