@@ -10,8 +10,12 @@ using EasyPay.Application.Commands.Payment.MobileBillEntity.UpdateMobileBill;
 using EasyPay.Application.Commands.Payment.UtilityBillEntity.CreateUtilityBill;
 using EasyPay.Application.Commands.Payment.UtilityBillEntity.UpdateUtilityBill;
 using EasyPay.Application.DTOs.AccountManagement;
+using EasyPay.Application.DTOs.Identity;
+using EasyPay.Application.DTOs.Report;
 using EasyPay.Domain.Entities.AccountManagement;
+using EasyPay.Domain.Entities.Identity;
 using EasyPay.Domain.Entities.Payment;
+using EasyPay.Domain.Entities.Report;
 using System.Linq;
 
 namespace EasyPay.Application
@@ -42,6 +46,9 @@ namespace EasyPay.Application
             CreateMap<AccountType, AccountTypeDto>();
             CreateMap<BankCard, BankCardDto>()
                 .ForMember(dest => dest.CardNumber, opt => opt.MapFrom(src => MaskCardNumber(src.CardNumber)));
+            CreateMap<Transaction, TransactionDto>();
+            CreateMap<AuthItemValue, AuthItemValueDto>()
+                .ForMember(dest => dest.AuthItemTitle, opt => opt.MapFrom(src => src.AuthItem != null ? src.AuthItem.Title : "Unknown"));
         }
 
         private static string MaskCardNumber(string cardNumber)

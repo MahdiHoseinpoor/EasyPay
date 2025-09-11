@@ -1,4 +1,10 @@
 ﻿using EasyPay.Application.Commands.Identity.AuthItemValueEntity.CreateAuthItemValue;
+using EasyPay.Application.DTOs.Identity;
+using EasyPay.Application.DTOs.Report;
+using EasyPay.Application.Queries.AccountManagement.AccountEntity;
+using EasyPay.Application.Queries.Identity.AuthItemValueEntity;
+using EasyPay.Application.Queries.Report.TransactionEntity;
+using EasyPay.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -36,6 +42,59 @@ namespace EasyPay.Api.Controllers
 
             return result.Match<ActionResult>(
                 authItemValueId => CreatedAtAction(nameof(SubmitAuthItemValue), new { id = authItemValueId }, authItemValueId),
+                failure => BadRequest(failure)
+            );
+        }
+
+        /// <summary>
+        /// Gets all accounts owned by the current authenticated user.
+        /// </summary>
+        [HttpGet("accounts")]
+        [ProducesResponseType(typeof(List<EasyPay.Application.DTOs.AccountManagement.AccountDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetMyAccounts()
+        {
+            var query = new GetMyAccountsQuery();
+            var result = await _mediator.Send(query);
+            return result.Match<ActionResult>(
+                Ok,
+                failure => BadRequest(failure)
+            );
+        }
+
+        /// <summary>
+        /// Gets the transaction history for one of the user's accounts.
+        /// </summary>
+        /// <param name="accountId">The ID of the account to retrieve history for.</param>
+        /// <param name="pageIndex">The page index for pagination.</param>
+        /// <param name="pageSize">The page size for pagination.</param>
+        [HttpGet("accounts/{accountId}/transactions")]
+        [ProducesResponseType(typeof(IPagedList<TransactionDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetMyTransactionHistory(Guid accountId, [FromQuery] int pageIndex = 0, [FromQuery] int pageSize = 20)
+        {
+            var query = new GetMyTransactionHistoryQuery { AccountId = accountId, PageIndex = pageIndex, PageSize = pageSize };
+            var result = await _mediator.Send(query);
+            return result.Match<ActionResult>(
+                Ok,
+                failure => failure switch
+                {
+                    NotFoundError => NotFound(failure),
+                    { code: 403 } => Forbid(),
+                    _ => BadRequest(failure)
+                }
+            );
+        }
+
+        /// <summary>
+        /// Gets all documents and auth items submitted by the current authenticated user.
+        /// </summary>
+        [HttpGet("auth-item-values")]
+        [ProducesResponseType(typeof(List<AuthItemValueDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetMySubmittedDocuments()
+        {
+            var query = new GetMySubmittedDocumentsQuery();
+            var result = await _mediator.Send(query);
+            return result.Match<ActionResult>(
+                Ok,
                 failure => BadRequest(failure)
             );
         }
