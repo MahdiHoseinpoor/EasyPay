@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EasyPay.Application.Commands.AccountManagement.AccountEntity.CreateAccount;
 using EasyPay.Application.Commands.AccountManagement.AccountEntity.UpdateAccount;
+using EasyPay.Application.Commands.AccountManagement.AccountTypeDocumentRequirementEntity.CreateAccountTypeDocumentRequirement;
 using EasyPay.Application.Commands.AccountManagement.AccountTypeEntity.CreateAccountType;
 using EasyPay.Application.Commands.AccountManagement.AccountTypeEntity.UpdateAccountType;
 using EasyPay.Application.Commands.AccountManagement.BankCardEntity.CreateBankCard;
@@ -42,7 +43,7 @@ namespace EasyPay.Application
             CreateMap<CreateAccountCommand, Account>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.AccountNumber, opt => opt.Ignore());
-
+            CreateMap<CreateAccountTypeDocumentRequirementCommand, AccountTypeDocumentRequirement>();
             CreateMap<Account, AccountDto>()
              .ForMember(dest => dest.AccountTypeName, opt => opt.MapFrom(src => src.AccountType != null ? src.AccountType.Title : null));
             CreateMap<Account, AccountDto>()
@@ -53,6 +54,8 @@ namespace EasyPay.Application
             CreateMap<Transaction, TransactionDto>();
             CreateMap<AuthItemValue, AuthItemValueDto>()
                 .ForMember(dest => dest.AuthItemTitle, opt => opt.MapFrom(src => src.AuthItem != null ? src.AuthItem.Title : "Unknown"));
+            CreateMap<AccountTypeDocumentRequirement, AccountTypeDocumentRequirementDto>()
+              .ForMember(dest => dest.AuthItemTitle, opt => opt.MapFrom(src => src.AuthItem != null ? src.AuthItem.Title : "Unknown"));
         }
 
         private static string MaskCardNumber(string cardNumber)

@@ -1,12 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using AutoMapper;
+using EasyPay.Domain.Entities.AccountManagement;
+using EasyPay.Infrastructure.Aggregates.AccountManagement;
+using MediatR;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace EasyPay.Application.Commands.AccountManagement.AccountTypeDocumentRequirementEntity.CreateAccountTypeDocumentRequirement
 {
-    internal class CreateAccountTypeDocumentRequirementCommandHandler
+    public class CreateAccountTypeDocumentRequirementCommandHandler : IRequestHandler<CreateAccountTypeDocumentRequirementCommand, Result<int>>
     {
+        private readonly IAccountTypeDocumentRequirementRepository _repository;
+        private readonly IMapper _mapper;
+
+        public CreateAccountTypeDocumentRequirementCommandHandler(IAccountTypeDocumentRequirementRepository repository, IMapper mapper)
+        {
+            _repository = repository;
+            _mapper = mapper;
+        }
+
+        public async Task<Result<int>> Handle(CreateAccountTypeDocumentRequirementCommand request, CancellationToken cancellationToken)
+        {
+            var alreadyExists = await _repository.ExistsAsync(r =>
+                r.AccountTypeId == request.AccountTypeId && r.AuthItemId == request.AuthItemId);
+
+            if (alreadyExists)
+            {
+                return Result<int>.Failure(new Error(409, "This document requirement already exists for this account type."));
+            }
+
+            var newRequirement = _mapper.Map<AccountTypeDocumentRequirement>(request);
+
+            await _repository.AddAsync(newRequirement);
+            await _repository.SaveChangesAsync();
+
+            return Result<int>.Success(newRequirement.Id);
+        }
     }
 }

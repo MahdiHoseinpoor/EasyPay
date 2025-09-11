@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
 namespace EasyPay.Application.Commands.AccountManagement.AccountTypeDocumentRequirementEntity.DeleteAccountTypeDocumentRequirement
 {
-    internal class DeleteAccountTypeDocumentRequirementCommandValidator
+    public class DeleteAccountTypeDocumentRequirementCommandValidator : AbstractValidator<DeleteAccountTypeDocumentRequirementCommand>
     {
+        public DeleteAccountTypeDocumentRequirementCommandValidator()
+        {
+            RuleFor(x => x.AccountTypeId).NotEmpty();
+            RuleFor(x => x.RequirementId).NotEmpty();
+        }
     }
 }
