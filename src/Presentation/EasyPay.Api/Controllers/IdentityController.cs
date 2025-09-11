@@ -1,6 +1,5 @@
 ﻿using Azure.Core;
 using EasyPay.Application.Commands.Identity.LoginCommand;
-using EasyPay.Application.Commands.Identity.LoginHistoryEntity.CreateLoginHistory;
 using EasyPay.Domain.Entities.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -37,10 +36,10 @@ namespace EasyPay.Api.Controllers
                 failure => BadRequest(failure)
             );
         }
-        //[HttpPost("/Register")]
-        //public async Task<ActionResult> Register()
-        //{
-           
-        //}
+        [HttpPost("/Register")]
+        public async Task<ActionResult> Register()
+        {
+
+        }
     }
 }

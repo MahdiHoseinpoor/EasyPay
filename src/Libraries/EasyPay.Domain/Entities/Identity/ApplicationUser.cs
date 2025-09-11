@@ -9,6 +9,9 @@ namespace EasyPay.Domain.Entities.Identity
 {
     public class ApplicationUser : IdentityUser, IEntityBase
     {
+
+        public RegistrationStep CurrentStep { get; set; }
+
         public string FirstName { get; set; }
 
         public string LastName { get; set; }
