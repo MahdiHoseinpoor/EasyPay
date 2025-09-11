@@ -27,7 +27,7 @@ namespace EasyPay.Application.Commands.AccountManagement.BankCardEntity.UpdateBa
                 var entity = await _bankCardRepository.GetByIdAsync(request.Id);
                 if (entity == null)
                     return Result.Failure(new NotFoundError("there is no any entity this id: " + request.Id));
-                entity = _mapper.Map<BankCard>(request);
+               _mapper.Map(request, entity);
                 await _bankCardRepository.UpdateAsync(entity);
                 await _bankCardRepository.SaveChangesAsync();
                 return Result.Success();

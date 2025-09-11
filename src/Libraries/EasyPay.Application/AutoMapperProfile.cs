@@ -32,8 +32,6 @@ namespace EasyPay.Application
             CreateMap<CreateAccountTypeCommand, AccountType>();
             CreateMap<UpdateAccountTypeCommand, AccountType>();
             CreateMap<UpdateAccountCommand, Account>();
-            CreateMap<CreateAccountTypeCommand, AccountType>();
-            CreateMap<UpdateAccountTypeCommand, AccountType>();
             CreateMap<CreateBankCardCommand, BankCard>();
             CreateMap<UpdateBankCardCommand, BankCard>();
             CreateMap<CreateMobileBillCommand, MobileBill>();
@@ -41,8 +39,10 @@ namespace EasyPay.Application
             CreateMap<CreateUtilityBillCommand, UtilityBill>();
             CreateMap<UpdateUtilityBillCommand, UtilityBill>();
             CreateMap<IdentityRole, RoleDto>();
+            CreateMap<CreateAccountCommand, Account>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.AccountNumber, opt => opt.Ignore());
 
-            // Entities to DTOs
             CreateMap<Account, AccountDto>()
              .ForMember(dest => dest.AccountTypeName, opt => opt.MapFrom(src => src.AccountType != null ? src.AccountType.Title : null));
             CreateMap<Account, AccountDto>()

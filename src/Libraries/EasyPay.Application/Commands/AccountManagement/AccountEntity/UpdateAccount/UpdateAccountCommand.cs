@@ -10,5 +10,6 @@ namespace EasyPay.Application.Commands.AccountManagement.AccountEntity.UpdateAcc
     public class UpdateAccountCommand : IRequest<Result>
     {
         public Guid Id { get; set; }
+        public string Title { get; set; }
     }
 }

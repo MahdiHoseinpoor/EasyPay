@@ -1,9 +1,4 @@
 ﻿using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EasyPay.Application.Commands.AccountManagement.AccountEntity.UpdateAccount
 {
@@ -11,7 +6,12 @@ namespace EasyPay.Application.Commands.AccountManagement.AccountEntity.UpdateAcc
     {
         public UpdateAccountCommandValidator()
         {
-            
+            RuleFor(x => x.Id)
+                .NotEmpty().WithMessage("Account ID is required.");
+
+            RuleFor(x => x.Title)
+                .NotEmpty().WithMessage("Account title is required.")
+                .MaximumLength(100).WithMessage("Title cannot exceed 100 characters.");
         }
     }
 }
