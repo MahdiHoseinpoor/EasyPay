@@ -1,6 +1,7 @@
 ﻿using EasyPay.Application.Commands.Report.TransactionEntity.CreateTransaction;
 using EasyPay.Application.Services;
 using EasyPay.Common.Errors;
+using EasyPay.Common.Errors.Business;
 using EasyPay.Domain.Entities.AccountManagement;
 using EasyPay.Domain.Entities.Report;
 using EasyPay.Domain.Enums.AccountManagement;
@@ -105,8 +106,7 @@ namespace EasyPay.Application.UnitTests.Commands.Report
 
             // Assert
             result.IsSuccess.Should().BeFalse();
-            result.error.code.Should().Be(403);
-            result.error.message.Should().Be("Forbidden: You do not have access to this account.");
+            result.error.Should().BeOfType<AuthorizationError>();
         }
 
         [Fact]
@@ -127,8 +127,7 @@ namespace EasyPay.Application.UnitTests.Commands.Report
 
             // Assert
             result.IsSuccess.Should().BeFalse();
-            result.error.code.Should().Be(400);
-            result.error.message.Should().Be("Account is not active.");
+            result.error.Should().BeOfType<AccountInactiveError>();
         }
     }
 }

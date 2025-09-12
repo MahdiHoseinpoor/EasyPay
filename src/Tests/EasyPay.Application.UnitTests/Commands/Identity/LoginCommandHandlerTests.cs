@@ -1,10 +1,11 @@
-﻿using Moq;
+﻿using EasyPay.Application.Commands.Identity.LoginCommand;
+using EasyPay.Application.Services;
+using EasyPay.Common.Errors.Business;
+using EasyPay.Domain.Entities.Identity;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using EasyPay.Application.Services;
-using EasyPay.Application.Commands.Identity.LoginCommand;
-using EasyPay.Domain.Entities.Identity;
+using Moq;
 
 namespace EasyPay.Application.UnitTests.Commands.Identity
 {
@@ -82,8 +83,7 @@ namespace EasyPay.Application.UnitTests.Commands.Identity
 
             // Assert
             result.IsSuccess.Should().BeFalse();
-            result.error.code.Should().Be(401);
-            result.error.message.Should().Be("Invalid username or password");
+            result.error.Should().BeOfType<AuthenticationError>();
             _mockPublisher.Verify(p => p.Publish(It.IsAny<INotification>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -102,8 +102,7 @@ namespace EasyPay.Application.UnitTests.Commands.Identity
 
             // Assert
             result.IsSuccess.Should().BeFalse();
-            result.error.code.Should().Be(401);
-            result.error.message.Should().Be("Invalid username or password.");
+            result.error.Should().BeOfType<AuthenticationError>();
             _mockPublisher.Verify(p => p.Publish(It.IsAny<INotification>(), It.IsAny<CancellationToken>()), Times.Once);
         }
     }

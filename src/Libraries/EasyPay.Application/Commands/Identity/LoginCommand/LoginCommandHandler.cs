@@ -1,12 +1,13 @@
-﻿using EasyPay.Domain.Enums.Identity;
+﻿using EasyPay.Application.Events.UserLoginAttempted;
+using EasyPay.Application.Services;
+using EasyPay.Common.Errors.Business;
+using EasyPay.Domain.Entities.Identity;
+using EasyPay.Domain.Enums.Identity;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using EasyPay.Application.Services;
-using Microsoft.AspNetCore.Identity;
-using EasyPay.Application.Events.UserLoginAttempted;
-using EasyPay.Domain.Entities.Identity;
 
 namespace EasyPay.Application.Commands.Identity.LoginCommand
 {
@@ -35,15 +36,16 @@ namespace EasyPay.Application.Commands.Identity.LoginCommand
             if (user == null)
             {
                 await PublishLoginAttemptEvent(request, LoginStatus.Failed, "Invalid username or password");
-                return Result<LoginResponse>.Failure(new Error(401, "Invalid username or password"));
+                return Result<LoginResponse>.Failure(new AuthenticationError());
             }
 
             var signInResult = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
 
             if (!signInResult.Succeeded)
             {
-                await PublishLoginAttemptEvent(request, LoginStatus.Failed, GetFailureReason(signInResult), user.Id);
-                return Result<LoginResponse>.Failure(new Error(401, GetFailureReason(signInResult)));
+                var reason = GetFailureReason(signInResult);
+                await PublishLoginAttemptEvent(request, LoginStatus.Failed, reason, user.Id);
+                return Result<LoginResponse>.Failure(new AuthenticationError(reason));
             }
 
             var token = await _tokenService.GenerateToken(user);

@@ -1,4 +1,5 @@
 ﻿using EasyPay.Application.Services;
+using EasyPay.Common.Errors.Business;
 using EasyPay.Domain.Entities.Report;
 using EasyPay.Domain.Enums.Report;
 using EasyPay.Domain.ValueObjects.Report;
@@ -32,13 +33,13 @@ namespace EasyPay.Application.Commands.Report.TransactionEntity.CreateTransactio
                 return Result<Guid>.Failure(new NotFoundError("Account not found."));
 
             if (account.OwnerUserId != userId)
-                return Result<Guid>.Failure(new Error(403, "Forbidden: You do not have access to this account."));
+                return Result<Guid>.Failure(new AuthorizationError("Forbidden: You do not have access to this account."));
 
             if (account.Status != Domain.Enums.AccountManagement.AccountStatus.Active)
-                return Result<Guid>.Failure(new Error(400, "Account is not active."));
+                return Result<Guid>.Failure(new AccountInactiveError(account.Status.ToString()));
 
             if (account.CurrentBalance < request.Amount)
-                return Result<Guid>.Failure(new Error(400, "Insufficient funds for this withdrawal."));
+                return Result<Guid>.Failure(new InsufficientFundsError(account.CurrentBalance, request.Amount));
 
             await _transactionRepository.BeginTransactionAsync();
             try
