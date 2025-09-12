@@ -1,4 +1,5 @@
 ﻿using EasyPay.Domain.Enums.Identity;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EasyPay.Domain.Entities.Identity
 {
@@ -10,5 +11,11 @@ namespace EasyPay.Domain.Entities.Identity
         public AuthItemValueType AuthItemValueType { get; set; }
 
         public virtual ICollection<AuthItemValue> AuthItemValues { get; set; }
+
+        [SetsRequiredMembers]
+        public AuthItem()
+        {
+            
+        }
     }
 }

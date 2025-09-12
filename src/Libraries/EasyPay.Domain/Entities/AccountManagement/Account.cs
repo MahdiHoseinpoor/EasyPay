@@ -3,6 +3,7 @@ using EasyPay.Domain.Entities.Report;
 using EasyPay.Domain.Enums.AccountManagement;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EasyPay.Domain.Entities.AccountManagement
 {
@@ -29,6 +30,12 @@ namespace EasyPay.Domain.Entities.AccountManagement
         public DateTime? LastActivityDate { get; set; }
 
         public virtual ICollection<Transaction> Transactions { get; set; }
+
+        [SetsRequiredMembers]
+        public Account()
+        {
+            
+        }
 
     }
 }

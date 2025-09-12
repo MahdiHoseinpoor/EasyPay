@@ -1,4 +1,5 @@
 ﻿using EasyPay.Domain.Entities.Identity;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EasyPay.Domain.Entities.AccountManagement
 {
@@ -13,5 +14,11 @@ namespace EasyPay.Domain.Entities.AccountManagement
         public bool IsRequired { get; set; } = true; 
         public int? Order { get; set; } 
         public string ValidationRules { get; set; }
+
+        [SetsRequiredMembers]
+        public AccountTypeDocumentRequirement()
+        {
+            
+        }
     }
 }
