@@ -1,9 +1,4 @@
 ﻿using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EasyPay.Application.Commands.Payment.MobileBillEntity.UpdateMobileBill
 {
@@ -11,7 +6,13 @@ namespace EasyPay.Application.Commands.Payment.MobileBillEntity.UpdateMobileBill
     {
         public UpdateMobileBillCommandValidator()
         {
-            
+            RuleFor(x => x.Id)
+                .NotEmpty().WithMessage("Mobile Bill ID is required.");
+
+            RuleFor(x => x.PhoneNumber)
+                .NotEmpty().WithMessage("Phone number is required.")
+                .Length(11).WithMessage("Phone number must be 11 digits.")
+                .Matches("^[0-9]*$").WithMessage("Phone number must only contain digits.");
         }
     }
 }

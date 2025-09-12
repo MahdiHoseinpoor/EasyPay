@@ -1,9 +1,5 @@
 ﻿using FluentValidation;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EasyPay.Application.Commands.Payment.MobileBillEntity.DeleteMobileBill
 {
@@ -11,7 +7,8 @@ namespace EasyPay.Application.Commands.Payment.MobileBillEntity.DeleteMobileBill
     {
         public DeleteMobileBillCommandValidator()
         {
-            
+            RuleFor(x => x.Id)
+                .NotEmpty().WithMessage("Mobile Bill ID is required.");
         }
     }
 }

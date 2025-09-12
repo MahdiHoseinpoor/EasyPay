@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
 namespace EasyPay.Application.Commands.AccountManagement.BankCardEntity.DeleteBankCard
 {
-    internal class DeleteBankCardCommandValidator
+    public class DeleteBankCardCommandValidator : AbstractValidator<DeleteBankCardCommand>
     {
+        public DeleteBankCardCommandValidator()
+        {
+            RuleFor(x => x.Id)
+                .NotEmpty().WithMessage("Bank Card ID is required.");
+        }
     }
 }

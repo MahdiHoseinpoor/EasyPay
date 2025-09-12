@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
 namespace EasyPay.Application.Commands.Payment.UtilityBillEntity.DeleteUtilityBill
 {
-    internal class DeleteUtilityBillCommandValidator
+    public class DeleteUtilityBillCommandValidator : AbstractValidator<DeleteUtilityBillCommand>
     {
+        public DeleteUtilityBillCommandValidator()
+        {
+            RuleFor(x => x.Id)
+                .NotEmpty().WithMessage("Utility Bill ID is required.");
+        }
     }
 }

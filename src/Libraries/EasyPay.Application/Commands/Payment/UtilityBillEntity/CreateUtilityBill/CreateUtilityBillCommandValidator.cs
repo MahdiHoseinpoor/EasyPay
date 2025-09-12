@@ -1,12 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
 namespace EasyPay.Application.Commands.Payment.UtilityBillEntity.CreateUtilityBill
 {
-    internal class CreateUtilityBillCommandValidator
+    public class CreateUtilityBillCommandValidator : AbstractValidator<CreateUtilityBillCommand>
     {
+        public CreateUtilityBillCommandValidator()
+        {
+            RuleFor(x => x.BillNumber)
+                .NotEmpty().WithMessage("Bill number is required.")
+                .MaximumLength(50).WithMessage("Bill number cannot exceed 50 characters.");
+
+            RuleFor(x => x.UtilityType)
+                .IsInEnum().WithMessage("A valid utility type must be specified.");
+        }
     }
 }
