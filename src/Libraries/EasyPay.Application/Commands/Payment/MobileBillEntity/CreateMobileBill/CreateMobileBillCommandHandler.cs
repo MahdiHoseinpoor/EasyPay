@@ -14,22 +14,30 @@ namespace EasyPay.Application.Commands.Payment.MobileBillEntity.CreateMobileBill
     {
         private readonly IMobileBillRepository _mobileBillRepository;
         private readonly IMapper _mapper;
-        private readonly IBillInquiryService _billInquiryService; 
+        private readonly IBillInquiryService _billInquiryService;
+        private readonly ICurrentUserService _currentUserService;
 
         public CreateMobileBillCommandHandler(
             IMobileBillRepository mobileBillRepository,
             IMapper mapper,
-            IBillInquiryService billInquiryService)
+            IBillInquiryService billInquiryService,
+            ICurrentUserService currentUserService)
         {
             _mobileBillRepository = mobileBillRepository;
             _mapper = mapper;
             _billInquiryService = billInquiryService;
+            _currentUserService = currentUserService; 
         }
 
         public async Task<Result<Guid>> Handle(CreateMobileBillCommand request, CancellationToken cancellationToken)
         {
             try
             {
+                var userId = _currentUserService.UserId;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Result<Guid>.Failure(new Error(401, "User is not authenticated."));
+                }
                 var billInquiryResult = await _billInquiryService.GetMobileBillAsync(request.PhoneNumber);
                 if (!billInquiryResult.IsSuccess)
                 {
@@ -39,8 +47,8 @@ namespace EasyPay.Application.Commands.Payment.MobileBillEntity.CreateMobileBill
                 var entity = _mapper.Map<MobileBill>(request);
 
                 entity.Amount = billInquiryResult.Value.Amount;
-                entity.Type = BillType.Mobile; 
-
+                entity.Type = BillType.Mobile;
+                entity.UserId = userId;
                 await _mobileBillRepository.AddAsync(entity);
                 await _mobileBillRepository.SaveChangesAsync();
 

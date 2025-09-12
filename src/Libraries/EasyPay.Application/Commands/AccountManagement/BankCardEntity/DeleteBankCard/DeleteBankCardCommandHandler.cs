@@ -29,10 +29,6 @@ namespace EasyPay.Application.Commands.AccountManagement.BankCardEntity.DeleteBa
                 var entity = await _bankCardRepository.GetByIdAsync(request.Id);
                 if (entity == null)
                     return Result.Failure(new NotFoundError());
-                if (request.IsHardDelete)
-                {
-                    //TODO: Check User has permissions
-                }
                 await _bankCardRepository.DeleteAsync(entity, request.IsHardDelete);
                 await _bankCardRepository.SaveChangesAsync();
                 return Result.Success();

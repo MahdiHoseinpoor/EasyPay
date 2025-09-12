@@ -26,10 +26,6 @@ namespace EasyPay.Application.Commands.AccountManagement.AccountTypeEntity.Delet
                 var entity = await _accountTypeRepository.GetByIdAsync(request.Id);
                 if (entity == null)
                     return Result.Failure(new NotFoundError());
-                if (request.IsHardDelete)
-                {
-                    //TODO: Check User has permissions
-                }
                 await _accountTypeRepository.DeleteAsync(entity, request.IsHardDelete);
                 await _accountTypeRepository.SaveChangesAsync();
                 return Result.Success();

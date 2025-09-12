@@ -1,14 +1,15 @@
-﻿using MediatR;
+﻿using EasyPay.Application.Common;
+using MediatR;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace EasyPay.Application.Commands.Payment.MobileBillEntity.DeleteMobileBill
 {
-    public class DeleteMobileBillCommand : IRequest<Result>
+    public class DeleteMobileBillCommand : IRequest<Result>, IAuthorizableRequest<Result>
     {
         public Guid Id { get; set; }
+
+        [JsonIgnore]
+        public string RequiredPermission => Permissions.Bills.Delete;
     }
 }
