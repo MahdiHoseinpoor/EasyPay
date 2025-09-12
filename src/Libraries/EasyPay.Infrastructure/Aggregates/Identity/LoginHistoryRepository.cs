@@ -1,5 +1,6 @@
 ﻿using EasyPay.Common;
 using EasyPay.Domain.Entities.Identity;
+using EasyPay.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace EasyPay.Infrastructure.Aggregates.Identity
 {
     public class LoginHistoryRepository : RepositoryBase<LoginHistory, long>, ILoginHistoryRepository
     {
-        public LoginHistoryRepository(DbContext context) : base(context)
+        public LoginHistoryRepository(ApplicationDbContext context) : base(context)
         {
         }
     }

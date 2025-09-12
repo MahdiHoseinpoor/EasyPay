@@ -34,9 +34,9 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddRepositoriesFormAssembly(Assembly.GetExecutingAssembly());
             builder.Services.AddIdentityCore<ApplicationUser>(
                 options => {
-            
                 })
                 .AddRoles<IdentityRole>()
+                .AddSignInManager()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
         }
     }

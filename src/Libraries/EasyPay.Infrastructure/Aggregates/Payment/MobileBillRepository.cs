@@ -1,5 +1,6 @@
 ﻿using EasyPay.Common;
 using EasyPay.Domain.Entities.Payment;
+using EasyPay.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace EasyPay.Infrastructure.Aggregates.Payment
 {
     public class MobileBillRepository : RepositoryBase<MobileBill, Guid>, IMobileBillRepository
     {
-        public MobileBillRepository(DbContext context) : base(context)
+        public MobileBillRepository(ApplicationDbContext context) : base(context)
         {
         }
     }

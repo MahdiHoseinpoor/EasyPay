@@ -1,5 +1,6 @@
 ﻿using EasyPay.Common;
 using EasyPay.Domain.Entities.Identity;
+using EasyPay.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace EasyPay.Infrastructure.Aggregates.Identity
 {
     public class AuthItemRepository : RepositoryBase<AuthItem, int>, IAuthItemRepository
     {
-        public AuthItemRepository(DbContext context) : base(context)
+        public AuthItemRepository(ApplicationDbContext context) : base(context)
         {
         }
     }

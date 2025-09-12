@@ -23,13 +23,22 @@ try
     builder.Host.UseSerilog();
 
     builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
-    builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+    builder.Services.AddHttpContextAccessor();
+    builder.Services.AddMemoryCache();
     builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
     builder.Services.AddControllers();
     builder.Services.AddHealthChecks()
         .AddDbContextCheck<ApplicationDbContext>("database");
-    builder.Services.AddOpenApi();
-
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen(options =>
+    {
+        options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+        {
+            Title = "EasyPay API",
+            Version = "v1",
+            Description = "The official API for the EasyPay Financial Platform."
+        });
+    });
     builder.AddInfrastructureServices();
     builder.AddApplicationServices();
 
@@ -60,7 +69,12 @@ try
     app.UseSerilogRequestLogging();
     if (app.Environment.IsDevelopment())
     {
-        app.MapOpenApi();
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "EasyPay API V1");
+            c.RoutePrefix = string.Empty;
+        });
     }
     app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 

@@ -60,12 +60,6 @@ namespace EasyPay.Api.Controllers
         }
 
         /// <summary>
-        /// Adds a new document requirement to an account type.
-        /// </summary>
-        [HttpPost]
-        // ... existing endpoint code ...
-
-        /// <summary>
         /// Deletes a document requirement from an account type.
         /// </summary>
         /// <param name="accountTypeId">The ID of the account type.</param>

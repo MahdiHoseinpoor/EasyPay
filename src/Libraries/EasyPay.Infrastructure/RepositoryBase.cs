@@ -7,15 +7,15 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-
+using EasyPay.Infrastructure.Data;
 namespace EasyPay.Common
 {
     public class RepositoryBase<TEntity, TKey> : IRepositoryBase<TEntity, TKey> where TEntity : EntityBase<TKey>
     {
-        DbContext _context;
+        ApplicationDbContext _context;
         DbSet<TEntity> _dbset;
         IDbContextTransaction _transaction;
-        public RepositoryBase(DbContext context)
+        public RepositoryBase(ApplicationDbContext context)
         {
             _context = context;
             _dbset = _context.Set<TEntity>();
@@ -25,20 +25,25 @@ namespace EasyPay.Common
         {
             return await _dbset.FindAsync(id);
         }
-        public async Task<IEnumerable<TEntity>> GetAllAsync(){
+        public async Task<IEnumerable<TEntity>> GetAllAsync()
+        {
             return await _dbset.ToListAsync();
         }
-        public async Task AddAsync(TEntity entity){
+        public async Task AddAsync(TEntity entity)
+        {
             await _dbset.AddAsync(entity);
         }
-        public async Task AddRangeAsync(IEnumerable<TEntity> entities){
+        public async Task AddRangeAsync(IEnumerable<TEntity> entities)
+        {
             await _dbset.AddRangeAsync(entities);
         }
-        public async Task UpdateAsync(TEntity entity){
+        public async Task UpdateAsync(TEntity entity)
+        {
             entity.ModifiedAt = DateTime.Now;
             _context.Update(entity);
         }
-        public Task UpdateRangeAsync(IEnumerable<TEntity> entities){
+        public Task UpdateRangeAsync(IEnumerable<TEntity> entities)
+        {
             //TODO: Use Better way for set ModifiedAt
             foreach (var entity in entities)
             {
@@ -47,13 +52,15 @@ namespace EasyPay.Common
             _context.UpdateRange(entities);
             return Task.CompletedTask;
         }
-        public async Task DeleteAsync(TKey id, bool isHardDelete = false){
+        public async Task DeleteAsync(TKey id, bool isHardDelete = false)
+        {
             //TODO: replace exeption with result object error
-            var entity =await GetByIdAsync(id);
-            if (entity == null) throw new Exception("can't find entity with id="+id);
+            var entity = await GetByIdAsync(id);
+            if (entity == null) throw new Exception("can't find entity with id=" + id);
             await DeleteAsync(entity, isHardDelete);
         }
-        public Task DeleteAsync(TEntity entity, bool isHardDelete = false){
+        public Task DeleteAsync(TEntity entity, bool isHardDelete = false)
+        {
             //TODO: replace exeption with result object error
             if (isHardDelete || entity is not ISoftDeletable)
             {
@@ -73,12 +80,14 @@ namespace EasyPay.Common
             }
             return Task.CompletedTask;
         }
-        public async Task DeleteRangeAsync(IEnumerable<TKey> ids, bool isHardDelete = false){
+        public async Task DeleteRangeAsync(IEnumerable<TKey> ids, bool isHardDelete = false)
+        {
 
-            var entities = await _dbset.Where(p=>ids.Contains(p.Id)).ToListAsync();
+            var entities = await _dbset.Where(p => ids.Contains(p.Id)).ToListAsync();
             await DeleteRangeAsync(entities, isHardDelete);
         }
-        public Task DeleteRangeAsync(IEnumerable<TEntity> entities, bool isHardDelete = false){
+        public Task DeleteRangeAsync(IEnumerable<TEntity> entities, bool isHardDelete = false)
+        {
             if (isHardDelete)
                 _dbset.RemoveRange(entities);
             else
@@ -92,17 +101,21 @@ namespace EasyPay.Common
         #endregion
 
         #region Advanced Query Operations
-        public async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> predicate){
+        public async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> predicate)
+        {
             return await _dbset.AnyAsync(predicate);
         }
-        public async Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate = null){
+        public async Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate = null)
+        {
             return await _dbset.CountAsync(predicate);
         }
-        public async Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate){
+        public async Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
+        {
             return await _dbset.FirstOrDefaultAsync(predicate);
         }
         public async Task<TResult> FirstOrDefaultAsync<TResult>(Expression<Func<TEntity, bool>> predicate,
-                                                Expression<Func<TEntity, TResult>> selector){
+                                                Expression<Func<TEntity, TResult>> selector)
+        {
             return await _dbset.Where(predicate).Select(selector).FirstOrDefaultAsync();
         }
         #endregion
@@ -113,15 +126,18 @@ namespace EasyPay.Common
             IQueryable<TEntity> query = Query(spec.Predicate, spec.OrderBy, spec.OrderByDescending, spec.GroupBy, spec.Includes, disableTracking);
             return Task.FromResult(query);
         }
-        public async Task<IEnumerable<TEntity>> GetBySpecificationAsync(ISpecification<TEntity> spec){
+        public async Task<IEnumerable<TEntity>> GetBySpecificationAsync(ISpecification<TEntity> spec)
+        {
             var query = await ApplySpecificationAsync(spec);
             return await query.ToListAsync();
         }
-        public async Task<int> CountBySpecificationAsync(ISpecification<TEntity> spec){
+        public async Task<int> CountBySpecificationAsync(ISpecification<TEntity> spec)
+        {
             var query = await ApplySpecificationAsync(spec);
             return await query.CountAsync();
         }
-        public async Task<TEntity> FirstOrDefaultBySpecificationAsync(ISpecification<TEntity> spec){
+        public async Task<TEntity> FirstOrDefaultBySpecificationAsync(ISpecification<TEntity> spec)
+        {
             var query = await ApplySpecificationAsync(spec);
             return await query.FirstOrDefaultAsync();
         }
@@ -133,7 +149,8 @@ namespace EasyPay.Common
             Expression<Func<TEntity, object>> orderBy = null,
             int pageIndex = 0,
             int pageSize = 20,
-            bool disableTracking = true){
+            bool disableTracking = true)
+        {
 
             IQueryable<TEntity> query = Query(predicate, orderBy, disableTracking: disableTracking);
 
@@ -154,7 +171,8 @@ namespace EasyPay.Common
             Expression<Func<TEntity, TResult>> selector = null,
             int pageIndex = 0,
             int pageSize = 20,
-            bool disableTracking = true) where TResult : class{
+            bool disableTracking = true) where TResult : class
+        {
             IQueryable<TEntity> query = Query(predicate, orderBy, disableTracking: disableTracking);
 
             var totalCount = await query.CountAsync();
@@ -170,12 +188,15 @@ namespace EasyPay.Common
         #endregion
 
         #region Transaction Support
-        public async Task BeginTransactionAsync(){
-            if (_transaction == null) {
+        public async Task BeginTransactionAsync()
+        {
+            if (_transaction == null)
+            {
                 _transaction = await _context.Database.BeginTransactionAsync();
             }
         }
-        public async Task CommitTransactionAsync(){
+        public async Task CommitTransactionAsync()
+        {
             try
             {
                 if (_transaction != null)
@@ -196,7 +217,8 @@ namespace EasyPay.Common
                 }
             }
         }
-        public async Task RollbackTransactionAsync(){
+        public async Task RollbackTransactionAsync()
+        {
             try
             {
                 await _transaction?.RollbackAsync();
@@ -210,7 +232,8 @@ namespace EasyPay.Common
                 }
             }
         }
-        public async Task<int> SaveChangesAsync(){
+        public async Task<int> SaveChangesAsync()
+        {
             return await _context.SaveChangesAsync();
         }
         #endregion
@@ -227,7 +250,7 @@ namespace EasyPay.Common
             if (disableTracking)
                 query = query.AsNoTracking();
             if (predicate != null)
-                query = query.Where(predicate);    
+                query = query.Where(predicate);
             if (orderBy != null)
                 query = query.OrderBy(orderBy);
             else if (orderByDescending != null)

@@ -1,5 +1,6 @@
 ﻿using EasyPay.Common;
 using EasyPay.Domain.Entities.AccountManagement;
+using EasyPay.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace EasyPay.Infrastructure.Aggregates.AccountManagement
 {
     public class AccountTypeRepository : RepositoryBase<AccountType, int>, IAccountTypeRepository
     {
-        public AccountTypeRepository(DbContext context) : base(context)
+        public AccountTypeRepository(ApplicationDbContext context) : base(context)
         {
         }
     }
