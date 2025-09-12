@@ -33,3 +33,4 @@ namespace EasyPay.Domain.Entities.Report
         public TransactionMetadata TransactionMetadata { get; set; }
         public virtual Account Account { get; set; }
     }
+}
