@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EasyPay.Common.Errors.Business;
 using EasyPay.Domain.Entities.AccountManagement;
 using EasyPay.Infrastructure.Aggregates.AccountManagement;
 using MediatR;
@@ -25,7 +26,7 @@ namespace EasyPay.Application.Commands.AccountManagement.AccountTypeDocumentRequ
 
             if (alreadyExists)
             {
-                return Result<int>.Failure(new Error(409, "This document requirement already exists for this account type."));
+                return Result<int>.Failure(new DuplicateDocumentRequirementError());
             }
 
             var newRequirement = _mapper.Map<AccountTypeDocumentRequirement>(request);

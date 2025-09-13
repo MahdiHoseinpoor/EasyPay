@@ -3,6 +3,7 @@ using EasyPay.Api.Services;
 using EasyPay.Application.Services;
 using EasyPay.Common;
 using EasyPay.Common.Errors;
+using EasyPay.Common.Errors.Business;
 using EasyPay.Domain.Entities.AccountManagement;
 using EasyPay.Domain.Entities.Identity;
 using EasyPay.Domain.Enums.AccountManagement;
@@ -79,8 +80,7 @@ namespace EasyPay.Application.Commands.AccountManagement.AccountEntity.CreateAcc
 
                 if (missingRequirements.Any())
                 {
-                    var errorMessage = $"User is missing the following approved documents: {string.Join(", ", missingRequirements)}";
-                    return Result<Guid>.Failure(new Error(400, errorMessage));
+                    return Result<Guid>.Failure(new MissingRequirementsError(missingRequirements));
                 }
 
                 return await CreateAccount(request, userId);

@@ -14,7 +14,7 @@ namespace EasyPay.Infrastructure.Configurations.Identity
     {
         public void Configure(EntityTypeBuilder<NaturalUser> builder)
         {
-            builder.HasBaseType<ApplicationDbContext>();
+            builder.HasBaseType<ApplicationUser>();
             builder.ToTable("NaturalUser");
             builder.Property(p => p.NationalCode)
                 .IsRequired()
