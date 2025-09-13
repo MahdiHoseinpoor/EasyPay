@@ -38,7 +38,7 @@ namespace EasyPay.Application.Queries.Report.TransactionEntity
                 return Result<IPagedList<TransactionDto>>.Failure(new Error(403, "Forbidden: You do not have access to this account's history."));
 
             var pagedTransactions = await _transactionRepository.GetPagedListAsync(
-                predicate: t => t.AccountId == request.AccountId.ToString(),
+                predicate: t => t.AccountId == request.AccountId,
                 orderBy: q => q.TransactionDate,
                 pageIndex: request.PageIndex,
                 pageSize: request.PageSize

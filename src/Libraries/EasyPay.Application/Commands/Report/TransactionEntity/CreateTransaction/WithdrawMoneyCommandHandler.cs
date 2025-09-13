@@ -50,7 +50,7 @@ namespace EasyPay.Application.Commands.Report.TransactionEntity.CreateTransactio
 
                 var metadata = new TransactionMetadata(request.RequestMetadata.IpAddress, request.RequestMetadata.UserAgent);
                 var referenceId = Guid.NewGuid().ToString();
-                var transaction = new Transaction(account.Id.ToString(), request.Amount, TransactionType.Withdrawal, referenceId, metadata, request.Description);
+                var transaction = new Transaction(account.Id, request.Amount, TransactionType.Withdrawal, referenceId, metadata, request.Description);
 
                 await _transactionRepository.AddAsync(transaction);
 

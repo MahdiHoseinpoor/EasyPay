@@ -11,7 +11,7 @@ namespace EasyPay.Domain.Entities.Report
         private Transaction() { }
 
         [SetsRequiredMembers]
-        public Transaction(string accountId, decimal amount, TransactionType transactionType, string referenceId, TransactionMetadata metadata, string description = null)
+        public Transaction(Guid accountId, decimal amount, TransactionType transactionType, string referenceId, TransactionMetadata metadata, string description = null)
         {
             AccountId = accountId;
             Amount = amount;
@@ -23,7 +23,7 @@ namespace EasyPay.Domain.Entities.Report
             TransactionDate = DateTime.UtcNow;
         }
 
-        public string AccountId { get; set; }
+        public Guid AccountId { get; set; }
         public decimal Amount { get; set; }
         public TransactionType TransactionType { get; set; }
         public DateTime TransactionDate { get; set; }

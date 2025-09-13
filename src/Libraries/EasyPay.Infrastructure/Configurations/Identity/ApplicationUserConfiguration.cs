@@ -14,13 +14,10 @@ namespace EasyPay.Infrastructure.Configurations.Identity
         public void Configure(EntityTypeBuilder<ApplicationUser> builder)
         {
             builder.Property(p => p.FirstName)
-                .IsRequired()
                 .HasMaxLength(EntityConstraints.DefaultMaxLength);
             builder.Property(p => p.LastName)
-                .IsRequired()
                 .HasMaxLength(EntityConstraints.DefaultMaxLength);
             builder.Property(p => p.Address)
-                .IsRequired()
                 .HasMaxLength(EntityConstraints.DefaultLongMaxLength);
             builder.Ignore(p => p.FullName);
 

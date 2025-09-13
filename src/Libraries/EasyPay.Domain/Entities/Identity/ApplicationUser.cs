@@ -12,20 +12,19 @@ namespace EasyPay.Domain.Entities.Identity
 
         public RegistrationStep CurrentStep { get; set; }
 
-        public string FirstName { get; set; }
+        public string? FirstName { get; set; }
 
-        public string LastName { get; set; }
+        public string? LastName { get; set; }
 
         public UserType UserType { get; set; }
 
-        public string Address { get; set; }
+        public string? Address { get; set; }
 
         public bool IsActive { get; set; } = true;
         public bool IsAuthorized { get; set; } = true;
         public DateTime RegistrationDate { get; set; } = DateTime.Now;
         public DateTime? LastLoginDate { get; set; }
 
-        public bool TwoFactorEnabled { get; set; }
         public DateTime? PasswordChangeDate { get; set; }
         public bool ForcePasswordChange { get; set; }
 
