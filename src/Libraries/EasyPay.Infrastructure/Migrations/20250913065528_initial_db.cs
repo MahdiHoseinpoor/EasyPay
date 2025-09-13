@@ -73,7 +73,7 @@ namespace EasyPay.Infrastructure.Migrations
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     IsAuthorized = table.Column<bool>(type: "bit", nullable: false),
                     RegistrationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastLoginDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastVerifyPasswordDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
                     PasswordChangeDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ForcePasswordChange = table.Column<bool>(type: "bit", nullable: false),
@@ -230,19 +230,19 @@ namespace EasyPay.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUserLogins",
+                name: "AspNetUserVerifyPasswords",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    VerifyPasswordProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                    table.PrimaryKey("PK_AspNetUserVerifyPasswords", x => new { x.VerifyPasswordProvider, x.ProviderKey });
                     table.ForeignKey(
-                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
+                        name: "FK_AspNetUserVerifyPasswords_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -278,13 +278,13 @@ namespace EasyPay.Infrastructure.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    VerifyPasswordProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
+                    table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.VerifyPasswordProvider, x.Name });
                     table.ForeignKey(
                         name: "FK_AspNetUserTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -320,13 +320,13 @@ namespace EasyPay.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "LoginHistory",
+                name: "VerifyPasswordHistory",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LoginTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    VerifyPasswordTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LogoutTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IPAddress = table.Column<string>(type: "nvarchar(45)", maxLength: 45, nullable: false),
                     UserAgent = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
@@ -346,9 +346,9 @@ namespace EasyPay.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LoginHistory", x => x.Id);
+                    table.PrimaryKey("PK_VerifyPasswordHistory", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_LoginHistory_AspNetUsers_UserId",
+                        name: "FK_VerifyPasswordHistory_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -542,8 +542,8 @@ namespace EasyPay.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUserLogins_UserId",
-                table: "AspNetUserLogins",
+                name: "IX_AspNetUserVerifyPasswords_UserId",
+                table: "AspNetUserVerifyPasswords",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -584,8 +584,8 @@ namespace EasyPay.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LoginHistory_UserId",
-                table: "LoginHistory",
+                name: "IX_VerifyPasswordHistory_UserId",
+                table: "VerifyPasswordHistory",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -616,7 +616,7 @@ namespace EasyPay.Infrastructure.Migrations
                 name: "AspNetUserClaims");
 
             migrationBuilder.DropTable(
-                name: "AspNetUserLogins");
+                name: "AspNetUserVerifyPasswords");
 
             migrationBuilder.DropTable(
                 name: "AspNetUserRoles");
@@ -634,7 +634,7 @@ namespace EasyPay.Infrastructure.Migrations
                 name: "BillBase");
 
             migrationBuilder.DropTable(
-                name: "LoginHistory");
+                name: "VerifyPasswordHistory");
 
             migrationBuilder.DropTable(
                 name: "NaturalUser");

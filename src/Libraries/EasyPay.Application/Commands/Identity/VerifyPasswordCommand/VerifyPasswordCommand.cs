@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EasyPay.Application.Commands.Identity.LoginCommand
+namespace EasyPay.Application.Commands.Identity.VerifyPasswordCommand
 {
-    public class LoginCommand : IRequest<Result<LoginResponse>>
+    public class VerifyPasswordCommand : IRequest<Result<VerifyPasswordResponse>>
     {
         public string Username { get; init; }
         public string Password { get; init; }

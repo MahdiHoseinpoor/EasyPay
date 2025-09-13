@@ -294,7 +294,7 @@ namespace EasyPay.Infrastructure.Migrations
                     b.Property<bool>("IsAuthorized")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("LastLoginDate")
+                    b.Property<DateTime?>("LastVerifyPasswordDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("LastName")
@@ -457,7 +457,7 @@ namespace EasyPay.Infrastructure.Migrations
                     b.ToTable("AuthItemValues");
                 });
 
-            modelBuilder.Entity("EasyPay.Domain.Entities.Identity.LoginHistory", b =>
+            modelBuilder.Entity("EasyPay.Domain.Entities.Identity.VerifyPasswordHistory", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -501,7 +501,7 @@ namespace EasyPay.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime>("LoginTime")
+                    b.Property<DateTime>("VerifyPasswordTime")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("LogoutTime")
@@ -543,7 +543,7 @@ namespace EasyPay.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("LoginHistory");
+                    b.ToTable("VerifyPasswordHistory");
                 });
 
             modelBuilder.Entity("EasyPay.Domain.Entities.Payment.BillBase", b =>
@@ -706,9 +706,9 @@ namespace EasyPay.Infrastructure.Migrations
                     b.ToTable("AspNetUserClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserVerifyPassword<string>", b =>
                 {
-                    b.Property<string>("LoginProvider")
+                    b.Property<string>("VerifyPasswordProvider")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderKey")
@@ -721,11 +721,11 @@ namespace EasyPay.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("LoginProvider", "ProviderKey");
+                    b.HasKey("VerifyPasswordProvider", "ProviderKey");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", (string)null);
+                    b.ToTable("AspNetUserVerifyPasswords", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -748,7 +748,7 @@ namespace EasyPay.Infrastructure.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("LoginProvider")
+                    b.Property<string>("VerifyPasswordProvider")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
@@ -757,7 +757,7 @@ namespace EasyPay.Infrastructure.Migrations
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserId", "LoginProvider", "Name");
+                    b.HasKey("UserId", "VerifyPasswordProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
@@ -917,10 +917,10 @@ namespace EasyPay.Infrastructure.Migrations
                     b.Navigation("VerifiedByUser");
                 });
 
-            modelBuilder.Entity("EasyPay.Domain.Entities.Identity.LoginHistory", b =>
+            modelBuilder.Entity("EasyPay.Domain.Entities.Identity.VerifyPasswordHistory", b =>
                 {
                     b.HasOne("EasyPay.Domain.Entities.Identity.ApplicationUser", "User")
-                        .WithMany("LoginHistories")
+                        .WithMany("VerifyPasswordHistories")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -994,7 +994,7 @@ namespace EasyPay.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserVerifyPassword<string>", b =>
                 {
                     b.HasOne("EasyPay.Domain.Entities.Identity.ApplicationUser", null)
                         .WithMany()
@@ -1061,7 +1061,7 @@ namespace EasyPay.Infrastructure.Migrations
 
                     b.Navigation("AuthItemValues");
 
-                    b.Navigation("LoginHistories");
+                    b.Navigation("VerifyPasswordHistories");
                 });
 
             modelBuilder.Entity("EasyPay.Domain.Entities.Identity.AuthItem", b =>

@@ -22,7 +22,7 @@ namespace EasyPay.Infrastructure.Data
         public virtual DbSet<AdminUser> AdminUsers { get; set; }
         public virtual DbSet<AuthItem> AuthItems { get; set; }
         public virtual DbSet<AuthItemValue> AuthItemValues { get; set; }
-        public virtual DbSet<LoginHistory> LoginHistory { get; set; }
+        public virtual DbSet<VerifyPasswordHistory> VerifyPasswordHistory { get; set; }
         public virtual DbSet<NaturalUser> NaturalUsers { get; set; }
 
         public virtual DbSet<Transaction> Transaction { get; set; }

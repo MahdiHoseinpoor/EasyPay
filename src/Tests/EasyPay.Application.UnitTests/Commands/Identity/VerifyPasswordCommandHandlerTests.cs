@@ -1,4 +1,4 @@
-﻿using EasyPay.Application.Commands.Identity.LoginCommand;
+﻿using EasyPay.Application.Commands.Identity.VerifyPasswordCommand;
 using EasyPay.Application.Services;
 using EasyPay.Common.Errors.Business;
 using EasyPay.Domain.Entities.Identity;
@@ -18,15 +18,15 @@ namespace EasyPay.Application.UnitTests.Commands.Identity
         { }
     }
 
-    public class LoginCommandHandlerTests
+    public class VerifyPasswordCommandHandlerTests
     {
         private readonly Mock<SignInManager<ApplicationUser>> _mockSignInManager;
         private readonly Mock<MockUserManager> _mockUserManager;
         private readonly Mock<IPublisher> _mockPublisher;
         private readonly Mock<ITokenService> _mockTokenService;
-        private readonly LoginCommandHandler _handler;
+        private readonly VerifyPasswordCommandHandler _handler;
 
-        public LoginCommandHandlerTests()
+        public VerifyPasswordCommandHandlerTests()
         {
             _mockUserManager = new Mock<MockUserManager>();
 
@@ -41,7 +41,7 @@ namespace EasyPay.Application.UnitTests.Commands.Identity
             _mockPublisher = new Mock<IPublisher>();
             _mockTokenService = new Mock<ITokenService>();
 
-            _handler = new LoginCommandHandler(
+            _handler = new VerifyPasswordCommandHandler(
                 _mockSignInManager.Object,
                 _mockUserManager.Object,
                 _mockPublisher.Object,
@@ -53,7 +53,7 @@ namespace EasyPay.Application.UnitTests.Commands.Identity
         public async Task Handle_Should_ReturnSuccess_WhenCredentialsAreValid()
         {
             // Arrange
-            var command = new LoginCommand { Username = "testuser", Password = "Password123!" };
+            var command = new VerifyPasswordCommand { Username = "testuser", Password = "Password123!" };
             var user = new ApplicationUser { UserName = "testuser" };
             var tokenResult = new TokenResult("fake-jwt-token", DateTime.UtcNow.AddHours(1));
 
@@ -74,7 +74,7 @@ namespace EasyPay.Application.UnitTests.Commands.Identity
         public async Task Handle_Should_ReturnFailure_WhenUserNotFound()
         {
             // Arrange
-            var command = new LoginCommand { Username = "nonexistent", Password = "Password123!" };
+            var command = new VerifyPasswordCommand { Username = "nonexistent", Password = "Password123!" };
 
             _mockUserManager.Setup(um => um.FindByNameAsync(command.Username)).ReturnsAsync((ApplicationUser)null);
 
@@ -91,7 +91,7 @@ namespace EasyPay.Application.UnitTests.Commands.Identity
         public async Task Handle_Should_ReturnFailure_WhenPasswordIsInvalid()
         {
             // Arrange
-            var command = new LoginCommand { Username = "testuser", Password = "WrongPassword" };
+            var command = new VerifyPasswordCommand { Username = "testuser", Password = "WrongPassword" };
             var user = new ApplicationUser { UserName = "testuser" };
 
             _mockUserManager.Setup(um => um.FindByNameAsync(command.Username)).ReturnsAsync(user);

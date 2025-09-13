@@ -29,7 +29,7 @@ namespace EasyPay.Infrastructure.Configurations.Identity
                 .WithOne(p => p.OwnerUser)
                 .HasForeignKey(p => p.OwnerUserId)
                 .OnDelete(DeleteBehavior.Restrict);
-            builder.HasMany(p => p.LoginHistories)
+            builder.HasMany(p => p.VerifyPasswordHistories)
                 .WithOne(p => p.User)
                 .HasForeignKey(p => p.UserId)
                 .OnDelete(DeleteBehavior.Restrict); ;

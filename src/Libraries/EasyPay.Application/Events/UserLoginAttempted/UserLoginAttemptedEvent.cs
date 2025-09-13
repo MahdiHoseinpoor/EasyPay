@@ -9,15 +9,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EasyPay.Application.Events.UserLoginAttempted
+namespace EasyPay.Application.Events.UserVerifyPasswordAttempted
 {
-    public class UserLoginAttemptedEvent : INotification
+    public class UserVerifyPasswordAttemptedEvent : INotification
     {
         public string Username { get; set; }
 
         public string UserId { get; set; }
 
-        public DateTime LoginTime { get; set; } = DateTime.Now;
+        public DateTime VerifyPasswordTime { get; set; } = DateTime.Now;
 
         public string IPAddress { get; set; }
 
@@ -31,7 +31,7 @@ namespace EasyPay.Application.Events.UserLoginAttempted
 
         public string Location { get; set; }
 
-        public LoginStatus Status { get; set; } = LoginStatus.Success;
+        public VerifyPasswordStatus Status { get; set; } = VerifyPasswordStatus.Success;
 
         public string FailureReason { get; set; }
 

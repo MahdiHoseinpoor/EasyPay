@@ -23,14 +23,14 @@ namespace EasyPay.Domain.Entities.Identity
         public bool IsActive { get; set; } = true;
         public bool IsAuthorized { get; set; } = true;
         public DateTime RegistrationDate { get; set; } = DateTime.Now;
-        public DateTime? LastLoginDate { get; set; }
+        public DateTime? LastVerifyPasswordDate { get; set; }
 
         public DateTime? PasswordChangeDate { get; set; }
         public bool ForcePasswordChange { get; set; }
 
         public virtual ICollection<AuthItemValue> AuthItemValues { get; set; }
         public virtual ICollection<Account> Accounts { get; set; }
-        public virtual ICollection<LoginHistory> LoginHistories { get; set; }
+        public virtual ICollection<VerifyPasswordHistory> VerifyPasswordHistories { get; set; }
 
         public string FullName => $"{FirstName} {LastName}";
 

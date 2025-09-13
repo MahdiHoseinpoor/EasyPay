@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace EasyPay.Infrastructure.Aggregates.Identity
 {
-    public class LoginHistoryRepository : RepositoryBase<LoginHistory, long>, ILoginHistoryRepository
+    public class VerifyPasswordHistoryRepository : RepositoryBase<VerifyPasswordHistory, long>, IVerifyPasswordHistoryRepository
     {
-        public LoginHistoryRepository(ApplicationDbContext context) : base(context)
+        public VerifyPasswordHistoryRepository(ApplicationDbContext context) : base(context)
         {
         }
     }

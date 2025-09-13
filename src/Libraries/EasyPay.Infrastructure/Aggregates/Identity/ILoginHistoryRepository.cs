@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace EasyPay.Infrastructure.Aggregates.Identity
 {
-    public interface ILoginHistoryRepository : IRepositoryBase<LoginHistory,long>
+    public interface IVerifyPasswordHistoryRepository : IRepositoryBase<VerifyPasswordHistory,long>
     {
     }
 }

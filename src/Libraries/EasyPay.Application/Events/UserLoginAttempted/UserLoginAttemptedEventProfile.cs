@@ -6,13 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EasyPay.Application.Events.UserLoginAttempted
+namespace EasyPay.Application.Events.UserVerifyPasswordAttempted
 {
-    public class UserLoginAttemptedEventProfile : Profile
+    public class UserVerifyPasswordAttemptedEventProfile : Profile
     {
-        public UserLoginAttemptedEventProfile()
+        public UserVerifyPasswordAttemptedEventProfile()
         {
-            CreateMap<UserLoginAttemptedEvent, LoginHistory>();
+            CreateMap<UserVerifyPasswordAttemptedEvent, VerifyPasswordHistory>();
         }
     }
 }

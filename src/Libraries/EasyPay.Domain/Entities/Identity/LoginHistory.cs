@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EasyPay.Domain.Entities.Identity
 {
-    public class LoginHistory : EntityBase<long>
+    public class VerifyPasswordHistory : EntityBase<long>
     {
         [Required]
         public string UserId { get; set; }
@@ -15,7 +15,7 @@ namespace EasyPay.Domain.Entities.Identity
         public virtual ApplicationUser User { get; set; }
 
         [Required]
-        public DateTime LoginTime { get; set; } = DateTime.Now;
+        public DateTime VerifyPasswordTime { get; set; } = DateTime.Now;
 
         public DateTime? LogoutTime { get; set; }
 
@@ -37,7 +37,7 @@ namespace EasyPay.Domain.Entities.Identity
         [MaxLength(100)]
         public string Location { get; set; }
 
-        public LoginStatus Status { get; set; } = LoginStatus.Success;
+        public VerifyPasswordStatus Status { get; set; } = VerifyPasswordStatus.Success;
 
         [MaxLength(500)]
         public string FailureReason { get; set; }
@@ -57,8 +57,8 @@ namespace EasyPay.Domain.Entities.Identity
         {
             get
             {
-                if (LoginTime != default && LogoutTime.HasValue)
-                    return LogoutTime.Value - LoginTime;
+                if (VerifyPasswordTime != default && LogoutTime.HasValue)
+                    return LogoutTime.Value - VerifyPasswordTime;
                 return null;
             }
         }

@@ -1,6 +1,6 @@
 ﻿namespace EasyPay.Domain.Enums.Identity
 {
-    public enum LoginStatus
+    public enum VerifyPasswordStatus
     {
         Success,
         Failed,

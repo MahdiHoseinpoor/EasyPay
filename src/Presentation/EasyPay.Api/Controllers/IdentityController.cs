@@ -1,7 +1,7 @@
-﻿using EasyPay.Application.Commands.Identity.LoginCommand;
+﻿using EasyPay.Application.Commands.Identity.VerifyPasswordCommand;
 using EasyPay.Application.Commands.Identity.NaturalUserEntity.CreateNaturalUser;
 using EasyPay.Application.Commands.Identity.NaturalUserRegisterPhoneCommand;
-using EasyPay.Application.Commands.Identity.NaturalUserRegisterVerifyPhoneCommand;
+using EasyPay.Application.Commands.Identity.AuthenticateWithPhone;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,15 +23,15 @@ namespace EasyPay.Api.Controllers
         /// <summary>
         /// Authenticates a user and returns a JWT token.
         /// </summary>
-        /// <param name="request">The user's login credentials.</param>
+        /// <param name="request">The user's VerifyPassword credentials.</param>
         /// <returns>A JWT token upon successful authentication.</returns>
-        [HttpPost("login")]
+        [HttpPost("VerifyPassword")]
         [AllowAnonymous]
-        [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(VerifyPasswordResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Error), StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> Login([FromBody] LoginRequest request)
+        public async Task<ActionResult> VerifyPassword([FromBody] VerifyPasswordRequest request)
         {
-            var command = new LoginCommand
+            var command = new VerifyPasswordCommand
             {
                 Username = request.Username,
                 Password = request.Password,
@@ -42,7 +42,7 @@ namespace EasyPay.Api.Controllers
             var result = await _mediator.Send(command);
 
             return result.Match<ActionResult>(
-                loginResponse => Ok(loginResponse),
+                VerifyPasswordResponse => Ok(VerifyPasswordResponse),
                 failure => BadRequest(failure)
             );
         }
@@ -73,10 +73,10 @@ namespace EasyPay.Api.Controllers
         /// <returns>A token to be used for completing the user profile.</returns>
         [HttpPost("register/verify-phone")]
         [AllowAnonymous]
-        [ProducesResponseType(typeof(NaturalUserRegisterVerifyPhoneResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AuthenticateWithPhoneResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Error), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(Error), StatusCodes.Status409Conflict)]
-        public async Task<ActionResult> VerifyPhone([FromBody] NaturalUserRegisterVerifyPhoneRequest request)
+        public async Task<ActionResult> VerifyPhone([FromBody] AuthenticateWithPhoneRequest request)
         {
             var command = new NaturalUserRegisterVerfiyPhoneCommand { Phone = request.phone, Code = request.code };
             var result = await _mediator.Send(command);

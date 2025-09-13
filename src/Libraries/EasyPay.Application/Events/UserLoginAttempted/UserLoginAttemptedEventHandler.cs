@@ -9,24 +9,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EasyPay.Application.Events.UserLoginAttempted
+namespace EasyPay.Application.Events.UserVerifyPasswordAttempted
 {
-    public class CreateLoginHistoryCommandHandler : INotificationHandler<UserLoginAttemptedEvent>
+    public class CreateVerifyPasswordHistoryCommandHandler : INotificationHandler<UserVerifyPasswordAttemptedEvent>
     {
-        ILoginHistoryRepository _loginHistoryRepository;
+        IVerifyPasswordHistoryRepository _VerifyPasswordHistoryRepository;
         IMapper _mapper;
-        public CreateLoginHistoryCommandHandler(ILoginHistoryRepository loginHistoryRepository, IMapper mapper)
+        public CreateVerifyPasswordHistoryCommandHandler(IVerifyPasswordHistoryRepository VerifyPasswordHistoryRepository, IMapper mapper)
         {
-            _loginHistoryRepository = loginHistoryRepository;
+            _VerifyPasswordHistoryRepository = VerifyPasswordHistoryRepository;
             _mapper = mapper;
         }
-        async Task INotificationHandler<UserLoginAttemptedEvent>.Handle(UserLoginAttemptedEvent notification, CancellationToken cancellationToken)
+        async Task INotificationHandler<UserVerifyPasswordAttemptedEvent>.Handle(UserVerifyPasswordAttemptedEvent notification, CancellationToken cancellationToken)
         {
             try
             {
-                var entity = _mapper.Map<LoginHistory>(notification);
-                await _loginHistoryRepository.AddAsync(entity);
-                await _loginHistoryRepository.SaveChangesAsync();
+                var entity = _mapper.Map<VerifyPasswordHistory>(notification);
+                await _VerifyPasswordHistoryRepository.AddAsync(entity);
+                await _VerifyPasswordHistoryRepository.SaveChangesAsync();
             }
             catch (Exception)
             {
