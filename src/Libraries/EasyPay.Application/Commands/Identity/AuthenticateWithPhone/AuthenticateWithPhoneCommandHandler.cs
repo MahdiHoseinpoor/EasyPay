@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace EasyPay.Application.Commands.Identity.AuthenticateWithPhone
 {
-    public class AuthenticateWithPhoneCommandHandler : IRequestHandler<NaturalUserRegisterVerfiyPhoneCommand, Result<AuthenticateWithPhoneResponse>>
+    public class AuthenticateWithPhoneCommandHandler : IRequestHandler<AuthenticateWithPhoneCommand, Result<AuthenticateWithPhoneResponse>>
     {
         private readonly IVerificationCodeCacheService _cache;
         private readonly ITokenService _tokenService;
@@ -23,7 +23,7 @@ namespace EasyPay.Application.Commands.Identity.AuthenticateWithPhone
             _tokenService = tokenService;
         }
 
-        public async Task<Result<AuthenticateWithPhoneResponse>> Handle(NaturalUserRegisterVerfiyPhoneCommand request, CancellationToken cancellationToken)
+        public async Task<Result<AuthenticateWithPhoneResponse>> Handle(AuthenticateWithPhoneCommand request, CancellationToken cancellationToken)
         {
             if (!_cache.TryGetValue(request.Phone, out VerificationCode storedCode) || storedCode.Code != request.Code || storedCode.IsExpired)
             {
@@ -55,7 +55,7 @@ namespace EasyPay.Application.Commands.Identity.AuthenticateWithPhone
                 }
 
                 var token = await _tokenService.GenerateToken(newUser);
-                var response = new AuthenticateWithPhoneResponse(PhoneAuthenticationStatus.NeedsRegistration, token.Token);
+                var response = new AuthenticateWithPhoneResponse(PhoneAuthenticationStatus.NeedsRegistration, request.Phone, token.Token);
                 return Result<AuthenticateWithPhoneResponse>.Success(response);
             }
 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EasyPay.Application.Commands.Identity.AuthenticateWithPhone
 {
-    public class NaturalUserRegisterVerfiyPhoneCommand :IRequest<Result<AuthenticateWithPhoneResponse>>
+    public class AuthenticateWithPhoneCommand :IRequest<Result<AuthenticateWithPhoneResponse>>
     {
         public string Phone { get; set; }
         public string Code { get; set; }

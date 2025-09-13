@@ -78,7 +78,7 @@ namespace EasyPay.Api.Controllers
         [ProducesResponseType(typeof(Error), StatusCodes.Status409Conflict)]
         public async Task<ActionResult> VerifyPhone([FromBody] AuthenticateWithPhoneRequest request)
         {
-            var command = new NaturalUserRegisterVerfiyPhoneCommand { Phone = request.phone, Code = request.code };
+            var command = new AuthenticateWithPhoneCommand { Phone = request.phone, Code = request.code };
             var result = await _mediator.Send(command);
 
             return result.Match<ActionResult>(
