@@ -3,6 +3,7 @@ using EasyPay.Application.Commands.AccountManagement.AccountTypeEntity.DeleteAcc
 using EasyPay.Application.Commands.AccountManagement.AccountTypeEntity.UpdateAccountType;
 using EasyPay.Application.Queries.AccountManagement.AccountTypeEntity;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -10,6 +11,7 @@ namespace EasyPay.Api.Controllers
 {
     [Route("api/account-types")]
     [ApiController]
+    [Authorize]
     public class AccountTypeController : ControllerBase
     {
         private readonly IMediator _mediator;

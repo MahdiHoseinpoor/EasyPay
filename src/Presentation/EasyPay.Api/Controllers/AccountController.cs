@@ -3,6 +3,7 @@ using EasyPay.Application.Commands.AccountManagement.AccountEntity.DeleteAccount
 using EasyPay.Application.Commands.AccountManagement.AccountEntity.UpdateAccount;
 using EasyPay.Application.Queries.AccountManagement.AccountEntity;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ namespace EasyPay.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AccountController : ControllerBase
     {
         private readonly IMediator _mediator;
