@@ -10,16 +10,17 @@ using Moq;
 namespace EasyPay.Application.UnitTests.Commands.Identity
 {
     // A helper class to mock UserManager since its constructor is protected
-    public class MockUserManager : UserManager<ApplicationUser>
-    {
-        public MockUserManager()
-            : base(new Mock<IUserStore<ApplicationUser>>().Object,
-                  null, null, null, null, null, null, null, null)
-        { }
-    }
+    
 
     public class VerifyPasswordCommandHandlerTests
     {
+        public class MockUserManager : UserManager<ApplicationUser>
+        {
+            public MockUserManager()
+                : base(new Mock<IUserStore<ApplicationUser>>().Object,
+                      null, null, null, null, null, null, null, null)
+            { }
+        }
         private readonly Mock<SignInManager<ApplicationUser>> _mockSignInManager;
         private readonly Mock<MockUserManager> _mockUserManager;
         private readonly Mock<IPublisher> _mockPublisher;
