@@ -43,7 +43,6 @@ namespace EasyPay.Application.UnitTests.Commands.AccountManagement
                 _mockAccountNumberService.Object
             );
 
-            // Setup common mocks
             _mockCurrentUserService.Setup(s => s.UserId).Returns("user-123");
             _mockMapper.Setup(m => m.Map<Account>(It.IsAny<CreateAccountCommand>())).Returns(new Account());
             _mockAccountNumberService.Setup(s => s.GenerateUniqueAccountNumberAsync()).ReturnsAsync("1234567890");
@@ -52,17 +51,10 @@ namespace EasyPay.Application.UnitTests.Commands.AccountManagement
         [Fact]
         public async Task Handle_Should_Succeed_WhenAccountTypeHasNoRequirements()
         {
-            // Arrange
             var command = new CreateAccountCommand { AccountTypeId = 1, Title = "Test Account" };
-
-            // Mocking repository to return an empty list for requirements
             _mockDocReqRepository.Setup(r => r.Query(It.IsAny<Expression<Func<AccountTypeDocumentRequirement, bool>>>(), null, null, null, null, true))
                                .Returns(new List<AccountTypeDocumentRequirement>().AsQueryable());
-
-            // Act
             var result = await _handler.Handle(command, CancellationToken.None);
-
-            // Assert
             result.IsSuccess.Should().BeTrue();
             _mockAccountRepository.Verify(r => r.AddAsync(It.IsAny<Account>()), Times.Once);
         }
@@ -70,7 +62,6 @@ namespace EasyPay.Application.UnitTests.Commands.AccountManagement
         [Fact]
         public async Task Handle_Should_Succeed_WhenAllRequirementsAreMet()
         {
-            // Arrange
             var command = new CreateAccountCommand { AccountTypeId = 1, Title = "Test Account" };
             var requirements = new List<AccountTypeDocumentRequirement> { new AccountTypeDocumentRequirement { AuthItemId = 101 } };
             var userDocuments = new List<AuthItemValue> { new AuthItemValue(101, "user-123", "value") { Status = VerificationStatus.Approved } };
@@ -79,11 +70,7 @@ namespace EasyPay.Application.UnitTests.Commands.AccountManagement
                                .Returns(requirements.AsQueryable());
             _mockAuthItemValueRepository.Setup(r => r.Query(It.IsAny<Expression<Func<AuthItemValue, bool>>>(), null, null, null, null, true))
                                         .Returns(userDocuments.AsQueryable());
-
-            // Act
             var result = await _handler.Handle(command, CancellationToken.None);
-
-            // Assert
             result.IsSuccess.Should().BeTrue();
             _mockAccountRepository.Verify(r => r.AddAsync(It.IsAny<Account>()), Times.Once);
         }
@@ -91,11 +78,8 @@ namespace EasyPay.Application.UnitTests.Commands.AccountManagement
         [Fact]
         public async Task Handle_Should_Fail_WhenDocumentIsMissing()
         {
-            // Arrange
             var command = new CreateAccountCommand { AccountTypeId = 1, Title = "Test Account" };
             var requirements = new List<AccountTypeDocumentRequirement> { new AccountTypeDocumentRequirement { AuthItemId = 101 } };
-
-            // User has no documents
             var userDocuments = new List<AuthItemValue>();
 
             _mockDocReqRepository.Setup(r => r.Query(It.IsAny<Expression<Func<AccountTypeDocumentRequirement, bool>>>(), null, null, null, null, true))
@@ -104,10 +88,8 @@ namespace EasyPay.Application.UnitTests.Commands.AccountManagement
                                         .Returns(userDocuments.AsQueryable());
             _mockAuthItemRepository.Setup(r => r.GetByIdAsync(101)).ReturnsAsync(new AuthItem { Title = "National ID" });
 
-            // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
-            // Assert
             result.IsSuccess.Should().BeFalse();
             result.error.code.Should().Be(400);
             result.error.message.Should().Contain("National ID");
@@ -116,11 +98,9 @@ namespace EasyPay.Application.UnitTests.Commands.AccountManagement
         [Fact]
         public async Task Handle_Should_Fail_WhenDocumentIsNotApproved()
         {
-            // Arrange
             var command = new CreateAccountCommand { AccountTypeId = 1, Title = "Test Account" };
             var requirements = new List<AccountTypeDocumentRequirement> { new AccountTypeDocumentRequirement { AuthItemId = 101 } };
 
-            // User has a document, but it's still pending
             var userDocuments = new List<AuthItemValue> { new AuthItemValue(101, "user-123", "value") { Status = VerificationStatus.Pending } };
 
             _mockDocReqRepository.Setup(r => r.Query(It.IsAny<Expression<Func<AccountTypeDocumentRequirement, bool>>>(), null, null, null, null, true))
@@ -129,10 +109,8 @@ namespace EasyPay.Application.UnitTests.Commands.AccountManagement
                                         .Returns(userDocuments.AsQueryable());
             _mockAuthItemRepository.Setup(r => r.GetByIdAsync(101)).ReturnsAsync(new AuthItem { Title = "National ID" });
 
-            // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
-            // Assert
             result.IsSuccess.Should().BeFalse();
             result.error.code.Should().Be(400);
             result.error.message.Should().Contain("User is missing the following approved documents");
