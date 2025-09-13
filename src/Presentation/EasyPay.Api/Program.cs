@@ -1,13 +1,7 @@
+using EasyPay.Api.Extensions;
 using EasyPay.Api.Middleware;
-using EasyPay.Api.Services;
-using EasyPay.Application.Services;
 using EasyPay.Infrastructure.Data;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.IdentityModel.Tokens;
 using Serilog;
-using System.Text;
-using System.Text.Json;
 
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(new ConfigurationBuilder()
@@ -18,55 +12,24 @@ Log.Logger = new LoggerConfiguration()
 
 try
 {
+    Log.Information("Starting EasyPay API host");
+
     var builder = WebApplication.CreateBuilder(args);
-
     builder.Host.UseSerilog();
-
-    builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
+    builder.AddApplicationServices();
+    builder.AddInfrastructureServices();
     builder.Services.AddHttpContextAccessor();
     builder.Services.AddMemoryCache();
     builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
     builder.Services.AddControllers();
     builder.Services.AddHealthChecks()
         .AddDbContextCheck<ApplicationDbContext>("database");
-    builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen(options =>
-    {
-        options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
-        {
-            Title = "EasyPay API",
-            Version = "v1",
-            Description = "The official API for the EasyPay Financial Platform."
-        });
-    });
-    builder.AddInfrastructureServices();
-    builder.AddApplicationServices();
-
-    builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options =>
-    {
-        var jwtSettings = builder.Configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>();
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidIssuer = jwtSettings.Issuer,
-            ValidateAudience = true,
-            ValidAudience = jwtSettings.Audience,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret))
-        };
-    });
-
-    builder.Services.AddAuthorization();
-
+    builder.Services.AddIdentityServices(builder.Configuration);
+    builder.Services.AddSwaggerDocumentation();
 
     var app = builder.Build();
     app.UseSerilogRequestLogging();
+
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
@@ -77,34 +40,11 @@ try
         });
     }
     app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
-
     app.UseHttpsRedirection();
-
     app.UseAuthentication();
     app.UseAuthorization();
-
     app.MapControllers();
-    app.MapHealthChecks("/health", new HealthCheckOptions
-    {
-        ResponseWriter = async (context, report) =>
-        {
-            context.Response.ContentType = "application/json";
-            var response = new
-            {
-                status = report.Status.ToString(),
-                checks = report.Entries.Select(e => new
-                {
-                    name = e.Key,
-                    status = e.Value.Status.ToString(),
-                    description = e.Value.Description,
-                    duration = e.Value.Duration
-                }),
-                totalDuration = report.TotalDuration
-            };
-            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
-        }
-    });
-
+    app.MapCustomHealthChecks();
     app.Run();
 }
 catch (Exception ex)
