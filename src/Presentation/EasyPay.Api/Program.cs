@@ -26,6 +26,16 @@ try
         .AddDbContextCheck<ApplicationDbContext>("database");
     builder.Services.AddIdentityServices(builder.Configuration);
     builder.Services.AddSwaggerDocumentation();
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy(name: BlazorAppCorsPolicy,
+                          policy =>
+                          {
+                              policy.WithOrigins("http://localhost:5145") // The default Blazor WASM debug URL
+                                    .AllowAnyHeader()
+                                    .AllowAnyMethod();
+                          });
+    });
 
     var app = builder.Build();
     app.UseSerilogRequestLogging();
