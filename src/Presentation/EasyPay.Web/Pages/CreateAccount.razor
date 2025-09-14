@@ -1,0 +1,218 @@
+﻿@page "/accounts/create"
+@attribute [Authorize]
+
+@using EasyPay.Shared.DTOs.AccountManagement
+@using EasyPay.Shared.DTOs.Identity
+@using EasyPay.Shared.Enums.Identity
+@using EasyPay.Shared.Models.AccountManagement
+@using EasyPay.Web.Services
+@using System.ComponentModel.DataAnnotations
+@inject IAccountService AccountService
+@inject IProfileService ProfileService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create New Account</PageTitle>
+
+<div class="header-container">
+    <h1>Open a New Account</h1>
+</div>
+
+<div class="card create-account-card">
+    <div class="card-body">
+        @if (isLoading)
+        {
+            <div class="text-center p-4">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading options...</span>
+                </div>
+            </div>
+        }
+        else
+        {
+            <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger" role="alert">
+                        @errorMessage
+                    </div>
+                }
+
+                <div class="mb-3">
+                    <label for="accountType" class="form-label">1. Select Account Type</label>
+                    <InputSelect id="accountType" class="form-select" @bind-Value="Model.AccountTypeId" @oninput="OnAccountTypeSelected">
+                        <option value="0" disabled>-- Choose an account type --</option>
+                        @foreach (var type in accountTypes)
+                        {
+                            <option value="@type.Id">@type.Title</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(() => Model.AccountTypeId)" />
+                </div>
+
+                @if (isRequirementsLoading)
+                {
+                    <div class="text-center p-3"><div class="spinner-border spinner-border-sm" role="status"></div></div>
+                }
+                else if (currentRequirements is { Count: > 0 })
+                {
+                    <div class="requirements-section mb-3">
+                        <h6 class="form-label">2. Fulfill Requirements</h6>
+                        <ul class="list-group">
+                            @foreach (var req in currentRequirements)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    @req.AuthItemTitle
+                                    @if (HasApprovedSubmission(req.AuthItemId))
+                                    {
+                                        <span class="req-status text-success"><i class="bi bi-check-circle-fill"></i> Approved</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="req-status text-danger"><i class="bi bi-x-circle-fill"></i> Missing</span>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                        <small class="form-text text-muted mt-2 d-block">
+                            You must submit and get all required documents approved before opening this account. You can manage your documents in your <a href="/profile">profile</a>.
+                        </small>
+                    </div>
+                }
+
+
+                <div class="mb-4">
+                    <label for="accountTitle" class="form-label">@GetStepNumber(). Give it a Nickname</label>
+                    <InputText id="accountTitle" class="form-control" @bind-Value="Model.Title" placeholder="e.g., My Savings, Daily Spending" />
+                    <ValidationMessage For="@(() => Model.Title)" />
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary" disabled="@(isSubmitting || isCreateButtonDisabled)">
+                        @if (isSubmitting)
+                        {
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            <span>Creating Account...</span>
+                        }
+                        else
+                        {
+                            <span>Submit Application</span>
+                        }
+                    </button>
+                </div>
+            </EditForm>
+        }
+    </div>
+</div>
+
+@code {
+    private CreateAccountModel Model = new();
+
+    private bool isLoading = true;
+    private bool isRequirementsLoading = false;
+    private bool isSubmitting = false;
+    private bool isCreateButtonDisabled = true;
+
+    private List<AccountTypeDto>? accountTypes;
+    private List<AuthItemValueDto>? userSubmissions;
+    private List<AccountTypeDocumentRequirementDto>? currentRequirements;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch all data in parallel for faster page load
+        await Task.WhenAll(
+            LoadAccountTypes(),
+            LoadUserSubmissions()
+        );
+        isLoading = false;
+    }
+
+    private async Task LoadAccountTypes()
+    {
+        accountTypes = await AccountService.GetAccountTypes();
+    }
+
+    private async Task LoadUserSubmissions()
+    {
+        userSubmissions = await ProfileService.GetMySubmittedDocuments();
+    }
+
+    private async Task OnAccountTypeSelected(ChangeEventArgs e)
+    {
+        isRequirementsLoading = true;
+        currentRequirements = null;
+        isCreateButtonDisabled = true;
+        StateHasChanged(); // Update UI to show loading spinner
+
+        if (int.TryParse(e.Value?.ToString(), out var selectedId) && selectedId > 0)
+        {
+            Model.AccountTypeId = selectedId;
+            currentRequirements = await AccountService.GetRequirementsForAccountType(selectedId);
+            ValidateRequirements();
+        }
+
+        isRequirementsLoading = false;
+        StateHasChanged();
+    }
+
+    private void ValidateRequirements()
+    {
+        if (currentRequirements == null || !currentRequirements.Any(r => r.IsRequired))
+        {
+            isCreateButtonDisabled = false;
+            return;
+        }
+
+        // Check if every required item has an approved submission
+        var allRequirementsMet = currentRequirements
+            .Where(r => r.IsRequired)
+            .All(req => HasApprovedSubmission(req.AuthItemId));
+
+        isCreateButtonDisabled = !allRequirementsMet;
+    }
+
+    private bool HasApprovedSubmission(int authItemId)
+    {
+        if (userSubmissions == null) return false;
+
+        return userSubmissions.Any(s =>
+            s.AuthItemTitle == currentRequirements.FirstOrDefault(cr => cr.AuthItemId == authItemId)?.AuthItemTitle &&
+            s.Status == VerificationStatus.Approved);
+    }
+
+    private string GetStepNumber()
+    {
+        return (currentRequirements is { Count: > 0 }) ? "3." : "2.";
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        isSubmitting = true;
+        errorMessage = null;
+
+        var request = new CreateAccountRequest(Model.AccountTypeId, Model.Title);
+        var success = await AccountService.CreateAccount(request);
+
+        if (success)
+        {
+            NavigationManager.NavigateTo("/accounts");
+        }
+        else
+        {
+            errorMessage = "There was an error creating your account. Please check the details and try again.";
+            isSubmitting = false;
+        }
+    }
+
+    public class CreateAccountModel
+    {
+        [Required(ErrorMessage = "Please give your account a nickname.")]
+        [StringLength(100, ErrorMessage = "The nickname is too long.")]
+        public string Title { get; set; } = string.Empty;
+
+        [Range(1, int.MaxValue, ErrorMessage = "Please select a valid account type.")]
+        public int AccountTypeId { get; set; }
+    }
+}

@@ -257,9 +257,11 @@ namespace EasyPay.Common
                 query = query.OrderByDescending(orderByDescending);
             if (groupBy != null)
                 query = query.GroupBy(groupBy).SelectMany(x => x);
-
-            query = Includes
-                .Aggregate(query, (current, include) => current.Include(include));
+            if (Includes != null)
+            {
+                query = Includes
+                    .Aggregate(query, (current, include) => current.Include(include));
+            }
             return query;
         }
 

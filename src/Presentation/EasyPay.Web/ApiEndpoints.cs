@@ -15,6 +15,7 @@ public static class ApiEndpoints
     public static class AccountTypes
     {
         public const string GetAll = $"{Base}/account-types";
+        public static string GetRequirements(int accountTypeId) => $"{GetAll}/{accountTypeId}/document-requirements";
     }
 
     public static class Accounts
@@ -40,5 +41,6 @@ public static class ApiEndpoints
     {
         public const string MyAccounts = $"{Base}/profile/accounts";
         public static string MyTransactionHistory(Guid accountId) => $"{MyAccounts}/{accountId}/transactions";
+        public const string MySubmittedDocuments = $"{Base}/profile/auth-item-values";
     }
 }

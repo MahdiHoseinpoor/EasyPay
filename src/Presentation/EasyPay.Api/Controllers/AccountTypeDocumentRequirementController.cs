@@ -1,8 +1,9 @@
 ﻿using Asp.Versioning;
 using EasyPay.Application.Commands.AccountManagement.AccountTypeDocumentRequirementEntity.CreateAccountTypeDocumentRequirement;
 using EasyPay.Application.Commands.AccountManagement.AccountTypeDocumentRequirementEntity.DeleteAccountTypeDocumentRequirement;
-using EasyPay.Common;
+using EasyPay.Application.Common;
 using EasyPay.Application.Queries.AccountManagement.AccountTypeDocumentRequirementEntity;
+using EasyPay.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +14,8 @@ namespace EasyPay.Api.Controllers
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/account-types/{accountTypeId}/document-requirements")]
     [ApiController]
-    [Authorize(Roles = SystemRoles.SuperAdmin)]
+    // Allow authenticated users to view requirements, but only admins to change them.
+    [Authorize]
     public class AccountTypeDocumentRequirementController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -24,12 +26,24 @@ namespace EasyPay.Api.Controllers
         }
 
         /// <summary>
-        /// Adds a new document requirement to an account type.
+        /// Gets all document requirements for a specific account type.
         /// </summary>
-        /// <param name="accountTypeId">The ID of the account type.</param>
-        /// <param name="command">The requirement details.</param>
-        /// <returns>The ID of the newly created requirement.</returns>
+        [HttpGet]
+        [ProducesResponseType(typeof(Result<List<EasyPay.Shared.DTOs.AccountManagement.AccountTypeDocumentRequirementDto>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetAllRequirements(int accountTypeId)
+        {
+            var query = new GetAllAccountTypeDocumentRequirementsQuery { AccountTypeId = accountTypeId };
+            var result = await _mediator.Send(query);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Adds a new document requirement to an account type. (Admin Only)
+        /// </summary>
         [HttpPost]
+        [Authorize(Roles = SystemRoles.SuperAdmin)] // Secure this action
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(Error), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(Error), StatusCodes.Status409Conflict)]
@@ -39,34 +53,17 @@ namespace EasyPay.Api.Controllers
 
             var result = await _mediator.Send(command);
 
-            return result.Match<ActionResult>(
-                requirementId => CreatedAtAction(null, new { accountTypeId = accountTypeId, id = requirementId }, requirementId),
-                failure => failure.code == 409 ? Conflict(failure) : BadRequest(failure)
-            );
+            if (!result.IsSuccess)
+                return result.error.code == 409 ? Conflict(result) : BadRequest(result);
+
+            return CreatedAtAction(nameof(GetAllRequirements), new { accountTypeId = accountTypeId, id = result.Value }, result);
         }
 
         /// <summary>
-        /// Gets all document requirements for a specific account type.
+        /// Deletes a document requirement from an account type. (Admin Only)
         /// </summary>
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAllRequirements(int accountTypeId)
-        {
-            var query = new GetAllAccountTypeDocumentRequirementsQuery { AccountTypeId = accountTypeId };
-            var result = await _mediator.Send(query);
-
-            return result.Match<ActionResult>(
-                Ok,
-                failure => BadRequest(failure)
-            );
-        }
-
-        /// <summary>
-        /// Deletes a document requirement from an account type.
-        /// </summary>
-        /// <param name="accountTypeId">The ID of the account type.</param>
-        /// <param name="requirementId">The ID of the requirement to delete.</param>
         [HttpDelete("{requirementId}")]
+        [Authorize(Roles = SystemRoles.SuperAdmin)] 
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(Error), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteDocumentRequirement(int accountTypeId, int requirementId)
@@ -78,10 +75,10 @@ namespace EasyPay.Api.Controllers
             };
             var result = await _mediator.Send(command);
 
-            return result.Match<ActionResult>(
-                () => NoContent(),
-                failure => failure is NotFoundError ? NotFound(failure) : BadRequest(failure)
-            );
+            if (!result.IsSuccess)
+                return result.error is NotFoundError ? NotFound(result) : BadRequest(result);
+
+            return NoContent();
         }
     }
 }

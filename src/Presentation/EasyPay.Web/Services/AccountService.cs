@@ -8,7 +8,9 @@ namespace EasyPay.Web.Services
     public interface IAccountService
     {
         Task<List<AccountTypeDto>> GetAccountTypes();
+        Task<List<AccountTypeDocumentRequirementDto>> GetRequirementsForAccountType(int accountTypeId);
         Task<bool> CreateAccount(CreateAccountRequest command);
+
     }
     public class AccountService : IAccountService
     {
@@ -32,6 +34,16 @@ namespace EasyPay.Web.Services
                 return new List<AccountTypeDto>();
             }
         }
+        public async Task<List<AccountTypeDocumentRequirementDto>> GetRequirementsForAccountType(int accountTypeId)
+        {
+            try
+            {
+                var result = await _httpClient.GetFromJsonAsync<Result<List<AccountTypeDocumentRequirementDto>>>(ApiEndpoints.AccountTypes.GetRequirements(accountTypeId));
+                return result is { IsSuccess: true } ? result.Value ?? new List<AccountTypeDocumentRequirementDto>() : new List<AccountTypeDocumentRequirementDto>();
+            }
+            catch { return new List<AccountTypeDocumentRequirementDto>(); }
+        }
+
 
         public async Task<bool> CreateAccount(CreateAccountRequest command)
         {

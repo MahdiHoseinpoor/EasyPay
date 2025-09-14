@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace EasyPay.Shared.Models.AccountManagement
 {
-    public record CreateAccountRequest(int AccountTypeId, string Titles);
+    public record CreateAccountRequest(int AccountTypeId, string Title);
 }

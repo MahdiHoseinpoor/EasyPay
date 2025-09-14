@@ -16,11 +16,11 @@ namespace EasyPay.Api.Controllers
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [Authorize]
-    public class AccountController : ControllerBase
+    public class AccountsController : ControllerBase
     {
         private readonly IMediator _mediator;
 
-        public AccountController(IMediator mediator)
+        public AccountsController(IMediator mediator)
         {
             _mediator = mediator;
         }
@@ -77,7 +77,7 @@ namespace EasyPay.Api.Controllers
             var command = new CreateAccountCommand()
             {
                 AccountTypeId = request.AccountTypeId,
-                Title = request.Titles
+                Title = request.Title
 
             };
             var result = await _mediator.Send(command);

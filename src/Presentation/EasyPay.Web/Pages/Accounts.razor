@@ -1,0 +1,165 @@
+﻿@page "/accounts"
+@attribute [Authorize]
+
+@using EasyPay.Shared.DTOs.AccountManagement
+@using EasyPay.Shared.Enums.AccountManagement
+@using EasyPay.Web.Services
+@inject IProfileService ProfileService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Accounts Dashboard</PageTitle>
+
+@if (isLoading)
+{
+    <div class="text-center mt-5">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-3 text-muted">Fetching your accounts...</p>
+    </div>
+}
+else
+{
+    <div class="header-container">
+        <div class="header-title">
+            <h1>Accounts</h1>
+            <p class="text-muted">Your financial dashboard at a glance.</p>
+        </div>
+
+        @if (accounts is { Count: > 0 })
+        {
+            <div class="total-balance-widget">
+                <div class="widget-label">Total Net Worth</div>
+                <div class="widget-amount">@totalBalance.ToString("C")</div>
+            </div>
+        }
+
+        <div class="header-actions">
+            <button class="btn btn-primary btn-lg" @onclick="NavigateToCreateAccount">
+                <i class="bi bi-plus-circle-fill me-2"></i>Create New Account
+            </button>
+        </div>
+    </div>
+
+    @if (accounts == null || !accounts.Any())
+    {
+        <div class="card empty-state-card mt-4">
+            <div class="card-body text-center p-5">
+                <div class="empty-state-icon mb-3">
+                    <i class="bi bi-wallet2"></i>
+                </div>
+                <h4>Your Dashboard Awaits</h4>
+                <p class="text-muted">You haven't created any accounts yet. Get started by opening your first one!</p>
+                <button class="btn btn-primary btn-lg mt-3" @onclick="NavigateToCreateAccount">
+                    Create Your First Account
+                </button>
+            </div>
+        </div>
+    }
+    else
+    {
+
+
+            <div class="account-section">
+                <h2 class="section-title">Accounts</h2>
+
+            @if (accounts.Count > itemsPerPage)
+                {
+                <div class="slider-wrapper">
+                    <button class="slider-btn prev" @onclick="Previous" disabled="@(currentIndex == 0)">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+
+                    <div class="slider-viewport">
+                        <div class="slider-track" style="@trackStyle">
+                            @foreach (var account in accounts)
+                            {
+                                <div class="slider-item">
+                                    <AccountCard Account="account" OnClickCallback="() => NavigateToAccountDetails(account.Id)" />
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <button class="slider-btn next" @onclick="Next" disabled="@(currentIndex >= accounts.Count - itemsPerPage)">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                </div>
+                }
+                else
+                {
+                    <div class="grid-container">
+                    @foreach (var account in accounts)
+                        {
+                            <AccountCard Account="account" OnClickCallback="() => NavigateToAccountDetails(account.Id)" />
+                        }
+                    </div>
+                }
+            </div>
+        
+      
+    }
+}
+
+
+@code {
+    private bool isLoading = true;
+    private List<AccountDto> accounts;
+    private decimal totalBalance;
+
+    private int currentIndex = 0;
+    private const int itemsPerPage = 4;
+    private const double itemWidthPercentage = 100.0 / itemsPerPage;
+    private string trackStyle = "transform: translateX(0%);";
+
+    protected override async Task OnInitializedAsync()
+    {
+        accounts = await ProfileService.GetMyAccounts();
+        if (accounts != null)
+        {
+            totalBalance = accounts.Sum(a => a.CurrentBalance);
+        }
+        UpdateTrackStyle(); 
+        isLoading = false;
+    }
+
+    private List<AccountDto> CategorizeAccounts(string accountCode)
+    {
+        return accounts?.Where(a => a.AccountTypeName.Contains(accountCode, StringComparison.OrdinalIgnoreCase)).ToList() ?? new List<AccountDto>();
+    }
+
+    private void Next()
+    {
+        var accountsCount = accounts.Count;
+        if (currentIndex < accountsCount - itemsPerPage)
+        {
+            currentIndex++;
+            UpdateTrackStyle();
+        }
+    }
+
+    private void Previous()
+    {
+        if (currentIndex > 0)
+        {
+            currentIndex--;
+            UpdateTrackStyle();
+        }
+    }
+
+    private void UpdateTrackStyle()
+    {
+        var movePercentage = currentIndex * itemWidthPercentage;
+        trackStyle = $"transform: translateX(-{movePercentage.ToString("F3", System.Globalization.CultureInfo.InvariantCulture)}%);";
+    }
+
+    private void NavigateToCreateAccount()
+    {
+        NavigationManager.NavigateTo("/accounts/create");
+    }
+
+    private void NavigateToAccountDetails(Guid accountId)
+    {
+        NavigationManager.NavigateTo($"/accounts/{accountId}");
+    }
+}

@@ -1,0 +1,45 @@
+﻿.header-container {
+    margin-bottom: 2rem;
+}
+
+h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+.create-account-card {
+    max-width: 600px;
+    margin: 0 auto;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+.form-select, .form-control {
+    height: 48px;
+}
+
+.btn-primary {
+    height: 48px;
+    font-weight: 500;
+}
+.requirements-section
+{
+    background-color: #f8f9fa;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.25rem;
+}
+
+.req-status {
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+    .req-status .bi {
+        margin-right: 0.5rem;
+        vertical-align: text-bottom;
+    }

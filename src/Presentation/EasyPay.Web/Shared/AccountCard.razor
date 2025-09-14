@@ -1,0 +1,50 @@
+﻿@using EasyPay.Shared.DTOs.AccountManagement
+@using EasyPay.Shared.Enums.AccountManagement
+@inject NavigationManager NavigationManager
+
+<div class="card account-card-item" @onclick="OnClickCallback">
+    <div class="card-body">
+        <div class="card-top">
+            <div class="account-info">
+                <h5 class="account-title">@Account.Title</h5>
+                <p class="account-number">@Account.AccountNumber</p>
+            </div>
+            <div class="card-icon">
+                <i class="@GetAccountIcon()"></i>
+            </div>
+        </div>
+
+        <p class="balance-amount">@Account.CurrentBalance.ToString("C")</p>
+
+        <div class="quick-actions">
+            <button class="btn btn-secondary" @onclick:stopPropagation="true" @onclick="() => NavigateToTransfer(Account.Id)">
+                <i class="bi bi-send"></i> Transfer
+            </button>
+            <button class="btn btn-outline-secondary" @onclick:stopPropagation="true" @onclick="OnClickCallback">
+                <i class="bi bi-list-ul"></i> Details
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public AccountDto Account { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback OnClickCallback { get; set; }
+
+    private string GetAccountIcon()
+    {
+        // Simple logic to assign an icon based on name
+        return Account.AccountTypeName.Contains("Saving", StringComparison.OrdinalIgnoreCase)
+            ? "bi bi-piggy-bank-fill"
+            : "bi bi-wallet-fill";
+    }
+
+    private void NavigateToTransfer(Guid accountId)
+    {
+        // Stop event propagation to prevent the main card click from firing
+        NavigationManager.NavigateTo($"/transfer?sourceAccountId={accountId}");
+    }
+}

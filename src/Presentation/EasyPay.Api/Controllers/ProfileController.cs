@@ -92,10 +92,7 @@ namespace EasyPay.Api.Controllers
         {
             var query = new GetMySubmittedDocumentsQuery();
             var result = await _mediator.Send(query);
-            return result.Match<ActionResult>(
-                Ok,
-                failure => BadRequest(failure)
-            );
+            return Ok(result);
         }
     }
 }

@@ -4,6 +4,7 @@ using EasyPay.Domain.Entities.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
+using System.Reflection;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,11 +17,11 @@ namespace EasyPay.Application.Behaviors
     {
         private readonly ICurrentUserService _currentUserService;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<ApplicationUser> _roleManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public AuthorizationBehavior(ICurrentUserService currentUserService,
             UserManager<ApplicationUser> userManager,
-            RoleManager<ApplicationUser> roleManager)
+            RoleManager<IdentityRole> roleManager)
         {
             _currentUserService = currentUserService;
             _userManager = userManager;
@@ -32,13 +33,13 @@ namespace EasyPay.Application.Behaviors
             var userId = _currentUserService.UserId;
             if (string.IsNullOrEmpty(userId))
             {
-                return (TResponse)Result.Failure(new Error(401, "User is not authenticated."));
+                return CreateFailureResponse(new Error(401, "User is not authenticated."));
             }
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                return (TResponse)Result.Failure(new Error(401, "Authenticated user could not be found."));
+                return CreateFailureResponse(new Error(401, "Authenticated user could not be found."));
             }
 
             var roles = await _userManager.GetRolesAsync(user);
@@ -66,9 +67,23 @@ namespace EasyPay.Application.Behaviors
                     return await next();
                 }
             }
+            return CreateFailureResponse(new Error(403, $"User does not have the required permission: {request.RequiredPermission}"));
+        }
 
+        private static TResponse CreateFailureResponse(Error error)
+        {
+            var responseType = typeof(TResponse);
+            var failureMethod = responseType.GetMethod(
+                "Failure",
+                BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy,
+                new[] { typeof(Error) });
 
-            return (TResponse)Result.Failure(new Error(403, $"User does not have the required permission: {request.RequiredPermission}"));
+            if (failureMethod == null)
+            {
+                throw new InvalidOperationException($"Could not find a static 'Failure' method on type {responseType.Name} that accepts an Error object.");
+            }
+
+            return (TResponse)failureMethod.Invoke(null, new object[] { error });
         }
     }
 }

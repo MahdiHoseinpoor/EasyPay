@@ -33,11 +33,7 @@ namespace EasyPay.Api.Controllers
         {
             var query = new GetAllAccountTypesQuery();
             var result = await _mediator.Send(query);
-
-            return result.Match<ActionResult>(
-                success => Ok(success),
-                failure => BadRequest(failure)
-            );
+            return Ok(result);
         }
         /// <summary>
         /// Gets a specific account type by its ID.

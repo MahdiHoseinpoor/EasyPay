@@ -1,5 +1,6 @@
 ﻿using EasyPay.Common;
 using EasyPay.Shared.DTOs.AccountManagement;
+using EasyPay.Shared.DTOs.Identity;
 using EasyPay.Shared.DTOs.Report;
 using Microsoft.Extensions.Logging;
 using System;
@@ -14,6 +15,7 @@ namespace EasyPay.Web.Services
     {
         Task<List<AccountDto>> GetMyAccounts();
         Task<IPagedList<TransactionDto>> GetTransactionHistory(Guid accountId, int page, int pageSize);
+        Task<List<AuthItemValueDto>> GetMySubmittedDocuments();
     }
 
     public class ProfileService : IProfileService
@@ -71,6 +73,19 @@ namespace EasyPay.Web.Services
             {
                 _logger.LogError(ex, "Exception occurred while fetching transaction history for account {AccountId}", accountId);
                 return null;
+            }
+        }
+        public async Task<List<AuthItemValueDto>> GetMySubmittedDocuments()
+        {
+            try
+            {
+                var result = await _httpClient.GetFromJsonAsync<Result<List<AuthItemValueDto>>>(ApiEndpoints.Profile.MySubmittedDocuments);
+                return result is { IsSuccess: true } ? result.Value ?? new List<AuthItemValueDto>() : new List<AuthItemValueDto>();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception occurred while fetching user's submitted documents.");
+                return new List<AuthItemValueDto>();
             }
         }
     }

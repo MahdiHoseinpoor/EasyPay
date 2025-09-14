@@ -23,19 +23,19 @@ namespace EasyPay.Infrastructure.Data
     {
         public static async Task InitializeAsync(IServiceProvider serviceProvider, bool clearFirst = false)
         {
-            //var context = serviceProvider.GetRequiredService<ApplicationDbContext>();
-            //var logger = serviceProvider.GetRequiredService<ILogger<DbInitializer>>();
+            var context = serviceProvider.GetRequiredService<ApplicationDbContext>();
+            var logger = serviceProvider.GetRequiredService<ILogger<DbInitializer>>();
 
-            //// Apply any pending migrations
-            //await context.Database.MigrateAsync();
-            //logger.LogInformation("Database migrations applied.");
+            // Apply any pending migrations
+            await context.Database.MigrateAsync();
+            logger.LogInformation("Database migrations applied.");
 
-            //if (clearFirst)
-            //{
-            //    await ClearDatabaseAsync(context, logger);
-            //}
+            if (clearFirst)
+            {
+                await ClearDatabaseAsync(context, logger);
+            }
 
-            //await RunSeedingTasksAsync(serviceProvider);
+            await RunSeedingTasksAsync(serviceProvider);
         }
 
         private static async Task RunSeedingTasksAsync(IServiceProvider serviceProvider)
@@ -135,6 +135,48 @@ namespace EasyPay.Infrastructure.Data
             if (permissionsToAdd.Any())
             {
                 logger.LogInformation("{Count} permissions added to role '{RoleName}'.", permissionsToAdd.Count, adminRole.Name);
+            }
+
+            var basicUserRole = await roleManager.FindByNameAsync(SystemRoles.BasicUser);
+            if (basicUserRole != null)
+            {
+                // Define the specific permissions for a basic user
+                var basicPermissions = new List<string>
+        {
+            Permissions.Accounts.View,
+            Permissions.Accounts.Create,
+            Permissions.Accounts.Edit, // To change account title
+            Permissions.Accounts.Delete, // Soft delete their own accounts
+            
+            Permissions.AccountTypes.View, // To see available account types when creating an account
+            
+            Permissions.BankCards.View,
+            Permissions.BankCards.Create,
+            Permissions.BankCards.Edit,
+            Permissions.BankCards.Delete,
+
+            Permissions.Bills.View,
+            Permissions.Bills.Create,
+            Permissions.Bills.Edit,
+            Permissions.Bills.Delete
+        };
+
+                var currentBasicClaims = await roleManager.GetClaimsAsync(basicUserRole);
+                var basicPermissionsToAdd = basicPermissions.Where(p => !currentBasicClaims.Any(c => c.Type == "Permission" && c.Value == p)).ToList();
+
+                foreach (var permission in basicPermissionsToAdd)
+                {
+                    await roleManager.AddClaimAsync(basicUserRole, new Claim("Permission", permission));
+                }
+
+                if (basicPermissionsToAdd.Any())
+                {
+                    logger.LogInformation("{Count} permissions added to role '{RoleName}'.", basicPermissionsToAdd.Count, basicUserRole.Name);
+                }
+            }
+            else
+            {
+                logger.LogError("BasicUser role not found. Cannot seed permissions.");
             }
         }
 
