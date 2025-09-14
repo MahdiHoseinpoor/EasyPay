@@ -7,7 +7,7 @@ using EasyPay.Infrastructure.Aggregates.Identity;
 using EasyPay.Application.Commands.AccountManagement.AccountEntity.CreateAccount;
 using EasyPay.Domain.Entities.AccountManagement;
 using EasyPay.Domain.Entities.Identity;
-using EasyPay.Domain.Enums.Identity;
+using EasyPay.Shared.Enums.Identity;
 using System.Linq.Expressions;
 
 namespace EasyPay.Application.UnitTests.Commands.AccountManagement

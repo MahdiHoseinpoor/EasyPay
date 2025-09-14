@@ -4,7 +4,7 @@ using EasyPay.Common.Errors;
 using EasyPay.Common.Errors.Business;
 using EasyPay.Domain.Entities.AccountManagement;
 using EasyPay.Domain.Entities.Report;
-using EasyPay.Domain.Enums.AccountManagement;
+using EasyPay.Shared.Enums.AccountManagement;
 using EasyPay.Infrastructure.Aggregates.AccountManagement;
 using EasyPay.Infrastructure.Aggregates.Report;
 using FluentAssertions;

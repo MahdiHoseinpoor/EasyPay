@@ -1,5 +1,5 @@
 ﻿using EasyPay.Common;
-using EasyPay.Domain.Enums.Identity;
+using EasyPay.Shared.Enums.Identity;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

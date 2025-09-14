@@ -1,7 +1,7 @@
 ﻿using EasyPay.Application.Commands.Identity.NaturalUserEntity.CreateNaturalUser;
 using EasyPay.Application.Services;
 using EasyPay.Domain.Entities.Identity;
-using EasyPay.Domain.Enums.Identity;
+using EasyPay.Shared.Enums.Identity;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
 using Moq;

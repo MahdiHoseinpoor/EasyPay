@@ -1,4 +1,4 @@
-﻿using EasyPay.Domain.Enums.Payment;
+﻿using EasyPay.Shared.Enums.Payment;
 using MediatR;
 using System;
 using System.Collections.Generic;

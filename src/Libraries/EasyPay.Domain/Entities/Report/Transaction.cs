@@ -1,5 +1,5 @@
 ﻿using EasyPay.Domain.Entities.AccountManagement;
-using EasyPay.Domain.Enums.Report;
+using EasyPay.Shared.Enums.Report;
 using EasyPay.Domain.ValueObjects.Report;
 using System.Diagnostics.CodeAnalysis;
 

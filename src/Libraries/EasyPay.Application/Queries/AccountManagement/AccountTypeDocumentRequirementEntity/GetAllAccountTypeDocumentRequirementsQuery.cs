@@ -1,5 +1,5 @@
 ﻿using EasyPay.Application.Common;
-using EasyPay.Application.DTOs.AccountManagement;
+using EasyPay.Shared.DTOs.AccountManagement;
 using MediatR;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;

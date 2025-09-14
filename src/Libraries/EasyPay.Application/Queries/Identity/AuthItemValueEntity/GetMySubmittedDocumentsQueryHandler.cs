@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EasyPay.Application.DTOs.Identity;
+using EasyPay.Shared.DTOs.Identity;
 using EasyPay.Application.Services;
 using EasyPay.Infrastructure.Aggregates.Identity;
 using MediatR;

@@ -2,7 +2,7 @@
 using EasyPay.Application.Services;
 using EasyPay.Common.Errors.Business;
 using EasyPay.Domain.Entities.Identity;
-using EasyPay.Domain.Enums.Identity;
+using EasyPay.Shared.Enums.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using System;

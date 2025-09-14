@@ -1,4 +1,4 @@
-﻿namespace EasyPay.Domain.Enums.AccountManagement
+﻿namespace EasyPay.Shared.Enums.AccountManagement
 {
     public enum AccountStatus
     {

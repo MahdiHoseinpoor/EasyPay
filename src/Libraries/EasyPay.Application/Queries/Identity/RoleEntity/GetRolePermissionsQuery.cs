@@ -1,5 +1,5 @@
 ﻿using EasyPay.Application.Common;
-using EasyPay.Application.DTOs.Identity;
+using EasyPay.Shared.DTOs.Identity;
 using MediatR;
 
 namespace EasyPay.Application.Queries.Identity.RoleEntity

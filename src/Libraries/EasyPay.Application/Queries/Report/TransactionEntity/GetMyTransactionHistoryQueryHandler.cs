@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EasyPay.Application.DTOs.Report;
+using EasyPay.Shared.DTOs.Report;
 using EasyPay.Application.Services;
 using EasyPay.Common;
 using EasyPay.Infrastructure.Aggregates.AccountManagement;

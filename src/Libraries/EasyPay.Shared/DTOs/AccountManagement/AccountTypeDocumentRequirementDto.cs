@@ -1,4 +1,4 @@
-﻿namespace EasyPay.Application.DTOs.AccountManagement
+﻿namespace EasyPay.Shared.DTOs.AccountManagement
 {
     public class AccountTypeDocumentRequirementDto
     {

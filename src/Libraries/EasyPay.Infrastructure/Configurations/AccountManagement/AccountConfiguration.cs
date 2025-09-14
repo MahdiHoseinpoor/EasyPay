@@ -1,6 +1,6 @@
 ﻿using EasyPay.Common;
 using EasyPay.Domain.Entities.AccountManagement;
-using EasyPay.Domain.Enums.AccountManagement;
+using EasyPay.Shared.Enums.AccountManagement;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

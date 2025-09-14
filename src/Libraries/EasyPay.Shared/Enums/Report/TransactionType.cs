@@ -1,4 +1,4 @@
-﻿namespace EasyPay.Domain.Enums.Report
+﻿namespace EasyPay.Shared.Enums.Report
 {
     public enum TransactionType
     {

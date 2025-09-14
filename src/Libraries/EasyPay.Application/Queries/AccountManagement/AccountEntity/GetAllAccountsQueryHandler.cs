@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EasyPay.Application.DTOs.AccountManagement;
+using EasyPay.Shared.DTOs.AccountManagement;
 using EasyPay.Common;
 using EasyPay.Infrastructure.Aggregates.AccountManagement;
 using MediatR;

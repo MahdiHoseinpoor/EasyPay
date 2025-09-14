@@ -1,6 +1,6 @@
 ﻿using EasyPay.Domain.Entities.Identity;
 using EasyPay.Domain.Entities.Report;
-using EasyPay.Domain.Enums.AccountManagement;
+using EasyPay.Shared.Enums.AccountManagement;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;

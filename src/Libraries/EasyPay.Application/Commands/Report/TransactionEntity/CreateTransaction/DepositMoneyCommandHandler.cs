@@ -1,7 +1,7 @@
 ﻿using EasyPay.Application.Services;
 using EasyPay.Common.Errors.Business;
 using EasyPay.Domain.Entities.Report;
-using EasyPay.Domain.Enums.Report;
+using EasyPay.Shared.Enums.Report;
 using EasyPay.Domain.ValueObjects.Report;
 using EasyPay.Infrastructure.Aggregates.AccountManagement;
 using EasyPay.Infrastructure.Aggregates.Report;

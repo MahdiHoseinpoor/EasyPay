@@ -1,4 +1,4 @@
-﻿namespace EasyPay.Domain.Enums.Identity
+﻿namespace EasyPay.Shared.Enums.Identity
 {
     public enum VerificationStatus
     {

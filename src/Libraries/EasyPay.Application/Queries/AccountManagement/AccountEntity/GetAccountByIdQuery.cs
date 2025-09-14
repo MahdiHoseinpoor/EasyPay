@@ -1,4 +1,4 @@
-﻿using EasyPay.Application.DTOs.AccountManagement;
+﻿using EasyPay.Shared.DTOs.AccountManagement;
 using MediatR;
 using System;
 

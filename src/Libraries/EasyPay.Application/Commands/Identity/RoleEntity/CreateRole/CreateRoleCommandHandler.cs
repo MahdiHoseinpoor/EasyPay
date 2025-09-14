@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EasyPay.Application.DTOs.Identity;
+using EasyPay.Shared.DTOs.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using System.Threading;

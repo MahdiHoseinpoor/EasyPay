@@ -1,5 +1,5 @@
 ﻿using EasyPay.Domain.Entities.Identity;
-using EasyPay.Domain.Enums.Payment;
+using EasyPay.Shared.Enums.Payment;
 
 namespace EasyPay.Domain.Entities.Payment
 {

@@ -1,7 +1,7 @@
 ﻿using EasyPay.Common;
 using EasyPay.Domain.Entities.AccountManagement;
 using EasyPay.Domain.Entities.Identity;
-using EasyPay.Domain.Enums.AccountManagement;
+using EasyPay.Shared.Enums.AccountManagement;
 using MediatR;
 using System;
 using System.Collections.Generic;

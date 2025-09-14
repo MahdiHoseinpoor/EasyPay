@@ -1,4 +1,4 @@
-﻿namespace EasyPay.Application.DTOs.Identity
+﻿namespace EasyPay.Shared.DTOs.Identity
 {
     public class RoleDto
     {

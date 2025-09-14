@@ -1,5 +1,5 @@
 ﻿using EasyPay.Domain.Entities.AccountManagement;
-using EasyPay.Domain.Enums.Identity;
+using EasyPay.Shared.Enums.Identity;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;

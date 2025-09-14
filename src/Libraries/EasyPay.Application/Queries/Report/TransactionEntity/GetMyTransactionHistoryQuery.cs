@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using System;
-using EasyPay.Application.DTOs.Report;
+using EasyPay.Shared.DTOs.Report;
 namespace EasyPay.Application.Queries.Report.TransactionEntity
 {
     public class GetMyTransactionHistoryQuery : IRequest<Result<IPagedList<TransactionDto>>>

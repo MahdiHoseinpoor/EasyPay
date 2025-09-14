@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using EasyPay.Application.Services;
 using EasyPay.Domain.Entities.Payment;
-using EasyPay.Domain.Enums.Payment;
+using EasyPay.Shared.Enums.Payment;
 using EasyPay.Infrastructure.Aggregates.Payment;
 using MediatR;
 using System;

@@ -1,7 +1,7 @@
-﻿using EasyPay.Domain.Enums.Report;
+﻿using EasyPay.Shared.Enums.Report;
 using System;
 
-namespace EasyPay.Application.DTOs.Report
+namespace EasyPay.Shared.DTOs.Report
 {
     public class TransactionDto
     {

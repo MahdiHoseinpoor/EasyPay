@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace EasyPay.Application.DTOs.Identity
+namespace EasyPay.Shared.DTOs.Identity
 {
     public class ManageRolePermissionsDto
     {

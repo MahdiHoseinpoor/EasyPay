@@ -1,6 +1,6 @@
 ﻿using EasyPay.Application.Commands.Identity.AuthItemValueEntity.CreateAuthItemValue;
-using EasyPay.Application.DTOs.Identity;
-using EasyPay.Application.DTOs.Report;
+using EasyPay.Shared.DTOs.Identity;
+using EasyPay.Shared.DTOs.Report;
 using EasyPay.Application.Queries.AccountManagement.AccountEntity;
 using EasyPay.Application.Queries.Identity.AuthItemValueEntity;
 using EasyPay.Application.Queries.Report.TransactionEntity;
@@ -50,7 +50,7 @@ namespace EasyPay.Api.Controllers
         /// Gets all accounts owned by the current authenticated user.
         /// </summary>
         [HttpGet("accounts")]
-        [ProducesResponseType(typeof(List<EasyPay.Application.DTOs.AccountManagement.AccountDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<EasyPay.Shared.DTOs.AccountManagement.AccountDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetMyAccounts()
         {
             var query = new GetMyAccountsQuery();

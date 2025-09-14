@@ -1,7 +1,7 @@
-﻿using EasyPay.Domain.Enums.AccountManagement;
+﻿using EasyPay.Shared.Enums.AccountManagement;
 using System;
 
-namespace EasyPay.Application.DTOs.AccountManagement
+namespace EasyPay.Shared.DTOs.AccountManagement
 {
     public class AccountDto
     {

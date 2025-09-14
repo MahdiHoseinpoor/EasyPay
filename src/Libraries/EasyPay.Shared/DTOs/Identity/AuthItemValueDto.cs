@@ -1,7 +1,7 @@
-﻿using EasyPay.Domain.Enums.Identity;
+﻿using EasyPay.Shared.Enums.Identity;
 using System;
 
-namespace EasyPay.Application.DTOs.Identity
+namespace EasyPay.Shared.DTOs.Identity
 {
     public class AuthItemValueDto
     {

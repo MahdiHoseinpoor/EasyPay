@@ -1,4 +1,4 @@
-﻿namespace EasyPay.Domain.Enums.Payment
+﻿namespace EasyPay.Shared.Enums.Payment
 {
     public enum BillType
     {
