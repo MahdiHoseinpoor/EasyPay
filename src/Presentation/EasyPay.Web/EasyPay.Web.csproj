@@ -23,8 +23,4 @@
     <ProjectReference Include="..\..\Libraries\EasyPay.Shared\EasyPay.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Shared\" />
-  </ItemGroup>
-
 </Project>

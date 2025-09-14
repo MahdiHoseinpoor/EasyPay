@@ -1,0 +1,21 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+
+<div class="auth-layout-container">
+    <main class="main-content">
+        <div class="auth-logo" @onclick="@(() => NavigationManager.NavigateTo("/"))">
+            @* <img src="/images/logo.svg" alt="EasyPay Logo" /> *@
+            <h1>EasyPay</h1>
+        </div>
+
+        @Body
+
+    </main>
+    <footer class="auth-footer">
+        <a href="/about-us">About Us</a>
+        <span>&bull;</span>
+        <a href="/privacy-policy">Privacy Policy</a>
+        <span>&bull;</span>
+        <a href="/terms-of-service">Terms of Service</a>
+    </footer>
+</div>

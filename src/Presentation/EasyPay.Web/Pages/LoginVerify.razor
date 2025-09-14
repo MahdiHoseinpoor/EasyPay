@@ -1,4 +1,6 @@
 ﻿@page "/login-verify"
+@layout Layout.AuthLayout
+
 @using System.ComponentModel.DataAnnotations
 @using EasyPay.Shared.Models.Identity
 @using EasyPay.Web.Services
@@ -8,38 +10,40 @@
 
 <PageTitle>Verify Code</PageTitle>
 
-<div class="row justify-content-center">
-    <div class="col-lg-5">
-        <div class="card shadow-sm">
-            <div class="card-body p-4">
-                <h3 class="card-title text-center mb-4">Enter Verification Code</h3>
-                @if (!string.IsNullOrEmpty(errorMessage))
-                {
-                    <div class="alert alert-danger">@errorMessage</div>
-                }
-                <p class="text-muted text-center">A code has been sent to @AuthState.PhoneNumber</p>
-                <EditForm Model="@Model" OnValidSubmit="HandleSubmit">
-                    <DataAnnotationsValidator />
-                    <div class="mb-3">
-                        <label for="code" class="form-label">Code</label>
-                        <InputText id="code" @bind-Value="Model.Code" class="form-control" />
-                        <ValidationMessage For="@(() => Model.Code)" />
-                    </div>
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary" disabled="@isSubmitting">
-                            @if (isSubmitting)
-                            {
-                                <span class="spinner-border spinner-border-sm"></span>
-                            }
-                            else
-                            {
-                                <span>Verify</span>
-                            }
-                        </button>
-                    </div>
-                </EditForm>
-            </div>
+<div class="auth-card">
+    <div class="card-body">
+        <div class="text-center">
+            <h3 class="card-title">Enter Verification Code</h3>
+            <p class="card-subtitle">A 6-digit code was sent to @AuthState.PhoneNumber</p>
         </div>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger">@errorMessage</div>
+        }
+
+        <EditForm Model="@Model" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="mb-3">
+                <label for="code" class="form-label">Verification Code</label>
+                <InputText id="code" @bind-Value="Model.Code" class="form-control" />
+                <ValidationMessage For="@(() => Model.Code)" />
+            </div>
+
+            <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary" disabled="@isSubmitting">
+                    @if (isSubmitting)
+                    {
+                        <span class="spinner-border spinner-border-sm"></span>
+                    }
+                    else
+                    {
+                        <span>Verify & Continue</span>
+                    }
+                </button>
+            </div>
+        </EditForm>
     </div>
 </div>
 

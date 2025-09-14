@@ -1,14 +1,42 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@using Microsoft.AspNetCore.Components.Authorization
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<div class="app-container">
+    <Sidebar />
 
-    <main>
-
-        <article class="content px-4">
+    <div class="main-content-wrapper">
+        <TopHeader />
+        
+        <main class="main-content">
             @Body
-        </article>
-    </main>
-</div>```
+        </main>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationStateTask { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateTask;
+        var user = authState.User;
+
+        if (user.Identity is { IsAuthenticated: true })
+        {
+            var currentUri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+            if (currentUri.AbsolutePath.Equals("/complete-profile", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            var profileCompletedClaim = user.FindFirst("profile_completed");
+            
+            if (profileCompletedClaim != null && profileCompletedClaim.Value.Equals("false", StringComparison.OrdinalIgnoreCase))
+            {
+                NavigationManager.NavigateTo("/complete-profile");
+            }
+        }
+    }
+}
