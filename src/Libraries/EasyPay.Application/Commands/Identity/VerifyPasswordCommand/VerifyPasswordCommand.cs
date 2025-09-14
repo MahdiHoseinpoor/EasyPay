@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using EasyPay.Shared.Models.Identity;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -3,6 +3,7 @@ using EasyPay.Application.Commands.Identity.AuthenticateWithPhone;
 using EasyPay.Application.Commands.Identity.NaturalUserEntity.CreateNaturalUser;
 using EasyPay.Application.Commands.Identity.NaturalUserRegisterPhoneCommand;
 using EasyPay.Application.Commands.Identity.VerifyPasswordCommand;
+using EasyPay.Shared.Models.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -99,8 +100,17 @@ namespace EasyPay.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult> CompleteProfile([FromBody] CompleteNaturalUserProfileCommand command)
+        public async Task<ActionResult> CompleteProfile([FromBody] CompleteProfileRequest request)
         {
+            var command = new CompleteNaturalUserProfileCommand
+            {
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                NationalCode = request.NationalCode,
+                BirthDate = request.BirthDate,
+                FatherName = request.FatherName,
+                Gender = request.Gender
+            };
             var result = await _mediator.Send(command);
 
             return result.Match<ActionResult>(
