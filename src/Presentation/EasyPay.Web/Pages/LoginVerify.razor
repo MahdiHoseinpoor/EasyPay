@@ -1,0 +1,97 @@
+﻿@page "/login-verify"
+@using System.ComponentModel.DataAnnotations
+@using EasyPay.Shared.Models.Identity
+@using EasyPay.Web.Services
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+@inject AuthState AuthState
+
+<PageTitle>Verify Code</PageTitle>
+
+<div class="row justify-content-center">
+    <div class="col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h3 class="card-title text-center mb-4">Enter Verification Code</h3>
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger">@errorMessage</div>
+                }
+                <p class="text-muted text-center">A code has been sent to @AuthState.PhoneNumber</p>
+                <EditForm Model="@Model" OnValidSubmit="HandleSubmit">
+                    <DataAnnotationsValidator />
+                    <div class="mb-3">
+                        <label for="code" class="form-label">Code</label>
+                        <InputText id="code" @bind-Value="Model.Code" class="form-control" />
+                        <ValidationMessage For="@(() => Model.Code)" />
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary" disabled="@isSubmitting">
+                            @if (isSubmitting)
+                            {
+                                <span class="spinner-border spinner-border-sm"></span>
+                            }
+                            else
+                            {
+                                <span>Verify</span>
+                            }
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private VerificationModel Model = new();
+    private bool isSubmitting = false;
+    private string errorMessage;
+
+    protected override void OnInitialized()
+    {
+        if (string.IsNullOrEmpty(AuthState.PhoneNumber))
+        {
+            NavigationManager.NavigateTo("/login-phone");
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        isSubmitting = true;
+        errorMessage = null;
+
+        var request = new AuthenticateWithPhoneRequest(AuthState.PhoneNumber, Model.Code);
+        var response = await AuthService.VerifyPhone(request);
+
+        if (response == null)
+        {
+            errorMessage = "Invalid or expired verification code.";
+            isSubmitting = false;
+            return;
+        }
+
+        switch (response.Status)
+        {
+            case PhoneAuthenticationStatus.LoggedIn:
+                NavigationManager.NavigateTo("/");
+                break;
+            case PhoneAuthenticationStatus.NeedsPassword:
+                NavigationManager.NavigateTo("/login-password");
+                break;
+            case PhoneAuthenticationStatus.NeedsRegistration:
+                NavigationManager.NavigateTo("/complete-profile");
+                break;
+            default:
+                errorMessage = "An unexpected error occurred. Please try again.";
+                isSubmitting = false;
+                break;
+        }
+    }
+
+    public class VerificationModel
+    {
+        [Required]
+        public string Code { get; set; }
+    }
+}

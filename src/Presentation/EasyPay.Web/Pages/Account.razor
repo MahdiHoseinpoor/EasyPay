@@ -1,0 +1,36 @@
+﻿@page "/account"
+@attribute [Authorize]
+@using EasyPay.Web.Services
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+
+<PageTitle>My Account</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Account Information</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>Welcome, <strong>@context.User.Identity?.Name</strong>!</p>
+                        <p>You have successfully logged into your EasyPay account.</p>
+                        <hr />
+                        <button class="btn btn-primary" @onclick="BeginLogout">Log Out</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+
+@code {
+    private async Task BeginLogout()
+    {
+        await AuthService.Logout();
+        NavigationManager.NavigateTo("/");
+    }
+}

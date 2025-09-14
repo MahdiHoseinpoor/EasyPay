@@ -1,39 +1,54 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using EasyPay.Web.Services
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">EasyPay.Web</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+        <a class="navbar-brand" href="">EasyPay</a>
     </div>
 </div>
 
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="nav flex-column">
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
+
+        <AuthorizeView>
+            <Authorized>
+                @* --- LINKS FOR LOGGED-IN USERS --- *@
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="account">
+                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> My Account
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <button class="nav-link btn btn-link" @onclick="BeginLogout">
+                        <span class="bi bi-box-arrow-right-nav-menu" aria-hidden="true"></span> Log out
+                    </button>
+                </div>
+            </Authorized>
+            <NotAuthorized>
+                @* --- LINK FOR LOGGED-OUT USERS --- *@
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="login-phone">
+                        <span class="bi bi-person-plus-fill-nav-menu" aria-hidden="true"></span> Login / Register
+                    </NavLink>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+
     </nav>
 </div>
 
 @code {
-    private bool collapseNavMenu = true;
-
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
+    private async Task BeginLogout()
     {
-        collapseNavMenu = !collapseNavMenu;
+        await AuthService.Logout();
+        NavigationManager.NavigateTo("/");
     }
 }

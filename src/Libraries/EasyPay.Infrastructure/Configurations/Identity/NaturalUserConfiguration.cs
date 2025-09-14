@@ -17,33 +17,24 @@ namespace EasyPay.Infrastructure.Configurations.Identity
             builder.HasBaseType<ApplicationUser>();
             builder.ToTable("NaturalUser");
             builder.Property(p => p.NationalCode)
-                .IsRequired()
                 .HasMaxLength(10);
 
             builder.Property(p => p.BirthCertificateNumber)
-                .IsRequired()
                 .HasMaxLength(10);
 
-            builder.Property(p => p.BirthDate)
-                .IsRequired();
 
             builder.Property(p => p.EducationLevel)
-                .IsRequired()
                 .HasMaxLength(EntityConstraints.DefaultMaxLength);
 
             builder.Property(p => p.FatherName)
-                .IsRequired()
                 .HasMaxLength(EntityConstraints.DefaultMaxLength);
 
-            builder.Property(p => p.Gender)
-               .IsRequired();
+            builder.Property(p => p.Gender);
 
             builder.Property(p => p.PlaceOfBirth)
-               .IsRequired()
                .HasMaxLength(EntityConstraints.DefaultMaxLength);
 
             builder.Property(p => p.Occupation)
-               .IsRequired()
                .HasMaxLength(EntityConstraints.DefaultMaxLength);
         }
     }

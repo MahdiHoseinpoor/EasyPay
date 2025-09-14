@@ -13,6 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddAutoMapper(_ => { },Assembly.GetExecutingAssembly());
             builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             builder.Services.Configure<StorageSettings>(builder.Configuration.GetSection(StorageSettings.SectionName));
+            builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
             builder.Services.AddScoped<IAccountNumberService, AccountNumberService>();
             builder.Services.AddScoped<IBillInquiryService, FakeBillInquiryService>();
             builder.Services.AddScoped<ISmsService, FakeSmsService>();

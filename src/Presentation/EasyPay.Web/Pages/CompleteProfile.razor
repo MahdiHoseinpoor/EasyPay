@@ -1,0 +1,108 @@
+﻿@page "/complete-profile"
+@using System.ComponentModel.DataAnnotations
+@using EasyPay.Shared.Enums.Identity
+@using EasyPay.Shared.Models.Identity
+@using EasyPay.Web.Services
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Register - Step 3</PageTitle>
+
+<AuthorizeView Context="authContext">
+    <Authorized>
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4">
+                        <h3 class="card-title text-center mb-4">Complete Your Profile</h3>
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-danger">@errorMessage</div>
+                        }
+                        <EditForm Model="@Model" OnValidSubmit="HandleSubmit">
+                            <DataAnnotationsValidator />
+                             <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">First Name</label>
+                                    <InputText @bind-Value="Model.FirstName" class="form-control" />
+                                    <ValidationMessage For="@(() => Model.FirstName)" />
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Last Name</label>
+                                    <InputText @bind-Value="Model.LastName" class="form-control" />
+                                    <ValidationMessage For="@(() => Model.LastName)" />
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Father's Name</label>
+                                <InputText @bind-Value="Model.FatherName" class="form-control" />
+                                <ValidationMessage For="@(() => Model.FatherName)" />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">National Code</label>
+                                <InputText @bind-Value="Model.NationalCode" class="form-control" />
+                                <ValidationMessage For="@(() => Model.NationalCode)" />
+                            </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Birth Date</label>
+                                    <InputDate @bind-Value="Model.BirthDate" class="form-control" />
+                                    <ValidationMessage For="@(() => Model.BirthDate)" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Gender</label>
+                                    <InputSelect @bind-Value="Model.Gender" class="form-select">
+                                        @foreach (var gender in Enum.GetValues<GenderType>())
+                                        {
+                                            <option value="@gender">@gender.ToString()</option>
+                                        }
+                                    </InputSelect>
+                                </div>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary" disabled="@isSubmitting">
+                                     @if (isSubmitting)
+                                    {
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    }
+                                    else
+                                    {
+                                        <span>Create Account</span>
+                                    }
+                                </button>
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <p>Your session has expired. Please <a href="/login-phone">start the registration process again</a>.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    private CompleteProfileRequest Model = new();
+    private bool isSubmitting = false;
+    private string errorMessage;
+
+    private async Task HandleSubmit()
+    {
+        isSubmitting = true;
+        errorMessage = null;
+
+        var success = await AuthService.CompleteProfile(Model);
+
+        if (success)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            errorMessage = "Could not create your profile. Please try again.";
+            isSubmitting = false;
+        }
+    }
+}

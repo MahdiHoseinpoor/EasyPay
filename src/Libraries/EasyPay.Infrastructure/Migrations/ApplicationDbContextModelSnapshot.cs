@@ -289,12 +289,12 @@ namespace EasyPay.Infrastructure.Migrations
                     b.Property<bool>("IsAuthorized")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("LastVerifyPasswordDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("LastName")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("LastVerifyPasswordDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -495,9 +495,6 @@ namespace EasyPay.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime>("VerifyPasswordTime")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime?>("LogoutTime")
                         .HasColumnType("datetime2");
 
@@ -532,6 +529,9 @@ namespace EasyPay.Infrastructure.Migrations
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("VerifyPasswordTime")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -700,9 +700,9 @@ namespace EasyPay.Infrastructure.Migrations
                     b.ToTable("AspNetUserClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserVerifyPassword<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.Property<string>("VerifyPasswordProvider")
+                    b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderKey")
@@ -715,11 +715,11 @@ namespace EasyPay.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("VerifyPasswordProvider", "ProviderKey");
+                    b.HasKey("LoginProvider", "ProviderKey");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserVerifyPasswords", (string)null);
+                    b.ToTable("AspNetUserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -742,7 +742,7 @@ namespace EasyPay.Infrastructure.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("VerifyPasswordProvider")
+                    b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
@@ -751,7 +751,7 @@ namespace EasyPay.Infrastructure.Migrations
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserId", "VerifyPasswordProvider", "Name");
+                    b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
@@ -781,7 +781,6 @@ namespace EasyPay.Infrastructure.Migrations
                     b.HasBaseType("EasyPay.Domain.Entities.Identity.ApplicationUser");
 
                     b.Property<string>("BirthCertificateNumber")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
@@ -789,12 +788,10 @@ namespace EasyPay.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("EducationLevel")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("FatherName")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -805,17 +802,14 @@ namespace EasyPay.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("NationalCode")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("Occupation")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("PlaceOfBirth")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -988,7 +982,7 @@ namespace EasyPay.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserVerifyPassword<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.HasOne("EasyPay.Domain.Entities.Identity.ApplicationUser", null)
                         .WithMany()

@@ -32,7 +32,7 @@ try
         options.AddPolicy(name: BlazorAppCorsPolicy,
                           policy =>
                           {
-                              policy.WithOrigins("http://localhost:5145") // The default Blazor WASM debug URL
+                              policy.WithOrigins("http://localhost:5038")
                                     .AllowAnyHeader()
                                     .AllowAnyMethod();
                           });
@@ -60,6 +60,7 @@ try
             c.RoutePrefix = string.Empty;
         });
     }
+    app.UseCors(BlazorAppCorsPolicy);
     app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
     app.UseHttpsRedirection();
     app.UseAuthentication();

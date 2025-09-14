@@ -2,6 +2,7 @@
 using EasyPay.Application.Services;
 using EasyPay.Domain.Entities.Identity;
 using EasyPay.Domain.ValueObjects.Identity;
+using EasyPay.Shared.Models.Identity;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
 using Moq;

@@ -36,7 +36,7 @@ namespace EasyPay.Application.Commands.Identity.AuthenticateWithPhone
 
             if (existingUser == null)
             {
-                var newUser = new ApplicationUser()
+                var newUser = new NaturalUser()
                 {
                     UserName = request.Phone,
                     PhoneNumber = request.Phone,
