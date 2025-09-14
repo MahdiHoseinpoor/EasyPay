@@ -59,6 +59,22 @@ try
             c.SwaggerEndpoint("/swagger/v1/swagger.json", "EasyPay API V1");
             c.RoutePrefix = string.Empty;
         });
+        using (var scope = app.Services.CreateScope())
+        {
+            var services = scope.ServiceProvider;
+            var logger = services.GetRequiredService<ILogger<Program>>();
+            try
+            {
+                var clearDatabase = app.Configuration.GetValue<bool>("Seeding:ClearDatabaseOnStartup");
+                logger.LogInformation("Attempting to seed database... Clear first: {Clear}", clearDatabase);
+                await SeedData.InitializeAsync(services, clearDatabase);
+                logger.LogInformation("Database seeding completed or data already exists.");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred during database seeding.");
+            }
+        }
     }
     app.UseCors(BlazorAppCorsPolicy);
     app.UseMiddleware<GlobalExceptionHandlingMiddleware>();

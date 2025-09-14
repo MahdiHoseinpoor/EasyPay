@@ -1,7 +1,7 @@
 ﻿using Asp.Versioning;
 using EasyPay.Application.Commands.AccountManagement.AccountTypeDocumentRequirementEntity.CreateAccountTypeDocumentRequirement;
 using EasyPay.Application.Commands.AccountManagement.AccountTypeDocumentRequirementEntity.DeleteAccountTypeDocumentRequirement;
-using EasyPay.Application.Common;
+using EasyPay.Common;
 using EasyPay.Application.Queries.AccountManagement.AccountTypeDocumentRequirementEntity;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

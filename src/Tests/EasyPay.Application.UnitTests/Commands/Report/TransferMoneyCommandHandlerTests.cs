@@ -14,6 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using EasyPay.Common.Errors.Business;
 using EasyPay.Common.Errors;
+using EasyPay.Shared.Models.Report;
 
 namespace EasyPay.Application.UnitTests.Commands.Report
 {

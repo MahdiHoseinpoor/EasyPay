@@ -1,65 +1,143 @@
 ﻿@page "/"
 @attribute [Authorize]
+@using EasyPay.Shared.DTOs.AccountManagement
+@using EasyPay.Shared.DTOs.Report
+@using EasyPay.Shared.Enums.Report
+@using EasyPay.Web.Services
+@inject IProfileService ProfileService
 
 <PageTitle>Dashboard</PageTitle>
 
 <AuthorizeView>
     <Authorized>
-        <div class="dashboard-header">
-            <h1>Welcome back, @(context.User.FindFirst("FirstName")?.Value ?? "User")!</h1>
-            <p>Here is your financial overview for today.</p>
-        </div>
-
-        <div class="dashboard-grid">
-            <div class="card account-card">
-                <div class="card-header">
-                    <span class="card-title">Primary Account</span>
-                    <span class="account-number">**** **** **** 1234</span>
+        @if (isLoading)
+        {
+            <div class="text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
                 </div>
-                <div class="card-body">
-                    <p class="balance-label">Available Balance</p>
-                    <p class="balance-amount">$12,504.87</p>
-                </div>
-                <div class="card-footer">
-                    <button class="btn btn-accent"><i class="bi bi-send"></i> Send Money</button>
-                    <button class="btn btn-secondary"><i class="bi bi-plus-circle"></i> Add Funds</button>
-                </div>
+                <p class="mt-2">Loading your dashboard...</p>
+            </div>
+        }
+        else
+        {
+            <div class="dashboard-header">
+                <h1>Welcome back, @(context.User.FindFirst("FirstName")?.Value ?? "User")!</h1>
+                <p>Here is your financial overview for today.</p>
             </div>
 
-            <div class="card transactions-card">
-                <div class="card-header">
-                    <span class="card-title">Recent Transactions</span>
-                    <a href="/history" class="view-all">View All</a>
-                </div>
-                <div class="card-body">
-                    <ul class="transaction-list">
-                        <li>
-                            <div class="transaction-icon" style="background-color: #fdf4f4;"><i class="bi bi-cup-hot-fill" style="color: #e57373;"></i></div>
-                            <div class="transaction-details">
-                                <span class="merchant">Starbucks</span>
-                                <span class="date">Today, 2:45 PM</span>
-                            </div>
-                            <span class="amount outgoing">-$5.75</span>
-                        </li>
-                         <li>
-                            <div class="transaction-icon" style="background-color: #f3f9ff;"><i class="bi bi-lightning-charge-fill" style="color: #64b5f6;"></i></div>
-                            <div class="transaction-details">
-                                <span class="merchant">Utility Bill</span>
-                                <span class="date">Yesterday, 10:10 AM</span>
-                            </div>
-                            <span class="amount outgoing">-$85.30</span>
-                        </li>
-                        <li>
-                            <div class="transaction-icon" style="background-color: #f2fbf6;"><i class="bi bi-cash-stack" style="color: #81c784;"></i></div>
-                            <div class="transaction-details">
-                                <span class="merchant">Work Payroll</span>
-                                <span class="date">Sep 12, 2025</span>
-                            </div>
-                            <span class="amount incoming">+$2,450.00</span>
-                        </li>
-                    </ul>
+            <div class="dashboard-grid">
+                @if (primaryAccount != null)
+                {
+                    <div class="card account-card">
+                        <div class="card-header">
+                            <span class="card-title">@primaryAccount.Title</span>
+                            <span class="account-number">@MaskAccountNumber(primaryAccount.AccountNumber)</span>
+                        </div>
+                        <div class="card-body">
+                            <p class="balance-label">Available Balance</p>
+                            <p class="balance-amount">@primaryAccount.CurrentBalance.ToString("C")</p>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-accent"><i class="bi bi-send"></i> Send Money</button>
+                            <button class="btn btn-secondary"><i class="bi bi-plus-circle"></i> Add Funds</button>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <p>You don't have any accounts yet. <a href="/accounts/create">Create one</a> to get started.</p>
+                        </div>
+                    </div>
+                }
+
+
+                <div class="card transactions-card">
+                    <div class="card-header">
+                        <span class="card-title">Recent Transactions</span>
+                        @if (recentTransactions is { Count: > 0 })
+                        {
+                            <a href="/history" class="view-all">View All</a>
+                        }
+                    </div>
+                    <div class="card-body">
+                        @if (recentTransactions is not { Count: > 0 })
+                        {
+                            <p>No recent transactions found for this account.</p>
+                        }
+                        else
+                        {
+                            <ul class="transaction-list">
+                                @foreach (var tx in recentTransactions)
+                                {
+                                    var (icon, iconBg, iconColor, amountSign) = GetTransactionTypeDetails(tx.TransactionType);
+                                    <li>
+                                        <div class="transaction-icon" style="background-color: @iconBg;">
+                                            <i class="@icon" style="color: @iconColor;"></i>
+                                        </div>
+                                        <div class="transaction-details">
+                                            <span class="merchant">@tx.Description</span>
+                                            <span class="date">@tx.TransactionDate.ToString("MMM dd, yyyy h:mm tt")</span>
+                                        </div>
+                                        <span class="amount @(IsIncoming(tx.TransactionType) ? "incoming" : "outgoing")">
+                                            @amountSign@tx.Amount.ToString("N2")
+                                        </span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </div>
                 </div>
             </div>
-        </div>
+        }
     </Authorized>
 </AuthorizeView>
+
+@code {
+    private bool isLoading = true;
+    private AccountDto? primaryAccount;
+    private List<TransactionDto>? recentTransactions;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var myAccounts = await ProfileService.GetMyAccounts();
+
+        if (myAccounts != null && myAccounts.Any())
+        {
+            primaryAccount = myAccounts.FirstOrDefault();
+
+            if (primaryAccount != null)
+            {
+                var transactionHistory = await ProfileService.GetTransactionHistory(primaryAccount.Id, 0, 3);
+                recentTransactions = transactionHistory?.Items.ToList();
+            }
+        }
+
+        isLoading = false;
+    }
+
+    private string MaskAccountNumber(string accountNumber)
+    {
+        if (string.IsNullOrEmpty(accountNumber) || accountNumber.Length < 4)
+        {
+            return "****";
+        }
+        return $"**** **** **** {accountNumber.Substring(accountNumber.Length - 4)}";
+    }
+
+    private bool IsIncoming(TransactionType type) => type == TransactionType.Deposit || type == TransactionType.TransferIn;
+
+    private (string Icon, string IconBg, string IconColor, string AmountSign) GetTransactionTypeDetails(TransactionType type)
+    {
+        return type switch
+        {
+            TransactionType.Deposit => ("bi bi-arrow-down-circle-fill", "#f2fbf6", "#81c784", "+$"),
+            TransactionType.TransferIn => ("bi bi-arrow-down-left-circle-fill", "#f2fbf6", "#81c784", "+$"),
+            TransactionType.Withdrawal => ("bi bi-arrow-up-circle-fill", "#fdf4f4", "#e57373", "-$"),
+            TransactionType.TransferOut => ("bi bi-arrow-up-right-circle-fill", "#fdf4f4", "#e57373", "-$"),
+            _ => ("bi bi-question-circle-fill", "#f4f4f4", "#6c757d", "$")
+        };
+    }
+}

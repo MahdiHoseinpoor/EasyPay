@@ -57,10 +57,7 @@ namespace EasyPay.Api.Controllers
         {
             var query = new GetMyAccountsQuery();
             var result = await _mediator.Send(query);
-            return result.Match<ActionResult>(
-                Ok,
-                failure => BadRequest(failure)
-            );
+            return Ok(result);
         }
 
         /// <summary>

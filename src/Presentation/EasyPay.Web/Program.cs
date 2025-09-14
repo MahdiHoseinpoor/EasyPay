@@ -9,13 +9,15 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
-
+builder.Logging.SetMinimumLevel(LogLevel.Debug);
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://localhost:5144") });
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IBillService, BillService>();
 builder.Services.AddSingleton<AuthState>();
 

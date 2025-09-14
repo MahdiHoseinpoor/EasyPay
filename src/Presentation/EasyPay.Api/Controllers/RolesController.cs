@@ -1,7 +1,7 @@
 ﻿using Asp.Versioning;
 using EasyPay.Application.Commands.Identity.RoleEntity.CreateRole;
 using EasyPay.Application.Commands.Identity.RoleEntity.UpdateRolePermissions;
-using EasyPay.Application.Common;
+using EasyPay.Common;
 using EasyPay.Application.Queries.Identity.RoleEntity;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

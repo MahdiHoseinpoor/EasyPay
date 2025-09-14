@@ -9,6 +9,7 @@ using EasyPay.Infrastructure.Aggregates.AccountManagement;
 using EasyPay.Infrastructure.Aggregates.Report;
 using FluentAssertions;
 using Moq;
+using EasyPay.Shared.Models.Report;
 
 namespace EasyPay.Application.UnitTests.Commands.Report
 {

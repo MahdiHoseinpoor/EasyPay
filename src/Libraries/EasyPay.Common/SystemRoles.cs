@@ -1,4 +1,4 @@
-﻿namespace EasyPay.Application.Common
+﻿namespace EasyPay.Common
 {
     public static class SystemRoles
     {

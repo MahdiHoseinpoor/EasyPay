@@ -34,6 +34,11 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddRepositoriesFormAssembly(Assembly.GetExecutingAssembly());
             builder.Services.AddIdentityCore<ApplicationUser>(
                 options => {
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequiredUniqueChars = 0;
+                    options.Password.RequireDigit = false;
                 })
                 .AddRoles<IdentityRole>()
                 .AddSignInManager()

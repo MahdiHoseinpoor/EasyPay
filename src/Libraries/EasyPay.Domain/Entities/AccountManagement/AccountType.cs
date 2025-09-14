@@ -1,4 +1,6 @@
-﻿namespace EasyPay.Domain.Entities.AccountManagement
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace EasyPay.Domain.Entities.AccountManagement
 {
     public class AccountType : EntityBase<int>
     {
@@ -27,7 +29,11 @@
         public int? MaximumAgeRequirement { get; set; }
 
         public virtual ICollection<Account> Accounts { get; set; }
-        
+        [SetsRequiredMembers]
+        public AccountType()
+        {
+            
+        }
     }
     public enum InterestCalculationMethod
     {
