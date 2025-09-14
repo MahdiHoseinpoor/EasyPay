@@ -22,7 +22,23 @@ namespace EasyPay.Api.Controllers
         {
             _mediator = mediator;
         }
+        /// <summary>
+        /// Gets a list of all active account types.
+        /// </summary>
+        /// <returns>A list of account types.</returns>
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetAllAccountTypes()
+        {
+            var query = new GetAllAccountTypesQuery();
+            var result = await _mediator.Send(query);
 
+            return result.Match<ActionResult>(
+                success => Ok(success),
+                failure => BadRequest(failure)
+            );
+        }
         /// <summary>
         /// Gets a specific account type by its ID.
         /// </summary>

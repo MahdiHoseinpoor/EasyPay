@@ -12,6 +12,11 @@ public static class ApiEndpoints
         public const string RegisterCompleteProfile = $"{Base}/identity/register/complete-profile";
     }
 
+    public static class AccountTypes
+    {
+        public const string GetAll = $"{Base}/account-types";
+    }
+
     public static class Accounts
     {
         public const string GetAll = $"{Base}/accounts";
@@ -19,6 +24,16 @@ public static class ApiEndpoints
         public const string Create = $"{Base}/accounts";
         public static string Update(Guid accountId) => $"{GetAll}/{accountId}";
         public static string Delete(Guid accountId) => $"{GetAll}/{accountId}";
+    }
+
+    public static class Transaction
+    {
+        public const string Transfer = $"{Base}/transaction/transfer";
+    }
+
+    public static class Bills
+    {
+        public const string PayMobileBill = $"{Base}/mobile-bill";
     }
 
     public static class Profile

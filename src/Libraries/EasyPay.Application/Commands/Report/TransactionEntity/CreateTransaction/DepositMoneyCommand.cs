@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using EasyPay.Shared.Models.Report;
+using MediatR;
 using System;
 using System.Text.Json.Serialization;
 
@@ -14,5 +15,5 @@ namespace EasyPay.Application.Commands.Report.TransactionEntity.CreateTransactio
         public TransactionRequestMetadata? RequestMetadata { get; set; }
     }
 
-    public record TransactionRequestMetadata(string IpAddress, string UserAgent);
+   
 }

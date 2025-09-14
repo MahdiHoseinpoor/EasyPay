@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using EasyPay.Shared.Models.Report;
+using MediatR;
 using System;
 using System.Text.Json.Serialization;
 

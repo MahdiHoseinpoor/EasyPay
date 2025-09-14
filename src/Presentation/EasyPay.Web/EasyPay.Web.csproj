@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\EasyPay.Common\EasyPay.Common.csproj" />
     <ProjectReference Include="..\..\Libraries\EasyPay.Shared\EasyPay.Shared.csproj" />
   </ItemGroup>
 

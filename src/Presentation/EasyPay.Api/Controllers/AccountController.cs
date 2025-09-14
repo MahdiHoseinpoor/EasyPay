@@ -3,6 +3,7 @@ using EasyPay.Application.Commands.AccountManagement.AccountEntity.CreateAccount
 using EasyPay.Application.Commands.AccountManagement.AccountEntity.DeleteAccount;
 using EasyPay.Application.Commands.AccountManagement.AccountEntity.UpdateAccount;
 using EasyPay.Application.Queries.AccountManagement.AccountEntity;
+using EasyPay.Shared.Models.AccountManagement;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -71,8 +72,14 @@ namespace EasyPay.Api.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateAccount([FromBody] CreateAccountCommand command)
+        public async Task<IActionResult> CreateAccount([FromBody] CreateAccountRequest request)
         {
+            var command = new CreateAccountCommand()
+            {
+                AccountTypeId = request.AccountTypeId,
+                Title = request.Titles
+
+            };
             var result = await _mediator.Send(command);
 
             return result.Match<ActionResult>(

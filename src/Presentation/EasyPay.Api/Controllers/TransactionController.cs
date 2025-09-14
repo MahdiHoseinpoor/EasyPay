@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using EasyPay.Application.Commands.Report.TransactionEntity.CreateTransaction;
 using EasyPay.Common.Errors.Business;
+using EasyPay.Shared.Models.Report;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -92,8 +93,15 @@ namespace EasyPay.Api.Controllers
         [ProducesResponseType(typeof(Error), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(Error), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(Error), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Transfer([FromBody] TransferMoneyCommand command)
+        public async Task<IActionResult> Transfer([FromBody] TransferMoneyRequest request)
         {
+            var command = new TransferMoneyCommand()
+            {
+                SourceAccountId = request.SourceAccountId,
+                Amount = request.Amount,
+                Description = request.Description,
+                DestinationAccountNumber = request.DestinationAccountNumber
+            };
             command.RequestMetadata = new TransactionRequestMetadata(
                 HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown",
                 HttpContext.Request.Headers["User-Agent"].ToString()
