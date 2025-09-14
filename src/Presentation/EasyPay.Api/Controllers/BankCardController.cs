@@ -1,4 +1,5 @@
-﻿using EasyPay.Application.Commands.AccountManagement.BankCardEntity.CreateBankCard;
+﻿using Asp.Versioning;
+using EasyPay.Application.Commands.AccountManagement.BankCardEntity.CreateBankCard;
 using EasyPay.Application.Commands.AccountManagement.BankCardEntity.DeleteBankCard;
 using EasyPay.Application.Commands.AccountManagement.BankCardEntity.UpdateBankCard;
 using EasyPay.Application.Queries.AccountManagement.BankCardEntity;
@@ -8,7 +9,8 @@ using System.Threading.Tasks;
 
 namespace EasyPay.Api.Controllers
 {
-    [Route("api/bank-cards")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/bank-cards")]
     [ApiController]
     public class BankCardController : ControllerBase
     {

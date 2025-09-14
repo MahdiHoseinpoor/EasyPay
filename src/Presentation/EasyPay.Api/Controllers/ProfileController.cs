@@ -1,10 +1,11 @@
-﻿using EasyPay.Application.Commands.Identity.AuthItemValueEntity.CreateAuthItemValue;
-using EasyPay.Shared.DTOs.Identity;
-using EasyPay.Shared.DTOs.Report;
+﻿using Asp.Versioning;
+using EasyPay.Application.Commands.Identity.AuthItemValueEntity.CreateAuthItemValue;
 using EasyPay.Application.Queries.AccountManagement.AccountEntity;
 using EasyPay.Application.Queries.Identity.AuthItemValueEntity;
 using EasyPay.Application.Queries.Report.TransactionEntity;
 using EasyPay.Common;
+using EasyPay.Shared.DTOs.Identity;
+using EasyPay.Shared.DTOs.Report;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,8 @@ using System.Threading.Tasks;
 
 namespace EasyPay.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [Authorize]
     public class ProfileController : ControllerBase

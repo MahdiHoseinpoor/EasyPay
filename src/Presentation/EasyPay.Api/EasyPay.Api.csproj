@@ -12,6 +12,8 @@
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
     <PackageReference Include="FluentValidation" Version="12.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.6" />
+    <PackageReference Include="Asp.Versioning.Mvc" Version="8.1.0" />
+    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.7" />
@@ -28,6 +30,7 @@
     <ProjectReference Include="..\..\Libraries\EasyPay.Common\EasyPay.Common.csproj" />
     <ProjectReference Include="..\..\Libraries\EasyPay.Domain\EasyPay.Domain.csproj" />
     <ProjectReference Include="..\..\Libraries\EasyPay.Infrastructure\EasyPay.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Libraries\EasyPay.Shared\EasyPay.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

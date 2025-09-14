@@ -1,4 +1,7 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using EasyPay.Api.Swagger;
+using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace EasyPay.Api.Extensions
 {
@@ -6,15 +9,11 @@ namespace EasyPay.Api.Extensions
     {
         public static IServiceCollection AddSwaggerDocumentation(this IServiceCollection services)
         {
+            services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+
             services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "EasyPay API",
-                    Version = "v1",
-                    Description = "The official API for the EasyPay Financial Platform."
-                });
-
+               
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     In = ParameterLocation.Header,

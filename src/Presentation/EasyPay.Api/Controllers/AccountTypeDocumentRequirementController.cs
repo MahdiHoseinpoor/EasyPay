@@ -1,4 +1,5 @@
-﻿using EasyPay.Application.Commands.AccountManagement.AccountTypeDocumentRequirementEntity.CreateAccountTypeDocumentRequirement;
+﻿using Asp.Versioning;
+using EasyPay.Application.Commands.AccountManagement.AccountTypeDocumentRequirementEntity.CreateAccountTypeDocumentRequirement;
 using EasyPay.Application.Commands.AccountManagement.AccountTypeDocumentRequirementEntity.DeleteAccountTypeDocumentRequirement;
 using EasyPay.Application.Common;
 using EasyPay.Application.Queries.AccountManagement.AccountTypeDocumentRequirementEntity;
@@ -9,7 +10,8 @@ using System.Threading.Tasks;
 
 namespace EasyPay.Api.Controllers
 {
-    [Route("api/account-types/{accountTypeId}/document-requirements")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/account-types/{accountTypeId}/document-requirements")]
     [ApiController]
     [Authorize(Roles = SystemRoles.SuperAdmin)]
     public class AccountTypeDocumentRequirementController : ControllerBase

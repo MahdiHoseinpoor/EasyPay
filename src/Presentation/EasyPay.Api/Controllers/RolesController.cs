@@ -1,4 +1,5 @@
-﻿using EasyPay.Application.Commands.Identity.RoleEntity.CreateRole;
+﻿using Asp.Versioning;
+using EasyPay.Application.Commands.Identity.RoleEntity.CreateRole;
 using EasyPay.Application.Commands.Identity.RoleEntity.UpdateRolePermissions;
 using EasyPay.Application.Common;
 using EasyPay.Application.Queries.Identity.RoleEntity;
@@ -9,7 +10,8 @@ using System.Threading.Tasks;
 
 namespace EasyPay.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [Authorize(Roles = SystemRoles.SuperAdmin)]
     public class RolesController : ControllerBase

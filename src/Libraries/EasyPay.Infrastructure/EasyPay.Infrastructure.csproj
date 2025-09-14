@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\EasyPay.Common\EasyPay.Common.csproj" />
     <ProjectReference Include="..\EasyPay.Domain\EasyPay.Domain.csproj" />
+    <ProjectReference Include="..\EasyPay.Shared\EasyPay.Shared.csproj" />
   </ItemGroup>
 
 </Project>

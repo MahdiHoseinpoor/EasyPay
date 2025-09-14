@@ -34,7 +34,7 @@ namespace EasyPay.Application.Commands.Report.TransactionEntity.CreateTransactio
             if (account.OwnerUserId != userId)
                 return Result<Guid>.Failure(new AuthorizationError("Forbidden: You do not have access to this account."));
 
-            if (account.Status != Domain.Enums.AccountManagement.AccountStatus.Active)
+            if (account.Status != Shared.Enums.AccountManagement.AccountStatus.Active)
                 return Result<Guid>.Failure(new AccountInactiveError(account.Status.ToString()));
 
             await _transactionRepository.BeginTransactionAsync();

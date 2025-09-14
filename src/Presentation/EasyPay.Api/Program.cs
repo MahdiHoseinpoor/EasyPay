@@ -1,8 +1,9 @@
+using Asp.Versioning;
 using EasyPay.Api.Extensions;
 using EasyPay.Api.Middleware;
 using EasyPay.Infrastructure.Data;
 using Serilog;
-
+const string BlazorAppCorsPolicy = "BlazorAppCorsPolicy";
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(new ConfigurationBuilder()
         .AddJsonFile("appsettings.json")
@@ -36,7 +37,17 @@ try
                                     .AllowAnyMethod();
                           });
     });
-
+    builder.Services.AddApiVersioning(options =>
+    {
+        options.DefaultApiVersion = new ApiVersion(1, 0);
+        options.AssumeDefaultVersionWhenUnspecified = true;
+        options.ReportApiVersions = true;
+        options.ApiVersionReader = new UrlSegmentApiVersionReader();
+    }).AddApiExplorer(options =>
+    {
+        options.GroupNameFormat = "'v'VVV";
+        options.SubstituteApiVersionInUrl = true;
+    });
     var app = builder.Build();
     app.UseSerilogRequestLogging();
 

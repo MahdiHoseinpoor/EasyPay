@@ -40,7 +40,7 @@ namespace EasyPay.Application.Commands.Identity.AuthItemValueEntity.CreateAuthIt
             var newAuthItemValue = new AuthItemValue(request.AuthItemId, userId, request.Value)
             {
                 ExtraInfo = request.ExtraInfo,
-                Status = Domain.Enums.Identity.VerificationStatus.Pending,
+                Status = Shared.Enums.Identity.VerificationStatus.Pending,
                 UploadDate = DateTime.UtcNow,
                 LastStatusChangeDate = DateTime.UtcNow,
                 Version = newVersion,

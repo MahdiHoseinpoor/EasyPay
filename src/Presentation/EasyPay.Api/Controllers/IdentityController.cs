@@ -1,7 +1,8 @@
-﻿using EasyPay.Application.Commands.Identity.VerifyPasswordCommand;
+﻿using Asp.Versioning;
+using EasyPay.Application.Commands.Identity.AuthenticateWithPhone;
 using EasyPay.Application.Commands.Identity.NaturalUserEntity.CreateNaturalUser;
 using EasyPay.Application.Commands.Identity.NaturalUserRegisterPhoneCommand;
-using EasyPay.Application.Commands.Identity.AuthenticateWithPhone;
+using EasyPay.Application.Commands.Identity.VerifyPasswordCommand;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,8 @@ using System.Threading.Tasks;
 
 namespace EasyPay.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class IdentityController : ControllerBase
     {

@@ -1,4 +1,5 @@
-﻿using EasyPay.Application.Commands.Report.TransactionEntity.CreateTransaction;
+﻿using Asp.Versioning;
+using EasyPay.Application.Commands.Report.TransactionEntity.CreateTransaction;
 using EasyPay.Common.Errors.Business;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -7,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace EasyPay.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [Authorize]
     public class TransactionController : ControllerBase

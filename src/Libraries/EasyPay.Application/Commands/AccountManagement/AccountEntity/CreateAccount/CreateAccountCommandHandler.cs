@@ -68,7 +68,7 @@ namespace EasyPay.Application.Commands.AccountManagement.AccountEntity.CreateAcc
 
                 foreach (var requirement in requirements)
                 {
-                    if (!authItemValues.Any(p => p.AuthItemId == requirement.AuthItemId && p.Status == Domain.Enums.Identity.VerificationStatus.Approved))
+                    if (!authItemValues.Any(p => p.AuthItemId == requirement.AuthItemId && p.Status == Shared.Enums.Identity.VerificationStatus.Approved))
                     {
                         var authItem = await _authItemRepository.GetByIdAsync(requirement.AuthItemId);
                         if (authItem != null)

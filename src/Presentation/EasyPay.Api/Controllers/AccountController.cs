@@ -1,4 +1,5 @@
-﻿using EasyPay.Application.Commands.AccountManagement.AccountEntity.CreateAccount;
+﻿using Asp.Versioning;
+using EasyPay.Application.Commands.AccountManagement.AccountEntity.CreateAccount;
 using EasyPay.Application.Commands.AccountManagement.AccountEntity.DeleteAccount;
 using EasyPay.Application.Commands.AccountManagement.AccountEntity.UpdateAccount;
 using EasyPay.Application.Queries.AccountManagement.AccountEntity;
@@ -10,7 +11,8 @@ using System.Threading.Tasks;
 
 namespace EasyPay.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [Authorize]
     public class AccountController : ControllerBase
