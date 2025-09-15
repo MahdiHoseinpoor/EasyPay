@@ -1,0 +1,97 @@
+﻿/*
+ *  EasyPay - Blazor Loading Progress Indicator Styles
+ *  CORRECTED VERSION: Styles are now fully isolated and will not conflict with app.css.
+ */
+
+/* 
+ * 1. Loader Container - This is the key change.
+ * We use position: fixed to remove the loader from the document flow and center it 
+ * perfectly on the screen without affecting the #app container.
+ */
+.blazor-loading-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* This perfectly centers the element */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem; /* Space between spinner and text */
+    z-index: 9999; /* Ensure it's on top of everything */
+}
+
+/* 
+ * 2. The Neon Spinner (No Changes)
+ * A div styled to be a circle with a glowing, rotating border.
+ */
+.blazor-loader {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    /* The faint "track" for the spinner */
+    border: 4px solid rgba(0, 255, 224, 0.2);
+    /* The active, bright part of the spinner */
+    border-top-color: var(--primary-glow);
+    /* The neon glow effect */
+    box-shadow: 0 0 15px rgba(0, 255, 224, 0.5);
+    /* The rotation animation */
+    animation: blazor-loader-spin 1s linear infinite;
+}
+
+/* 
+ * 3. The Loading Text (No Changes)
+ * Styled to match the app's heading font with a subtle pulse.
+ */
+.blazor-loader-text {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+    animation: blazor-loader-pulse 1.8s infinite ease-in-out;
+}
+
+
+/* 
+ * 4. Keyframe Animations (No Changes)
+ */
+
+/* Spinner rotation animation */
+@keyframes blazor-loader-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Text pulsing animation for a dynamic feel */
+@keyframes blazor-loader-pulse {
+    0%, 100% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/*
+ * Styles for Blazor's error UI to match the dark theme.
+ */
+#blazor-error-ui {
+    background: rgba(40, 0, 0, 0.85); /* Dark red, semi-transparent */
+    color: var(--text-primary);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    border-top: 2px solid var(--error-color);
+    z-index: 10000;
+}
+
+    #blazor-error-ui a {
+        color: var(--primary-glow);
+    }
