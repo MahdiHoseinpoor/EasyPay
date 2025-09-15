@@ -62,7 +62,7 @@ namespace EasyPay.Application.Commands.Identity.NaturalUserEntity.CreateNaturalU
             {
                 return Result.Failure(new Error(500, "Failed to update user profile."));
             }
-
+            var applyRoleResult = await _userManager.AddToRoleAsync(user, SystemRoles.BasicUser);
             return Result.Success();
         }
     }

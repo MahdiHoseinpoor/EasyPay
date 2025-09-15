@@ -53,7 +53,7 @@ namespace EasyPay.Application.Commands.Identity.AuthenticateWithPhone
                     return Result<AuthenticateWithPhoneResponse>.Failure(
                         new Error(500, $"User creation failed: {errors}"));
                 }
-
+                
                 var token = await _tokenService.GenerateToken(newUser);
                 var response = new AuthenticateWithPhoneResponse(PhoneAuthenticationStatus.NeedsRegistration, request.Phone, token.Token);
                 return Result<AuthenticateWithPhoneResponse>.Success(response);

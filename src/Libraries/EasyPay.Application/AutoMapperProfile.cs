@@ -52,6 +52,7 @@ namespace EasyPay.Application
             CreateMap<BankCard, BankCardDto>()
                 .ForMember(dest => dest.CardNumber, opt => opt.MapFrom(src => MaskCardNumber(src.CardNumber)));
             CreateMap<Transaction, TransactionDto>();
+            CreateMap<AuthItem, AuthItemDto>();
             CreateMap<AuthItemValue, AuthItemValueDto>()
                 .ForMember(dest => dest.AuthItemTitle, opt => opt.MapFrom(src => src.AuthItem != null ? src.AuthItem.Title : "Unknown"));
             CreateMap<AccountTypeDocumentRequirement, AccountTypeDocumentRequirementDto>()

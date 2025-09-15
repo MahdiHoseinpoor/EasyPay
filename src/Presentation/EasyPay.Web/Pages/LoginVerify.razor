@@ -10,36 +10,30 @@
 
 <PageTitle>Verify Code</PageTitle>
 
-<h2 class="text-center mb-1">Verify Code</h2>
-<p class="text-center text-secondary mb-4">A 6-digit code was sent to <strong class="text-light">@AuthState.PhoneNumber</strong>.</p>
 
-@if (!string.IsNullOrEmpty(errorMessage))
-{
-    <div class="alert alert-danger" style="background-color: rgba(255, 82, 82, 0.15); border-color: var(--error-color); color: var(--text-primary);">@errorMessage</div>
-}
-
-<EditForm Model="@Model" OnValidSubmit="HandleSubmit">
-    <DataAnnotationsValidator />
-
-    <div class="mb-3">
-        <label for="code" class="form-label">Verification Code</label>
-        <InputText id="code" @bind-Value="Model.Code" class="form-control-cyber text-center" placeholder="_ _ _ _ _ _" />
-        <ValidationMessage For="@(() => Model.Code)" />
-    </div>
-
-    <div class="d-grid mt-4">
-        <button type="submit" class="btn btn-glow" disabled="@isSubmitting">
-            @if (isSubmitting)
-            {
-                <span class="spinner-border spinner-border-sm"></span>
-            }
-            else
-            {
-                <span>Verify & Continue</span>
-            }
-        </button>
-    </div>
-</EditForm>
+<div id="enter-code-state">
+    <h2 class="text-center mb-1">Verify Code</h2>
+    <p class="text-center text-secondary mb-4">A 6-digit code was sent to <strong id="user-mobile-display" class="text-light">@AuthState.PhoneNumber</strong>. <a href="#" id="change-number-link" class="btn-link-cyber">Change</a></p>
+    <EditForm Model="@Model" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+        <div class="mb-3">
+            <InputText id="code" @bind-Value="Model.Code" class="form-control form-control-cyber text-center" placeholder="_ _ _ _ _" />
+            <div id="code-error" class="text-danger mt-2" style="font-size: 0.875rem; display: none;">Invalid verification code.</div>
+        </div>
+        <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-glow" disabled="@isSubmitting">
+                @if (isSubmitting)
+                {
+                    <span class="spinner-border spinner-border-sm"></span>
+                }
+                else
+                {
+                    <span>Verify & Continue</span>
+                }
+            </button>
+        </div>
+    </EditForm>
+</div>
 
 @code {
     // C# code remains the same
@@ -73,12 +67,14 @@
         switch (response.Status)
         {
             case PhoneAuthenticationStatus.LoggedIn:
+                Console.WriteLine("login");
                 NavigationManager.NavigateTo("/");
                 break;
             case PhoneAuthenticationStatus.NeedsPassword:
                 NavigationManager.NavigateTo("/login-password");
                 break;
             case PhoneAuthenticationStatus.NeedsRegistration:
+                Console.WriteLine("register-need");
                 NavigationManager.NavigateTo("/complete-profile");
                 break;
             default:

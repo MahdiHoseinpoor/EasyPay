@@ -36,7 +36,10 @@ public static class ApiEndpoints
     {
         public const string PayMobileBill = $"{Base}/mobile-bill";
     }
-
+    public static class AuthItems
+    {
+        public const string GetAll = $"{Base}/auth-items";
+    }
     public static class Profile
     {
         public const string MyAccounts = $"{Base}/profile/accounts";

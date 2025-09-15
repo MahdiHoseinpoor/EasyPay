@@ -44,5 +44,12 @@
             public const string Edit = "Permissions.Bills.Edit";
             public const string Delete = "Permissions.Bills.Delete";
         }
+        public static class AuthItem
+        {
+            public const string View = "Permissions.AuthItem.View";
+            public const string Create = "Permissions.AuthItem.Create";
+            public const string Edit = "Permissions.AuthItem.Edit";
+            public const string Delete = "Permissions.AuthItem.Delete";
+        }
     }
 }

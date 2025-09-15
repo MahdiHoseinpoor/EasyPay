@@ -72,15 +72,7 @@ namespace EasyPay.Api.Controllers
         {
             var query = new GetMyTransactionHistoryQuery { AccountId = accountId, PageIndex = pageIndex, PageSize = pageSize };
             var result = await _mediator.Send(query);
-            return result.Match<ActionResult>(
-                Ok,
-                failure => failure switch
-                {
-                    NotFoundError => NotFound(failure),
-                    { code: 403 } => Forbid(),
-                    _ => BadRequest(failure)
-                }
-            );
+            return Ok(result);
         }
 
         /// <summary>

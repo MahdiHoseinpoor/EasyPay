@@ -158,7 +158,9 @@ namespace EasyPay.Infrastructure.Data
             Permissions.Bills.View,
             Permissions.Bills.Create,
             Permissions.Bills.Edit,
-            Permissions.Bills.Delete
+            Permissions.Bills.Delete,
+
+            Permissions.AuthItem.View
         };
 
                 var currentBasicClaims = await roleManager.GetClaimsAsync(basicUserRole);
@@ -192,7 +194,7 @@ namespace EasyPay.Infrastructure.Data
                     FirstName = "Super",
                     LastName = "Admin",
                     EmailConfirmed = true,
-                    PhoneNumber = "09000000000",
+                    PhoneNumber = "+989000000000",
                     PhoneNumberConfirmed = true,
                     IsActive = true,
                     CurrentStep = RegistrationStep.Completed,
@@ -210,12 +212,12 @@ namespace EasyPay.Infrastructure.Data
             }
 
             // Seed Basic User 1 (Fully registered)
-            if (await userManager.FindByNameAsync("09123456789") == null)
+            if (await userManager.FindByNameAsync("+989123456789") == null)
             {
                 var basicUser1 = new NaturalUser
                 {
-                    UserName = "09123456789",
-                    PhoneNumber = "09123456789",
+                    UserName = "+989123456789",
+                    PhoneNumber = "+989123456789",
                     PhoneNumberConfirmed = true,
                     FirstName = "John",
                     LastName = "Doe",

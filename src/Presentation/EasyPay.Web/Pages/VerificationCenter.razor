@@ -7,6 +7,7 @@
 @using static Shared.AuthItemCard 
 
 @inject IProfileService ProfileService
+@inject IAuthItemsService AuthItemsService
 
 <PageTitle>Verification Center</PageTitle>
 
@@ -89,7 +90,7 @@ else
 
 @code {
     private bool isLoading = true;
-    private List<UserAuthItemStatusDto> authItems;
+    private List<UserAuthItemStatusViewModel> authItems;
 
     private int completedItems = 0;
     private int totalItems = 0;
@@ -99,28 +100,27 @@ else
     protected override async Task OnInitializedAsync()
     {
         var submittedDocs = await ProfileService.GetMySubmittedDocuments() ?? new List<AuthItemValueDto>();
-        
-        var allPossibleAuthItems = new List<UserAuthItemStatusDto>
-        {
-            new() { Title = "Phone Number", Description = "Your primary contact number for alerts and verification.", ActionLink = "#", ActionText = "Verify Number" },
-            new() { Title = "ID Document", Description = "Upload a government-issued photo ID to verify your identity.", ActionLink = "/profile", ActionText = "Upload ID Now" },
-            new() { Title = "Address Confirmation", Description = "Submit a utility bill or bank statement to confirm your address.", ActionLink = "/profile", ActionText = "Upload Document" },
-            new() { Title = "Two-Factor Authentication (2FA)", Description = "Add a critical layer of security to protect your account.", ActionLink = "/settings/security", ActionText = "Enable 2FA" }
-        };
+
+        var allPossibleAuthItems = await AuthItemsService.getAllAuthItems() ?? new List<AuthItemDto>();
 
         authItems = allPossibleAuthItems.Select(possibleItem => 
         {
+            var userAuthItemStatusViewModel = new UserAuthItemStatusViewModel()
+            {
+                Title = possibleItem.Title,
+                Description = possibleItem.Description
+            };
             var submittedVersion = submittedDocs.FirstOrDefault(s => s.AuthItemTitle.Equals(possibleItem.Title, StringComparison.OrdinalIgnoreCase));
             if (submittedVersion != null)
             {
-                possibleItem.Status = submittedVersion.Status;
-                possibleItem.LastStatusChangeDate = submittedVersion.VerificationDate;
+                userAuthItemStatusViewModel.Status = submittedVersion.Status;
+                userAuthItemStatusViewModel.LastStatusChangeDate = submittedVersion.VerificationDate;
             }
             else
             {
-                possibleItem.Status = VerificationStatus.Missing; 
+                userAuthItemStatusViewModel.Status = VerificationStatus.Missing;
             }
-            return possibleItem;
+            return userAuthItemStatusViewModel;
         }).ToList();
         
         CalculateProgress();

@@ -25,7 +25,7 @@
 
 @code {
     [Parameter, EditorRequired]
-    public UserAuthItemStatusDto Item { get; set; }
+    public UserAuthItemStatusViewModel Item { get; set; }
 
     private string IconClass => Item.Status switch
     {
@@ -55,7 +55,7 @@
         VerificationStatus.Rejected => "Rejected",
         _ => "Action Required"
     };
-    public class UserAuthItemStatusDto
+    public class UserAuthItemStatusViewModel
     {
         public string Title { get; set; }
         public string Description { get; set; }
