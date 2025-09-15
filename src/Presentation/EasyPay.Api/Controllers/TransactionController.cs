@@ -119,5 +119,41 @@ namespace EasyPay.Api.Controllers
                 }
             );
         }
+
+
+        /// <summary>
+        /// Withdraws money from a user's account to a saved bank card.
+        /// </summary>
+        /// <param name="request">The withdrawal details.</param>
+        /// <returns>The ID of the created transaction record.</returns>
+        [HttpPost("withdraw-to-card")]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(Error), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> WithdrawToBankCard([FromBody] WithdrawToBankCardRequest request)
+        {
+            var command = new WithdrawToBankCardCommand
+            {
+                AccountId = request.AccountId,
+                DestinationBankCardId = request.DestinationBankCardId,
+                Amount = request.Amount,
+                Description = request.Description,
+                RequestMetadata = new TransactionRequestMetadata(
+                    HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown",
+                    HttpContext.Request.Headers["User-Agent"].ToString()
+                )
+            };
+
+            var result = await _mediator.Send(command);
+
+            return result.Match<ActionResult>(
+                transactionId => CreatedAtAction(null, new { id = transactionId }, transactionId),
+                failure => failure switch
+                {
+                    NotFoundError => NotFound(failure),
+                    AuthorizationError => Forbid(),
+                    _ => BadRequest(failure)
+                }
+            );
+        }
     }
 }

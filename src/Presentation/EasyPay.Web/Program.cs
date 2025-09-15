@@ -20,6 +20,7 @@ builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IBillService, BillService>();
 builder.Services.AddScoped<IAuthItemsService, AuthItemsService>();
+builder.Services.AddScoped<IBankCardService, BankCardService>();
 builder.Services.AddSingleton<AuthState>();
 
 var app = builder.Build();

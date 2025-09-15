@@ -1,9 +1,11 @@
 ﻿using Asp.Versioning;
 using EasyPay.Application.Commands.Identity.AuthItemValueEntity.CreateAuthItemValue;
 using EasyPay.Application.Queries.AccountManagement.AccountEntity;
+using EasyPay.Application.Queries.AccountManagement.BankCardEntity;
 using EasyPay.Application.Queries.Identity.AuthItemValueEntity;
 using EasyPay.Application.Queries.Report.TransactionEntity;
 using EasyPay.Common;
+using EasyPay.Shared.DTOs.AccountManagement;
 using EasyPay.Shared.DTOs.Identity;
 using EasyPay.Shared.DTOs.Report;
 using MediatR;
@@ -83,6 +85,18 @@ namespace EasyPay.Api.Controllers
         public async Task<IActionResult> GetMySubmittedDocuments()
         {
             var query = new GetMySubmittedDocumentsQuery();
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Gets all bank cards owned by the current authenticated user.
+        /// </summary>
+        [HttpGet("bank-cards")]
+        [ProducesResponseType(typeof(List<BankCardDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetMyBankCards()
+        {
+            var query = new GetMyBankCardsQuery();
             var result = await _mediator.Send(query);
             return Ok(result);
         }

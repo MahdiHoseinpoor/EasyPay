@@ -1,4 +1,5 @@
-﻿using EasyPay.Shared.Enums.Identity;
+﻿using EasyPay.Domain.Entities.AccountManagement;
+using EasyPay.Shared.Enums.Identity;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -25,5 +26,6 @@ namespace EasyPay.Domain.Entities.Identity
 
         public string? EducationLevel { get; set; }
 
+        public virtual ICollection<BankCard> BankCards { get; set; }
     }
 }

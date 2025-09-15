@@ -18,6 +18,11 @@ namespace EasyPay.Infrastructure.Configurations.AccountManagement
                 .HasMaxLength(16);
             builder.Property(p => p.InternationalBankAccountNumber)
                 .HasMaxLength(34);
+
+            builder.HasOne(p => p.OwnerUser)
+              .WithMany(p => p.BankCards)
+              .HasForeignKey(p => p.OwnerUserId)
+              .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

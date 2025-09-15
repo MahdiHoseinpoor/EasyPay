@@ -1,0 +1,50 @@
+﻿.form-control-cyber, .form-select-cyber {
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-glass);
+    color: var(--text-primary);
+}
+
+    .form-control-cyber:focus, .form-select-cyber:focus {
+        border-color: var(--primary-glow);
+        box-shadow: 0 0 10px -2px var(--primary-glow);
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+
+.transaction-header {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    padding: 0.75rem 1.5rem;
+    border-bottom: 2px solid var(--border-glass);
+}
+
+.transaction-row {
+    border-bottom: 1px solid var(--border-glass);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    padding: 1rem 1.5rem;
+}
+
+    .transaction-row:last-child {
+        border-bottom: none;
+    }
+
+    .transaction-row:hover {
+        background-color: rgba(0, 255, 224, 0.05);
+    }
+
+.modal-content {
+    border-radius: 16px;
+    border: 1px solid var(--border-glass);
+}
+
+.modal-header, .modal-footer {
+    border-color: var(--border-glass);
+}
+
+dt {
+    color: var(--text-secondary);
+}
+
+dd {
+    color: var(--text-primary);
+}

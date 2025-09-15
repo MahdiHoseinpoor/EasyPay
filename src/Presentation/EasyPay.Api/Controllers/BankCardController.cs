@@ -83,14 +83,9 @@ namespace EasyPay.Api.Controllers
             );
         }
 
-        /// <summary>
-        /// Deletes a bank card by its ID.
-        /// </summary>
-        /// <param name="id">The ID of the bank card to delete.</param>
-        /// <param name="isHardDelete">Flag for performing a hard delete (requires permissions).</param>
-        /// <returns>An HTTP status code indicating the result.</returns>
-        [HttpDelete("{id}")]
+ [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteBankCard(int id, [FromQuery] bool isHardDelete = false)
         {
@@ -99,7 +94,12 @@ namespace EasyPay.Api.Controllers
 
             return result.Match<ActionResult>(
                 () => NoContent(),
-                failure => failure is NotFoundError ? NotFound(failure) : BadRequest(failure)
+                failure => failure switch
+                {
+                    NotFoundError => NotFound(failure),
+                    { code: 403 } => Forbid(),
+                    _ => BadRequest(failure)
+                }
             );
         }
     }

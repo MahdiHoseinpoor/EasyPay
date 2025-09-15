@@ -1,0 +1,34 @@
+﻿.form-control-cyber {
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-glass);
+    color: var(--text-primary);
+}
+
+    .form-control-cyber:focus {
+        background-color: rgba(0, 0, 0, 0.3);
+        border-color: var(--primary-glow);
+        box-shadow: 0 0 10px -2px var(--primary-glow);
+    }
+
+.input-group-text {
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-glass);
+    color: var(--text-secondary);
+    border-right: 0;
+}
+
+.saved-card {
+    border: 1px solid var(--border-glass);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+    .saved-card:hover {
+        border-color: var(--text-secondary);
+    }
+
+    .saved-card.selected {
+        border-color: var(--primary-glow);
+        box-shadow: 0 0 10px -2px var(--primary-glow);
+    }

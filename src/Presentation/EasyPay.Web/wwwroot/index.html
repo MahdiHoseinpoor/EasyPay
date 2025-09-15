@@ -33,6 +33,15 @@
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
     <script>navigator.serviceWorker.register('service-worker.js');</script>
+    <script>
+        window.showModal = (id) => {
+            const modalElement = document.getElementById(id);
+            if (modalElement) {
+                const modal = new bootstrap.Modal(modalElement);
+                modal.show();
+            }
+        };
+    </script>
 </body>
 
 </html>

@@ -1,0 +1,315 @@
+﻿@page "/history"
+@attribute [Authorize]
+
+@using EasyPay.Shared.DTOs.AccountManagement
+@using EasyPay.Shared.DTOs.Report
+@using EasyPay.Shared.Enums.Report
+@using EasyPay.Web.Services
+@inject IProfileService ProfileService
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Transaction History</PageTitle>
+
+@if (isLoading)
+{
+    <div class="text-center mt-5">
+        <div class="spinner-border" style="width: 3rem; height: 3rem; color: var(--primary-glow);" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-3 text-secondary">Loading your transaction history...</p>
+    </div>
+}
+else
+{
+    <h1 class="h2 mb-4">Transaction History</h1>
+
+    <!-- Filter Panel -->
+    <div class="glass-panel p-3 mb-4">
+        <div class="row g-2 align-items-end">
+            <div class="col-lg-3">
+                <label class="form-label small">Search Description</label>
+                <input type="text" class="form-control form-control-cyber" placeholder="e.g., Coffee Shop..." @bind="filterModel.SearchTerm" @bind:event="oninput" />
+            </div>
+            <div class="col-lg-3">
+                <label class="form-label small">Account</label>
+                <select class="form-select form-select-cyber" @bind="filterModel.SelectedAccountId">
+                    <option value="all">All Accounts</option>
+                    @if (myAccounts is not null)
+                    {
+                        @foreach (var account in myAccounts)
+                        {
+                            <option value="@account.Id">@account.Title (@account.AccountNumber)</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-lg-2">
+                <label class="form-label small">Type</label>
+                <select class="form-select form-select-cyber" @bind="filterModel.TransactionType">
+                    <option value="all">All</option>
+                    <option value="incoming">Incoming</option>
+                    <option value="outgoing">Outgoing</option>
+                </select>
+            </div>
+            <div class="col-lg-2">
+                <label class="form-label small">Date Range</label>
+                <select class="form-select form-select-cyber" @bind="filterModel.DateRange">
+                    <option value="0">All Time</option>
+                    <option value="7">Last 7 Days</option>
+                    <option value="30">Last 30 Days</option>
+                    <option value="90">Last 90 Days</option>
+                </select>
+            </div>
+            <div class="col-lg-2">
+                <button class="btn btn-outline-light w-100"><i class="bi bi-download me-2"></i>Export</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction List Panel -->
+    <div class="glass-panel">
+        <div class="transaction-header row d-none d-lg-flex">
+            <div class="col-lg-3">DATE</div>
+            <div class="col-lg-4">DESCRIPTION</div>
+            <div class="col-lg-3">ACCOUNT</div>
+            <div class="col-lg-2 text-end">AMOUNT(USD)</div>
+        </div>
+
+        @if (!filteredTransactions.Any())
+        {
+            <div class="p-5 text-center text-secondary">
+                <i class="bi bi-search fs-1"></i>
+                <h4 class="mt-3">No Transactions Found</h4>
+                <p>Try adjusting your search filters.</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var tx in filteredTransactions)
+            {
+                var (icon, color, amountSign) = GetTransactionTypeDetails(tx.TransactionType);
+                <div class="transaction-row p-3" @onclick="() => ShowDetails(tx)">
+                    <div class="row align-items-center">
+                        <div class="col-6 col-lg-3">
+                            @tx.TransactionDate.ToString("MMM dd, yyyy")
+                        </div>
+                        <div class="col-6 col-lg-4 text-end text-lg-start">
+                            <div class="fw-bold">@tx.Description</div>
+                            <small class="text-secondary d-lg-none">@GetAccountTitle(tx.Id)</small>
+                        </div>
+                        <div class="col-lg-3 d-none d-lg-block text-secondary">@GetAccountTitle(tx.Id)</div>
+                        <div class="col-12 col-lg-2 text-end fw-bold mt-1 mt-lg-0" style="color: @color;">
+                            @amountSign @tx.Amount.ToString("N2")
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+
+        @if (canLoadMore)
+        {
+            <div class="p-3 text-center">
+                <button class="btn btn-outline-secondary" @onclick="LoadMore" disabled="@isMoreLoading">
+                    @if (isMoreLoading)
+                    {
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span class="ms-2">Loading...</span>
+                    }
+                    else
+                    {
+                        <span>Load More</span>
+                    }
+                </button>
+            </div>
+        }
+    </div>
+}
+
+
+<!-- Transaction Detail Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-panel">
+            @if (selectedTransaction is not null)
+            {
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detailsModalLabel">Transaction Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <dl class="row">
+                        <dt class="col-sm-5">Amount</dt>
+                        <dd class="col-sm-7 fs-5 fw-bold" style="color: @GetTransactionTypeDetails(selectedTransaction.TransactionType).Color;">
+                            @GetTransactionTypeDetails(selectedTransaction.TransactionType).AmountSign @selectedTransaction.Amount.ToString("N2")
+                        </dd>
+
+                        <dt class="col-sm-5">Description</dt>
+                        <dd class="col-sm-7">@selectedTransaction.Description</dd>
+
+                        <dt class="col-sm-5">Date & Time</dt>
+                        <dd class="col-sm-7">@selectedTransaction.TransactionDate.ToString("f")</dd>
+
+                        <dt class="col-sm-5">Account</dt>
+                        <dd class="col-sm-7">@GetAccountTitle(selectedTransaction.Id)</dd>
+
+                        <dt class="col-sm-5">Status</dt>
+                        <dd class="col-sm-7"><span class="badge" style="background-color: var(--success-color);">@selectedTransaction.Status</span></dd>
+
+                        <dt class="col-sm-5">Transaction ID</dt>
+                        <dd class="col-sm-7 text-secondary"><small>@selectedTransaction.Id</small></dd>
+
+                        <dt class="col-sm-5">Reference ID</dt>
+                        <dd class="col-sm-7 text-secondary"><small>@selectedTransaction.ReferenceId</small></dd>
+                    </dl>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool isLoading = true;
+    private bool isMoreLoading = false;
+    private bool canLoadMore = true;
+    private int currentPage = 0;
+    private const int PageSize = 10;
+
+    private List<AccountDto> myAccounts = new();
+    private List<TransactionDto> allTransactions = new();
+    private List<TransactionDto> filteredTransactions = new();
+    private TransactionDto? selectedTransaction;
+    private TransactionFilterModel filterModel = new();
+    private System.Threading.Timer? searchDebounceTimer;
+
+    private Dictionary<Guid, string> accountIdToTitleMap = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        myAccounts = await ProfileService.GetMyAccounts();
+        if (myAccounts.Any())
+        {
+            accountIdToTitleMap = myAccounts.ToDictionary(a => a.Id, a => a.Title);
+            filterModel.SelectedAccountId = myAccounts.First().Id.ToString();
+
+            await LoadTransactionsForAccount(myAccounts.First().Id);
+        }
+        isLoading = false;
+
+        searchDebounceTimer = new System.Threading.Timer(OnSearchTimerElapsed, null, Timeout.Infinite, Timeout.Infinite);
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        ApplyFilters();
+    }
+
+    private async void OnSearchTimerElapsed(object? state)
+    {
+        await InvokeAsync(ApplyFilters);
+    }
+
+    private void OnSearchInput(ChangeEventArgs e)
+    {
+        filterModel.SearchTerm = e.Value?.ToString() ?? string.Empty;
+        searchDebounceTimer?.Change(500, Timeout.Infinite);
+    }
+
+
+    private async Task LoadTransactionsForAccount(Guid accountId)
+    {
+        var pagedResult = await ProfileService.GetTransactionHistory(accountId, 0, 50); 
+        if (pagedResult != null)
+        {
+            allTransactions = pagedResult.Items.ToList();
+            ApplyFilters();
+        }
+    }
+
+    private void ApplyFilters()
+    {
+        IEnumerable<TransactionDto> query = allTransactions;
+
+
+        if (filterModel.SelectedAccountId != "all" && Guid.TryParse(filterModel.SelectedAccountId, out var accountId))
+        {
+
+        }
+
+        if (!string.IsNullOrWhiteSpace(filterModel.SearchTerm))
+        {
+            query = query.Where(t => t.Description.Contains(filterModel.SearchTerm, StringComparison.OrdinalIgnoreCase));
+        }
+        if (filterModel.TransactionType != "all")
+        {
+            bool isIncoming = filterModel.TransactionType == "incoming";
+            query = query.Where(t =>
+                isIncoming ?
+                (t.TransactionType == TransactionType.Deposit || t.TransactionType == TransactionType.TransferIn) :
+                (t.TransactionType == TransactionType.Withdrawal || t.TransactionType == TransactionType.TransferOut || t.TransactionType == TransactionType.BillPayment)
+            );
+        }
+        if (filterModel.DateRange > 0)
+        {
+            var dateLimit = DateTime.Now.AddDays(-filterModel.DateRange);
+            query = query.Where(t => t.TransactionDate >= dateLimit);
+        }
+
+        filteredTransactions = query.OrderByDescending(t => t.TransactionDate).ToList();
+
+        InvokeAsync(StateHasChanged);
+    }
+
+
+    private async Task LoadMore()
+    {
+        if (filterModel.SelectedAccountId == "all") return;
+
+        isMoreLoading = true;
+        currentPage++;
+
+        var pagedResult = await ProfileService.GetTransactionHistory(Guid.Parse(filterModel.SelectedAccountId), currentPage, PageSize);
+        if (pagedResult != null && pagedResult.Items.Any())
+        {
+            allTransactions.AddRange(pagedResult.Items);
+            ApplyFilters();
+            canLoadMore = !pagedResult.HasNextPage;
+        }
+        else
+        {
+            canLoadMore = false;
+        }
+        isMoreLoading = false;
+    }
+
+    private async Task ShowDetails(TransactionDto tx)
+    {
+        selectedTransaction = tx;
+        await JSRuntime.InvokeVoidAsync("showModal", "detailsModal");
+    }
+
+    private string GetAccountTitle(Guid txId)
+    {
+        var tx = allTransactions.FirstOrDefault(t => t.Id == txId);
+        if (tx != null && myAccounts.FirstOrDefault(a => a.Id == tx.Id) != null)
+        {
+            // return accountIdToTitleMap.GetValueOrDefault(tx.AccountId, "Unknown Account");
+        }
+        return "Personal Savings";
+    }
+
+    private (string Icon, string Color, string AmountSign) GetTransactionTypeDetails(TransactionType type)
+    {
+        return type switch
+        {
+            TransactionType.Deposit or TransactionType.TransferIn => ("bi bi-arrow-down-circle-fill", "var(--success-color)", "+"),
+            TransactionType.Withdrawal or TransactionType.TransferOut or TransactionType.BillPayment => ("bi bi-arrow-up-circle-fill", "var(--text-primary)", "-"),
+            _ => ("bi bi-receipt-cutoff", "var(--text-primary)", "-")
+        };
+    }
+    private class TransactionFilterModel
+    {
+        public string SearchTerm { get; set; } = string.Empty;
+        public string SelectedAccountId { get; set; } = "all";
+        public string TransactionType { get; set; } = "all";
+        public int DateRange { get; set; }
+    }
+}

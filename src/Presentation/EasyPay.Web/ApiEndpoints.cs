@@ -17,7 +17,14 @@ public static class ApiEndpoints
         public const string GetAll = $"{Base}/account-types";
         public static string GetRequirements(int accountTypeId) => $"{GetAll}/{accountTypeId}/document-requirements";
     }
-
+    public static class BankCards
+    {
+        public const string GetAll = $"{Base}/bank-cards";
+        public static string GetById(int cardId) => $"{GetAll}/{cardId}";
+        public const string Create = $"{Base}/bank-cards";
+        public static string Update(int cardId) => $"{GetAll}/{cardId}";
+        public static string Delete(int cardId) => $"{GetAll}/{cardId}";
+    }
     public static class Accounts
     {
         public const string GetAll = $"{Base}/accounts";
@@ -30,6 +37,7 @@ public static class ApiEndpoints
     public static class Transaction
     {
         public const string Transfer = $"{Base}/transaction/transfer";
+        public const string WithdrawToBankCard = $"{Base}/transaction/withdraw-to-card";
     }
 
     public static class Bills
@@ -43,6 +51,7 @@ public static class ApiEndpoints
     public static class Profile
     {
         public const string MyAccounts = $"{Base}/profile/accounts";
+        public const string MyBankCards = $"{Base}/profile/bank-cards";
         public static string MyTransactionHistory(Guid accountId) => $"{MyAccounts}/{accountId}/transactions";
         public const string MySubmittedDocuments = $"{Base}/profile/auth-item-values";
     }

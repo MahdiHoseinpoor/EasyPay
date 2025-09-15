@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EasyPay.Domain.Entities.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,8 @@ namespace EasyPay.Domain.Entities.AccountManagement
 {
     public class BankCard:EntityBase<int>
     {
+        public string OwnerUserId { get; set; }
+        public virtual NaturalUser OwnerUser { get; set; }
         public string Title { get; set; }
         public string CardNumber { get; set; }
         public string AccountNumber { get; set; }
