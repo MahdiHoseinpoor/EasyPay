@@ -1,5 +1,6 @@
 ﻿using EasyPay.Common;
 using EasyPay.Domain.Entities.Payment;
+using EasyPay.Shared.Enums.Payment;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -17,7 +18,12 @@ namespace EasyPay.Infrastructure.Configurations.Payment
             builder.Property(p => p.Amount)
                 .IsRequired()
                 .HasColumnType(SqlColumnTypes.Decimal());
-
+            builder.Property(p => p.Status)
+                .HasConversion(
+                    v => v.ToString(),
+                    v => (BillStatus)Enum.Parse(typeof(BillStatus), v))
+                .HasMaxLength(20)
+                .HasDefaultValue(BillStatus.Unpaid);
         }
     }
 }

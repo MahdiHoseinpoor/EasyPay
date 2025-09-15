@@ -5,6 +5,7 @@
         Withdrawal,
         Deposit,
         TransferOut,
-        TransferIn
+        TransferIn,
+        BillPayment
     }
 }

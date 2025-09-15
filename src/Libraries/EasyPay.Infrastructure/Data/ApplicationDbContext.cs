@@ -26,7 +26,7 @@ namespace EasyPay.Infrastructure.Data
         public virtual DbSet<NaturalUser> NaturalUsers { get; set; }
 
         public virtual DbSet<Transaction> Transaction { get; set; }
-
+        public virtual DbSet<BillBase> BillBase { get; set; }
         public virtual DbSet<MobileBill> MobileBills { get; set; }
         public virtual DbSet<UtilityBill> UtilityBills { get; set; }
 
