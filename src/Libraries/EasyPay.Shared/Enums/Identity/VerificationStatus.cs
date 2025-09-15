@@ -2,6 +2,7 @@
 {
     public enum VerificationStatus
     {
+        Missing,
         Pending,    
         Approved,   
         Rejected,  

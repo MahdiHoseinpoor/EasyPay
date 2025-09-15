@@ -1,349 +1,146 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
+/* --- Base Theme & Typography --- */
 :root {
-    --app-bg: #F8F9FA; 
-    --sidebar-bg: #0A2540; 
-    --sidebar-text: #E0E6EB;
-    --sidebar-text-active: #FFFFFF;
-    --sidebar-active-bg: rgba(255, 255, 255, 0.08);
-    --sidebar-hover-bg: rgba(255, 255, 255, 0.05);
-    --accent-color: #00D2A0;
-    --accent-hover-color: #00B88A;
-    --text-primary: #1A1F36;
-    --text-secondary: #6c757d;
-    --card-bg: #FFFFFF;
-    --border-color: #E2E8F0;
-    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    --success-color: #28a745;
-    --danger-color: #dc3545;
+    --bg-color: #0d0d0d;
+    --surface-glass: rgba(25, 27, 46, 0.5);
+    --primary-glow: #00ffe0;
+    --secondary-glow: #ff007f;
+    --text-primary: #f0f0f0;
+    --text-secondary: #a0a0a0;
+    --border-glass: rgba(255, 255, 255, 0.15);
+    --error-color: #ff5252;
+    --warning-color: #ffb300;
+    --success-color: #4caf50;
+    --border-color: rgba(255, 255, 255, 0.15); /* Bootstrap variable override */
 }
 
 body {
-    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    background-image: radial-gradient(circle at 1% 1%, var(--secondary-glow), transparent 25%), radial-gradient(circle at 99% 99%, var(--primary-glow), transparent 25%);
+    background-attachment: fixed;
     color: var(--text-primary);
-    margin: 0;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
 }
 
-.app-container {
+h1, h2, h3, h4, h5 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* --- Reusable Components & Effects --- */
+.glass-panel {
+    background: var(--surface-glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-glass);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    border-radius: 16px;
+}
+
+.btn-glow {
+    border-radius: 8px;
+    border: 1px solid var(--primary-glow);
+    background-color: transparent;
+    color: var(--primary-glow);
+    transition: all 0.2s ease-in-out;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+    .btn-glow:hover, .btn-glow:focus {
+        background-color: var(--primary-glow);
+        color: var(--bg-color);
+        box-shadow: 0 0 5px var(--primary-glow), 0 0 15px var(--primary-glow);
+    }
+
+    .btn-glow:disabled {
+        border-color: var(--text-secondary);
+        color: var(--text-secondary);
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+        .btn-glow:disabled:hover {
+            background-color: transparent;
+            box-shadow: none;
+        }
+
+.form-control-cyber, .form-select-cyber {
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-glass);
+    color: var(--text-primary);
+    border-radius: 8px;
+    min-height: 48px;
+}
+
+    .form-control-cyber:focus, .form-select-cyber:focus {
+        background-color: rgba(0, 0, 0, 0.3);
+        color: var(--text-primary);
+        border-color: var(--primary-glow);
+        box-shadow: 0 0 10px -2px var(--primary-glow);
+    }
+
+    .form-control-cyber::placeholder {
+        color: var(--text-secondary);
+    }
+
+.validation-message {
+    color: var(--error-color);
+    font-size: 0.875em;
+    margin-top: .25rem;
+}
+
+/* --- Layout Structure --- */
+.app-wrapper {
     display: flex;
     min-height: 100vh;
 }
 
-.main-content-wrapper {
+.sidebar {
+    width: 260px;
+    padding: 1.5rem 1rem;
+    z-index: 1000;
+}
+
+.content-wrapper {
     flex-grow: 1;
+    padding: 1rem;
     display: flex;
     flex-direction: column;
-    background-color: var(--app-bg);
+}
+
+.topbar {
+    padding: 0.75rem 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
 .main-content {
-    padding: 2rem;
     flex-grow: 1;
 }
 
-@media (max-width: 768px) {
-    .main-content {
-        padding: 1rem;
-    }
-}
-
-/* --- Top Header & Profile Dropdown --- */
-.top-header {
-    height: 70px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 2rem;
-    background-color: var(--card-bg);
-    border-bottom: 1px solid var(--border-color);
-    flex-shrink: 0;
-}
-
-.page-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin: 0;
-}
-
-.profile-dropdown-container {
-    position: relative;
-}
-
-.profile-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 2rem;
-    color: var(--text-secondary);
-    padding: 0;
-}
-
-.profile-dropdown-menu {
-    position: absolute;
-    top: 130%;
-    right: 0;
-    background-color: var(--card-bg);
-    border-radius: 8px;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border-color);
-    width: 220px;
-    z-index: 100;
-    padding: 0.5rem 0;
-}
-
-.dropdown-header {
-    padding: 0.75rem 1.25rem;
-}
-
-    .dropdown-header .username {
-        font-weight: 600;
-        display: block;
+@media (max-width: 991.98px) {
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
     }
 
-.dropdown-divider {
-    height: 1px;
-    background-color: var(--border-color);
-    margin: 0.5rem 0;
-}
-
-.dropdown-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1.25rem;
-    color: var(--text-primary);
-    text-decoration: none;
-    background: none;
-    border: none;
-    width: 100%;
-    text-align: left;
-}
-
-    .dropdown-item i {
-        color: var(--text-secondary);
-    }
-
-    .dropdown-item:hover {
-        background-color: var(--app-bg);
-    }
-/* --- Sidebar --- */
-.sidebar {
-    width: 260px;
-    background-color: var(--sidebar-bg);
-    color: var(--sidebar-text);
-    display: flex;
-    flex-direction: column;
-    flex-shrink: 0;
-}
-
-.sidebar-header {
-    display: flex;
-    align-items: center;
-    padding: 0 1.5rem;
-    height: 70px; /* Match top header height */
-    gap: 0.75rem;
-}
-
-    .sidebar-header img {
-        height: 32px;
-    }
-
-    .sidebar-header .brand-name {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: #fff;
-    }
-
-.sidebar-nav {
-    padding: 1rem;
-}
-
-    .sidebar-nav ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .sidebar-nav a {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        padding: 0.8rem 1rem;
-        color: var(--sidebar-text);
-        text-decoration: none;
-        border-radius: 6px;
-        font-weight: 500;
-        transition: background-color 0.2s ease, color 0.2s ease;
-    }
-
-        .sidebar-nav a:hover {
-            background-color: var(--sidebar-hover-bg);
-            color: var(--sidebar-text-active);
+        .sidebar.is-open {
+            transform: translateX(0);
         }
-
-        .sidebar-nav a.active {
-            background-color: var(--sidebar-active-bg);
-            color: var(--sidebar-text-active);
-        }
-
-        .sidebar-nav a i {
-            font-size: 1.25rem;
-            line-height: 1;
-        }
-/* --- Dashboard --- */
-.dashboard-header {
-    margin-bottom: 2rem;
 }
 
-    .dashboard-header h1 {
-        font-size: 1.75rem;
-        font-weight: 700;
-        margin-bottom: 0.25rem;
+@media (min-width: 992px) {
+    #sidebar-toggle {
+        display: none;
     }
 
-    .dashboard-header p {
-        font-size: 1rem;
-        color: var(--text-secondary);
+    .content-wrapper {
+        width: calc(100% - 260px);
     }
-
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
 }
-
-/* --- Card Styling --- */
-.card {
-    background-color: var(--card-bg);
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-}
-
-    .card .card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1.5rem;
-        border-bottom: 1px solid var(--border-color);
-    }
-
-    .card .card-title {
-        font-size: 1rem;
-        font-weight: 600;
-        margin: 0;
-    }
-
-    .card .card-body {
-        padding: 1.5rem;
-        flex-grow: 1;
-    }
-
-    .card .card-footer {
-        display: flex;
-        gap: 1rem;
-        padding: 1.5rem;
-        background-color: var(--app-bg);
-        border-top: 1px solid var(--border-color);
-    }
-
-/* --- Specific Card Styles --- */
-.account-card .balance-label {
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-    margin-bottom: 0.25rem;
-}
-
-.account-card .balance-amount {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin: 0;
-}
-
-.btn-accent {
-    background-color: var(--accent-color);
-    color: #fff;
-    border: none;
-    padding: 0.75rem 1rem;
-    border-radius: 6px;
-    font-weight: 500;
-    cursor: pointer;
-}
-
-    .btn-accent:hover {
-        background-color: var(--accent-hover-color);
-    }
-
-.btn-secondary {
-    background-color: #E2E8F0;
-    color: var(--text-primary);
-    border: none;
-    padding: 0.75rem 1rem;
-    border-radius: 6px;
-    font-weight: 500;
-    cursor: pointer;
-}
-
-
-/* Transaction List */
-.transactions-card .view-all {
-    font-size: 0.875rem;
-    text-decoration: none;
-    font-weight: 500;
-    color: var(--accent-color);
-}
-
-.transaction-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-    .transaction-list li {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-.transaction-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.25rem;
-}
-
-.transaction-details {
-    flex-grow: 1;
-}
-
-    .transaction-details .merchant {
-        font-weight: 500;
-        display: block;
-    }
-
-    .transaction-details .date {
-        font-size: 0.875rem;
-        color: var(--text-secondary);
-    }
-
-.amount {
-    font-weight: 600;
-}
-
-    .amount.incoming {
-        color: var(--success-color);
-    }
-
-    .amount.outgoing {
-        color: var(--text-primary);
-    }

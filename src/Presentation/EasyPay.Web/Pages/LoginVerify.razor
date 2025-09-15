@@ -1,5 +1,5 @@
 ﻿@page "/login-verify"
-@layout Layout.AuthLayout
+@layout AuthLayout
 
 @using System.ComponentModel.DataAnnotations
 @using EasyPay.Shared.Models.Identity
@@ -10,44 +10,39 @@
 
 <PageTitle>Verify Code</PageTitle>
 
-<div class="auth-card">
-    <div class="card-body">
-        <div class="text-center">
-            <h3 class="card-title">Enter Verification Code</h3>
-            <p class="card-subtitle">A 6-digit code was sent to @AuthState.PhoneNumber</p>
-        </div>
+<h2 class="text-center mb-1">Verify Code</h2>
+<p class="text-center text-secondary mb-4">A 6-digit code was sent to <strong class="text-light">@AuthState.PhoneNumber</strong>.</p>
 
-        @if (!string.IsNullOrEmpty(errorMessage))
-        {
-            <div class="alert alert-danger">@errorMessage</div>
-        }
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger" style="background-color: rgba(255, 82, 82, 0.15); border-color: var(--error-color); color: var(--text-primary);">@errorMessage</div>
+}
 
-        <EditForm Model="@Model" OnValidSubmit="HandleSubmit">
-            <DataAnnotationsValidator />
+<EditForm Model="@Model" OnValidSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
 
-            <div class="mb-3">
-                <label for="code" class="form-label">Verification Code</label>
-                <InputText id="code" @bind-Value="Model.Code" class="form-control" />
-                <ValidationMessage For="@(() => Model.Code)" />
-            </div>
-
-            <div class="d-grid mt-4">
-                <button type="submit" class="btn btn-primary" disabled="@isSubmitting">
-                    @if (isSubmitting)
-                    {
-                        <span class="spinner-border spinner-border-sm"></span>
-                    }
-                    else
-                    {
-                        <span>Verify & Continue</span>
-                    }
-                </button>
-            </div>
-        </EditForm>
+    <div class="mb-3">
+        <label for="code" class="form-label">Verification Code</label>
+        <InputText id="code" @bind-Value="Model.Code" class="form-control-cyber text-center" placeholder="_ _ _ _ _ _" />
+        <ValidationMessage For="@(() => Model.Code)" />
     </div>
-</div>
+
+    <div class="d-grid mt-4">
+        <button type="submit" class="btn btn-glow" disabled="@isSubmitting">
+            @if (isSubmitting)
+            {
+                <span class="spinner-border spinner-border-sm"></span>
+            }
+            else
+            {
+                <span>Verify & Continue</span>
+            }
+        </button>
+    </div>
+</EditForm>
 
 @code {
+    // C# code remains the same
     private VerificationModel Model = new();
     private bool isSubmitting = false;
     private string errorMessage;

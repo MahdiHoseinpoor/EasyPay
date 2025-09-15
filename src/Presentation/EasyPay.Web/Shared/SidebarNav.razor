@@ -1,0 +1,59 @@
+﻿<nav class="sidebar glass-panel d-flex flex-column" id="appSidebar">
+    <div>
+        <a href="/" class="nav-link text-light mb-4 d-flex align-items-center">
+            <i class="bi bi-shield-check fs-2 me-3"></i>
+            <span style="font-size: 1.5rem; font-family: 'Poppins', sans-serif;">EasyPay</span>
+        </a>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <NavLink class="nav-link" href="/" Match="NavLinkMatch.All"><i class="bi bi-grid-1x2-fill"></i><span>Dashboard</span></NavLink>
+            </li>
+            <li class="nav-item">
+                <NavLink class="nav-link" href="/accounts"><i class="bi bi-wallet2"></i><span>Accounts</span></NavLink>
+            </li>
+            <li class="nav-item">
+                <NavLink class="nav-link" href="/verification-center"><i class="bi bi-patch-check-fill"></i><span>Verification</span></NavLink>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/transfer"><i class="bi bi-arrow-left-right"></i><span>Transfer</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/bills"><i class="bi bi-receipt"></i><span>Bills</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/history"><i class="bi bi-clock-history"></i><span>History</span></a>
+            </li>
+        </ul>
+    </div>
+    <div class="mt-auto">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="/settings"><i class="bi bi-gear-fill"></i><span>Settings</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/logout"><i class="bi bi-box-arrow-right"></i><span>Logout</span></a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<style>
+    .sidebar .nav-link {
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        transition: color 0.2s ease, background-color 0.2s ease;
+    }
+    .sidebar .nav-link i {
+        font-size: 1.25rem;
+        margin-right: 1rem;
+        width: 24px;
+    }
+    .sidebar .nav-link.active, .sidebar .nav-link:hover {
+        background-color: rgba(0, 255, 224, 0.1);
+        color: var(--primary-glow);
+    }
+</style>

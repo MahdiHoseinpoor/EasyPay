@@ -1,5 +1,5 @@
 ﻿@page "/login-phone"
-@layout Layout.AuthLayout
+@layout AuthLayout
 
 @using System.ComponentModel.DataAnnotations
 @using EasyPay.Shared.Models.Identity
@@ -10,44 +10,39 @@
 
 <PageTitle>Sign In or Sign Up</PageTitle>
 
-<div class="auth-card">
-    <div class="card-body">
-        <div class="text-center">
-            <h3 class="card-title">Welcome</h3>
-            <p class="card-subtitle">Enter your phone to sign in or create an account.</p>
-        </div>
+<h2 class="text-center mb-1">Welcome</h2>
+<p class="text-center text-secondary mb-4">Enter your mobile to sign in or create an account.</p>
 
-        @if (!string.IsNullOrEmpty(errorMessage))
-        {
-            <div class="alert alert-danger">@errorMessage</div>
-        }
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger" style="background-color: rgba(255, 82, 82, 0.15); border-color: var(--error-color); color: var(--text-primary);">@errorMessage</div>
+}
 
-        <EditForm Model="@Model" OnValidSubmit="HandleSubmit">
-            <DataAnnotationsValidator />
+<EditForm Model="@Model" OnValidSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
 
-            <div class="mb-3">
-                <label for="phone" class="form-label">Phone Number</label>
-                <InputText id="phone" @bind-Value="Model.PhoneNumber" class="form-control" placeholder="e.g., 09123456789" />
-                <ValidationMessage For="@(() => Model.PhoneNumber)" />
-            </div>
-
-            <div class="d-grid mt-4">
-                <button type="submit" class="btn btn-primary" disabled="@isSubmitting">
-                    @if (isSubmitting)
-                    {
-                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    }
-                    else
-                    {
-                        <span>Continue</span>
-                    }
-                </button>
-            </div>
-        </EditForm>
+    <div class="mb-3">
+        <label for="phone" class="form-label">Phone Number</label>
+        <InputText id="phone" @bind-Value="Model.PhoneNumber" class="form-control-cyber" placeholder="e.g., 09123456789" />
+        <ValidationMessage For="@(() => Model.PhoneNumber)" />
     </div>
-</div>
+
+    <div class="d-grid mt-4">
+        <button type="submit" class="btn btn-glow" disabled="@isSubmitting">
+            @if (isSubmitting)
+            {
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            }
+            else
+            {
+                <span>Send Code</span>
+            }
+        </button>
+    </div>
+</EditForm>
 
 @code {
+    // C# code remains the same
     private PhoneModel Model = new();
     private bool isSubmitting = false;
     private string errorMessage;

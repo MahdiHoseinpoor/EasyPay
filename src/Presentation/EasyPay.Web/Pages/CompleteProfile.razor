@@ -1,5 +1,5 @@
 ﻿@page "/complete-profile"
-@layout Layout.AuthLayout
+@attribute [Authorize]
 
 @using System.ComponentModel.DataAnnotations
 @using EasyPay.Shared.Enums.Identity
@@ -12,90 +12,98 @@
 
 <AuthorizeView Context="authContext">
     <Authorized>
-        <div class="auth-card">
-            <div class="card-body">
-                <div class="text-center">
-                    <h3 class="card-title">One Last Step</h3>
-                    <p class="card-subtitle">Complete your profile to join EasyPay.</p>
-                </div>
+        <div class="main-content d-flex flex-column align-items-center justify-content-center">
+            <div class="w-100" style="max-width: 800px;">
+                <div class="glass-panel p-4 p-md-5 rounded-4">
+                    <div class="text-center">
+                        <h1 class="h2">Complete Your Profile</h1>
+                        <p class="text-secondary">This information is required to verify your identity and create your accounts.</p>
+                    </div>
 
-                @if (!string.IsNullOrEmpty(errorMessage))
-                {
-                    <div class="alert alert-danger">@errorMessage</div>
-                }
+                    <!-- Progress Bar (Visual only) -->
+                    <div class="progress my-4" style="height: 8px; background-color: rgba(0,0,0,0.3);">
+                        <div class="progress-bar" role="progressbar" style="width: 50%; background-color: var(--primary-glow);" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
 
-                <EditForm Model="@Model" OnValidSubmit="HandleSubmit">
-                    <DataAnnotationsValidator />
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">First Name</label>
-                            <InputText @bind-Value="Model.FirstName" class="form-control" />
-                            <ValidationMessage For="@(() => Model.FirstName)" />
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger" style="background-color: rgba(255, 82, 82, 0.15); border-color: var(--error-color); color: var(--text-primary);">
+                            @errorMessage
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Last Name</label>
-                            <InputText @bind-Value="Model.LastName" class="form-control" />
-                            <ValidationMessage For="@(() => Model.LastName)" />
+                    }
+
+                    <EditForm Model="@Model" OnValidSubmit="HandleSubmit">
+                        <DataAnnotationsValidator />
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">First Name</label>
+                                <InputText @bind-Value="Model.FirstName" class="form-control form-control-cyber" />
+                                <ValidationMessage For="@(() => Model.FirstName)" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Last Name</label>
+                                <InputText @bind-Value="Model.LastName" class="form-control form-control-cyber" />
+                                <ValidationMessage For="@(() => Model.LastName)" />
+                            </div>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Father Name</label>
-                        <InputText @bind-Value="Model.FatherName" class="form-control" />
-                        <ValidationMessage For="@(() => Model.FatherName)" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">National Code</label>
-                        <InputText @bind-Value="Model.NationalCode" class="form-control" />
-                        <ValidationMessage For="@(() => Model.NationalCode)" />
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Birth Date</label>
-                            <InputDate @bind-Value="Model.BirthDate" class="form-control" />
-                            <ValidationMessage For="@(() => Model.BirthDate)" />
+                        <div class="mb-3">
+                            <label class="form-label">Father Name</label>
+                            <InputText @bind-Value="Model.FatherName" class="form-control form-control-cyber" />
+                            <ValidationMessage For="@(() => Model.FatherName)" />
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Gender</label>
-                            <InputSelect @bind-Value="Model.Gender" class="form-select">
-                                @foreach (var gender in Enum.GetValues<GenderType>())
+                        <div class="mb-3">
+                            <label class="form-label">National Code</label>
+                            <InputText @bind-Value="Model.NationalCode" class="form-control form-control-cyber" />
+                            <ValidationMessage For="@(() => Model.NationalCode)" />
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Birth Date</label>
+                                <InputDate @bind-Value="Model.BirthDate" class="form-control form-control-cyber" />
+                                <ValidationMessage For="@(() => Model.BirthDate)" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Gender</label>
+                                <InputSelect @bind-Value="Model.Gender" class="form-select form-select-cyber">
+                                    @foreach (var gender in Enum.GetValues<GenderType>())
+                                    {
+                                        <option value="@gender">@gender.ToString()</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                        </div>
+
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-glow btn-lg" disabled="@isSubmitting">
+                                @if (isSubmitting)
                                 {
-                                    <option value="@gender">@gender.ToString()</option>
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    <span class="ms-2">Saving Profile...</span>
                                 }
-                            </InputSelect>
+                                else
+                                {
+                                    <span>Save & Continue</span>
+                                }
+                            </button>
                         </div>
-                    </div>
-                    <div class="d-grid mt-4">
-                        <button type="submit" class="btn btn-primary" disabled="@isSubmitting">
-                            @if (isSubmitting)
-                            {
-                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                            }
-                            else
-                            {
-                                <span>Create Account</span>
-                            }
-                        </button>
-                    </div>
-                </EditForm>
+                    </EditForm>
+                </div>
             </div>
         </div>
     </Authorized>
     <NotAuthorized>
-        <div class="auth-card">
-            <div class="card-body text-center">
-                <h4 class="card-title">Session Expired</h4>
-                <p>Your session has expired. Please <a href="/login-phone">start the registration process again</a>.</p>
-            </div>
+        <div class="glass-panel p-4 p-sm-5 text-center">
+            <h4 class="card-title">Session Expired</h4>
+            <p class="text-secondary">Your session has expired. Please <a href="/login-phone" style="color: var(--primary-glow);">start the registration process again</a>.</p>
         </div>
     </NotAuthorized>
 </AuthorizeView>
 
 @code {
-    // Note: The FatherName property was removed from the form as it was nested incorrectly in the original code.
-    // It can be added back if needed with the same structure as other fields.
     private CompleteProfileRequest Model = new();
     private bool isSubmitting = false;
-    private string errorMessage;
+    private string? errorMessage;
 
     private async Task HandleSubmit()
     {
@@ -106,11 +114,11 @@
 
         if (success)
         {
-            NavigationManager.NavigateTo("/");
+            NavigationManager.NavigateTo("/"); // Navigate to dashboard after successful profile completion
         }
         else
         {
-            errorMessage = "Could not create your profile. Please try again.";
+            errorMessage = "Could not create your profile. Please check your information and try again.";
             isSubmitting = false;
         }
     }

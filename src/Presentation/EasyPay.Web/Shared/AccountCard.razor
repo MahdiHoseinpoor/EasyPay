@@ -1,50 +1,35 @@
 ﻿@using EasyPay.Shared.DTOs.AccountManagement
 @using EasyPay.Shared.Enums.AccountManagement
-@inject NavigationManager NavigationManager
 
-<div class="card account-card-item" @onclick="OnClickCallback">
-    <div class="card-body">
-        <div class="card-top">
-            <div class="account-info">
-                <h5 class="account-title">@Account.Title</h5>
-                <p class="account-number">@Account.AccountNumber</p>
-            </div>
-            <div class="card-icon">
-                <i class="@GetAccountIcon()"></i>
-            </div>
+<div class="glass-panel p-4 h-100" @onclick="OnClickCallback">
+    <div class="d-flex justify-content-between align-items-start">
+        <div>
+            <h5 class="mb-1">@Account.Title</h5>
+            @if (Account.Status == AccountStatus.Active)
+            {
+                <span class="badge" style="background-color: rgba(76, 175, 80, 0.2); color: var(--success-color); border: 1px solid var(--success-color);">Active</span>
+            }
+            else
+            {
+                <span class="badge" style="background-color: rgba(255, 179, 0, 0.2); color: var(--warning-color); border: 1px solid var(--warning-color);">@Account.Status.ToString()</span>
+            }
         </div>
-
-        <p class="balance-amount">@Account.CurrentBalance.ToString("C")</p>
-
-        <div class="quick-actions">
-            <button class="btn btn-secondary" @onclick:stopPropagation="true" @onclick="() => NavigateToTransfer(Account.Id)">
-                <i class="bi bi-send"></i> Transfer
-            </button>
-            <button class="btn btn-outline-secondary" @onclick:stopPropagation="true" @onclick="OnClickCallback">
-                <i class="bi bi-list-ul"></i> Details
-            </button>
+        <div class="text-end">
+            <h4 class="mb-1" style="color: var(--primary-glow);">@Account.CurrentBalance.ToString("C")</h4>
+            <small class="text-secondary">Rial</small>
         </div>
+    </div>
+    <hr style="border-color: var(--border-glass);">
+    <div class="d-flex flex-wrap gap-2 mt-3">
+        <button class="btn btn-outline-light btn-sm"><i class="bi bi-eye me-1"></i>View</button>
+        <button class="btn btn-outline-light btn-sm"><i class="bi bi-arrow-right-short me-1"></i>Transfer</button>
     </div>
 </div>
 
 @code {
     [Parameter, EditorRequired]
-    public AccountDto Account { get; set; } = default!;
+    public AccountDto Account { get; set; }
 
     [Parameter]
     public EventCallback OnClickCallback { get; set; }
-
-    private string GetAccountIcon()
-    {
-        // Simple logic to assign an icon based on name
-        return Account.AccountTypeName.Contains("Saving", StringComparison.OrdinalIgnoreCase)
-            ? "bi bi-piggy-bank-fill"
-            : "bi bi-wallet-fill";
-    }
-
-    private void NavigateToTransfer(Guid accountId)
-    {
-        // Stop event propagation to prevent the main card click from firing
-        NavigationManager.NavigateTo($"/transfer?sourceAccountId={accountId}");
-    }
 }

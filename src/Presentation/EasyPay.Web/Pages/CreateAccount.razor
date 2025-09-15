@@ -13,98 +13,142 @@
 
 <PageTitle>Create New Account</PageTitle>
 
-<div class="header-container">
-    <h1>Open a New Account</h1>
-</div>
+<div class="main-content d-flex flex-column align-items-center justify-content-center">
+    <div class="w-100" style="max-width: 700px;">
 
-<div class="card create-account-card">
-    <div class="card-body">
-        @if (isLoading)
-        {
-            <div class="text-center p-4">
-                <div class="spinner-border" role="status">
-                    <span class="visually-hidden">Loading options...</span>
-                </div>
-            </div>
-        }
-        else
-        {
-            <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
-                <DataAnnotationsValidator />
+        <div class="text-center mb-4">
+            <h1 class="h2">Create New Account</h1>
+        </div>
 
-                @if (!string.IsNullOrEmpty(errorMessage))
-                {
-                    <div class="alert alert-danger" role="alert">
-                        @errorMessage
+        <div class="glass-panel p-4 p-md-5">
+            @if (isLoading)
+            {
+                <div class="text-center p-5">
+                    <div class="spinner-border" style="width: 3rem; height: 3rem; color: var(--primary-glow);" role="status">
+                        <span class="visually-hidden">Loading options...</span>
                     </div>
-                }
-
-                <div class="mb-3">
-                    <label for="accountType" class="form-label">1. Select Account Type</label>
-                    <InputSelect id="accountType" class="form-select" @bind-Value="Model.AccountTypeId" @oninput="OnAccountTypeSelected">
-                        <option value="0" disabled>-- Choose an account type --</option>
-                        @foreach (var type in accountTypes)
-                        {
-                            <option value="@type.Id">@type.Title</option>
-                        }
-                    </InputSelect>
-                    <ValidationMessage For="@(() => Model.AccountTypeId)" />
                 </div>
+            }
+            else
+            {
+                <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
+                    <DataAnnotationsValidator />
 
-                @if (isRequirementsLoading)
-                {
-                    <div class="text-center p-3"><div class="spinner-border spinner-border-sm" role="status"></div></div>
-                }
-                else if (currentRequirements is { Count: > 0 })
-                {
-                    <div class="requirements-section mb-3">
-                        <h6 class="form-label">2. Fulfill Requirements</h6>
-                        <ul class="list-group">
-                            @foreach (var req in currentRequirements)
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger" role="alert" style="background-color: rgba(255, 82, 82, 0.15); border-color: var(--error-color); color: var(--text-primary);">
+                            @errorMessage
+                        </div>
+                    }
+
+                    <!-- Step 1: Select Account Type -->
+                    <div class="mb-4">
+                        <label for="accountTypeSelect" class="form-label fs-5">1. Choose an Account Type</label>
+                        <InputSelect id="accountTypeSelect" class="form-select form-select-lg form-select-cyber" @bind-Value="Model.AccountTypeId" @oninput="OnAccountTypeSelected">
+                            <option value="0" disabled>-- Select an account type --</option>
+                            @if (accountTypes is not null)
                             {
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    @req.AuthItemTitle
-                                    @if (HasApprovedSubmission(req.AuthItemId))
-                                    {
-                                        <span class="req-status text-success"><i class="bi bi-check-circle-fill"></i> Approved</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="req-status text-danger"><i class="bi bi-x-circle-fill"></i> Missing</span>
-                                    }
-                                </li>
+                                @foreach (var type in accountTypes)
+                                {
+                                    <option value="@type.Id">@type.Title</option>
+                                }
                             }
-                        </ul>
-                        <small class="form-text text-muted mt-2 d-block">
-                            You must submit and get all required documents approved before opening this account. You can manage your documents in your <a href="/profile">profile</a>.
-                        </small>
+                        </InputSelect>
+                        <ValidationMessage For="@(() => Model.AccountTypeId)" />
                     </div>
-                }
 
+                    <!-- Step 2: Show Requirements -->
+                    @if (isRequirementsLoading)
+                    {
+                        <div class="text-center p-4">
+                            <div class="spinner-border spinner-border-sm" style="color: var(--primary-glow);" role="status"></div>
+                        </div>
+                    }
+                    else if (currentRequirements is { Count: > 0 })
+                    {
+                        <div class="mb-4 requirements-section">
+                            <h3 class="fs-5">2. Fulfill Requirements</h3>
+                            <p class="text-secondary small">Your status for the selected account type is shown below. You must complete all required items to continue.</p>
 
-                <div class="mb-4">
-                    <label for="accountTitle" class="form-label">@GetStepNumber(). Give it a Nickname</label>
-                    <InputText id="accountTitle" class="form-control" @bind-Value="Model.Title" placeholder="e.g., My Savings, Daily Spending" />
-                    <ValidationMessage For="@(() => Model.Title)" />
-                </div>
+                            <ul class="list-group list-group-flush">
+                                @foreach (var req in currentRequirements.Where(r => r.IsRequired))
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            @if (HasApprovedSubmission(req.AuthItemId))
+                                            {
+                                                <i class="bi bi-check-circle-fill me-3 text-success"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-x-circle-fill me-3 text-danger"></i>
+                                            }
+                                            <span class="text-light">@req.AuthItemTitle</span>
+                                        </div>
+                                        @if (!HasApprovedSubmission(req.AuthItemId))
+                                        {
+                                            <a href="/profile" class="btn btn-outline-danger btn-sm">Complete Now</a>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success bg-opacity-25 text-success border border-success">Completed</span>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    }
 
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-primary" disabled="@(isSubmitting || isCreateButtonDisabled)">
-                        @if (isSubmitting)
+                    <!-- Step 3: Give it a Nickname -->
+                    <div class="mb-4">
+                        <label for="accountTitle" class="form-label fs-5">@GetStepNumber() Give it a Nickname</label>
+                        <InputText id="accountTitle" class="form-control form-control-cyber" @bind-Value="Model.Title" placeholder="e.g., My Savings, Daily Spending" />
+                        <ValidationMessage For="@(() => Model.Title)" />
+                    </div>
+
+                    <!-- Step 4: Create Account CTA -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-glow btn-lg" disabled="@(isSubmitting || isCreateButtonDisabled)">
+                            @if (isSubmitting)
+                            {
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                <span class="ms-2">Creating Account...</span>
+                            }
+                            else
+                            {
+                                <span>Create Account</span>
+                            }
+                        </button>
+                        @if (isCreateButtonDisabled && Model.AccountTypeId > 0)
                         {
-                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                            <span>Creating Account...</span>
+                            <p class="text-center text-warning mt-3 small">Please complete all required items before creating the account.</p>
                         }
-                        else
-                        {
-                            <span>Submit Application</span>
-                        }
-                    </button>
-                </div>
-            </EditForm>
-        }
+                    </div>
+                </EditForm>
+            }
+        </div>
     </div>
 </div>
+
+<style>
+    .requirements-section {
+        border: 1px solid var(--border-glass);
+        border-radius: 8px;
+        padding: 1.25rem;
+        background-color: rgba(0,0,0,0.2);
+    }
+
+        .requirements-section .list-group-item {
+            background-color: transparent;
+            border-color: var(--border-glass) !important;
+            padding: 0.75rem 0;
+        }
+
+            .requirements-section .list-group-item:last-child {
+                border-bottom: none;
+            }
+</style>
+
 
 @code {
     private CreateAccountModel Model = new();
@@ -121,7 +165,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Fetch all data in parallel for faster page load
         await Task.WhenAll(
             LoadAccountTypes(),
             LoadUserSubmissions()
@@ -144,7 +187,7 @@
         isRequirementsLoading = true;
         currentRequirements = null;
         isCreateButtonDisabled = true;
-        StateHasChanged(); // Update UI to show loading spinner
+        StateHasChanged();
 
         if (int.TryParse(e.Value?.ToString(), out var selectedId) && selectedId > 0)
         {
@@ -154,7 +197,6 @@
         }
 
         isRequirementsLoading = false;
-        StateHasChanged();
     }
 
     private void ValidateRequirements()
@@ -165,7 +207,6 @@
             return;
         }
 
-        // Check if every required item has an approved submission
         var allRequirementsMet = currentRequirements
             .Where(r => r.IsRequired)
             .All(req => HasApprovedSubmission(req.AuthItemId));
@@ -175,10 +216,15 @@
 
     private bool HasApprovedSubmission(int authItemId)
     {
-        if (userSubmissions == null) return false;
+        if (userSubmissions == null || currentRequirements == null) return false;
 
+        // Find the title for the given authItemId
+        var requiredItemTitle = currentRequirements.FirstOrDefault(cr => cr.AuthItemId == authItemId)?.AuthItemTitle;
+        if (requiredItemTitle == null) return false;
+
+        // Check if there is an approved submission with that title
         return userSubmissions.Any(s =>
-            s.AuthItemTitle == currentRequirements.FirstOrDefault(cr => cr.AuthItemId == authItemId)?.AuthItemTitle &&
+            s.AuthItemTitle == requiredItemTitle &&
             s.Status == VerificationStatus.Approved);
     }
 
@@ -209,7 +255,7 @@
     public class CreateAccountModel
     {
         [Required(ErrorMessage = "Please give your account a nickname.")]
-        [StringLength(100, ErrorMessage = "The nickname is too long.")]
+        [StringLength(50, ErrorMessage = "The nickname is too long.")]
         public string Title { get; set; } = string.Empty;
 
         [Range(1, int.MaxValue, ErrorMessage = "Please select a valid account type.")]

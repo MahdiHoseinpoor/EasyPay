@@ -1,5 +1,6 @@
 ﻿@page "/"
 @attribute [Authorize]
+
 @using EasyPay.Shared.DTOs.AccountManagement
 @using EasyPay.Shared.DTOs.Report
 @using EasyPay.Shared.Enums.Report
@@ -12,82 +13,105 @@
     <Authorized>
         @if (isLoading)
         {
-            <div class="text-center">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
+            <div class="d-flex justify-content-center align-items-center" style="min-height: 50vh;">
+                <div class="text-center">
+                    <div class="spinner-border" style="width: 3rem; height: 3rem; color: var(--primary-glow);" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-3 text-secondary">Loading your dashboard...</p>
                 </div>
-                <p class="mt-2">Loading your dashboard...</p>
             </div>
         }
         else
         {
-            <div class="dashboard-header">
-                <h1>Welcome back, @(context.User.FindFirst("FirstName")?.Value ?? "User")!</h1>
-                <p>Here is your financial overview for today.</p>
-            </div>
-
-            <div class="dashboard-grid">
-                @if (primaryAccount != null)
-                {
-                    <div class="card account-card">
-                        <div class="card-header">
-                            <span class="card-title">@primaryAccount.Title</span>
-                            <span class="account-number">@MaskAccountNumber(primaryAccount.AccountNumber)</span>
-                        </div>
-                        <div class="card-body">
-                            <p class="balance-label">Available Balance</p>
-                            <p class="balance-amount">@primaryAccount.CurrentBalance.ToString("C")</p>
-                        </div>
-                        <div class="card-footer">
-                            <button class="btn btn-accent"><i class="bi bi-send"></i> Send Money</button>
-                            <button class="btn btn-secondary"><i class="bi bi-plus-circle"></i> Add Funds</button>
-                        </div>
-                    </div>
-                }
-                else
-                {
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <p>You don't have any accounts yet. <a href="/accounts/create">Create one</a> to get started.</p>
-                        </div>
-                    </div>
-                }
-
-
-                <div class="card transactions-card">
-                    <div class="card-header">
-                        <span class="card-title">Recent Transactions</span>
-                        @if (recentTransactions is { Count: > 0 })
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="glass-panel p-4 mb-4">
+                        @if (myAccounts is { Count: > 0 })
                         {
-                            <a href="/history" class="view-all">View All</a>
-                        }
-                    </div>
-                    <div class="card-body">
-                        @if (recentTransactions is not { Count: > 0 })
-                        {
-                            <p>No recent transactions found for this account.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="text-secondary mb-0">Total Balance</h5>
+                                    <h1 class="display-5" style="color: var(--primary-glow);">@totalBalance.ToString("C") <span class="h5 text-secondary">USD</span></h1>
+                                </div>
+                                <a href="/accounts" class="btn btn-outline-light">Manage Accounts</a>
+                            </div>
+                            <hr style="border-color: var(--border-glass);">
+
+                            @foreach (var account in myAccounts)
+                            {
+                                <div class="d-flex justify-content-between align-items-center py-2">
+                                    <div><i class="bi bi-wallet me-2"></i>@account.Title</div>
+                                    <div class="fw-bold">@account.CurrentBalance.ToString("C")</div>
+                                </div>
+                            }
                         }
                         else
                         {
-                            <ul class="transaction-list">
-                                @foreach (var tx in recentTransactions)
-                                {
-                                    var (icon, iconBg, iconColor, amountSign) = GetTransactionTypeDetails(tx.TransactionType);
-                                    <li>
-                                        <div class="transaction-icon" style="background-color: @iconBg;">
-                                            <i class="@icon" style="color: @iconColor;"></i>
-                                        </div>
-                                        <div class="transaction-details">
-                                            <span class="merchant">@tx.Description</span>
-                                            <span class="date">@tx.TransactionDate.ToString("MMM dd, yyyy h:mm tt")</span>
-                                        </div>
-                                        <span class="amount @(IsIncoming(tx.TransactionType) ? "incoming" : "outgoing")">
-                                            @amountSign@tx.Amount.ToString("N2")
-                                        </span>
-                                    </li>
-                                }
-                            </ul>
+                            <div class="text-center p-4">
+                                <h4>No Accounts Found</h4>
+                                <p class="text-secondary">You don't have any accounts yet.</p>
+                                <a href="/accounts/create" class="btn btn-glow mt-2">Create Your First Account</a>
+                            </div>
                         }
+                    </div>
+
+                    <!-- Recent Transactions Widget -->
+                    <div class="glass-panel p-4 mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">Recent Activity</h5>
+                            @if (recentTransactions is { Count: > 0 })
+                            {
+                                <a href="/history" class="text-decoration-none" style="color: var(--text-secondary);">View All</a>
+                            }
+                        </div>
+
+                        @if (recentTransactions is not { Count: > 0 })
+                        {
+                            <p class="text-secondary text-center p-3">No recent transactions found.</p>
+                        }
+                        else
+                        {
+                            @foreach (var tx in recentTransactions)
+                            {
+                                var (icon, color, amountSign) = GetTransactionTypeDetails(tx.TransactionType);
+                                <div class="d-flex align-items-center py-2" style="border-bottom: 1px solid var(--border-glass);">
+                                    <i class="@icon fs-4 me-3" style="color: @color;"></i>
+                                    <div class="flex-grow-1">
+                                        <div class="fw-bold">@tx.Description</div>
+                                        <small class="text-secondary">@tx.TransactionDate.ToString("MMM dd, yyyy")</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="fw-bold" style="color: @color;">@amountSign@tx.Amount.ToString("N2")</div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+
+                <!-- Side Column -->
+                <div class="col-lg-4">
+                    <!-- Quick Actions Widget -->
+                    <div class="glass-panel p-4 mb-4">
+                        <h5 class="mb-3">Quick Actions</h5>
+                        <div class="d-flex justify-content-around gap-2">
+                            <a href="/transfer" class="quick-action-btn flex-fill"><i class="bi bi-send-fill fs-4 mb-2"></i><div>Send</div></a>
+                            <a href="/accounts/topup" class="quick-action-btn flex-fill"><i class="bi bi-plus-circle-fill fs-4 mb-2"></i><div>Add</div></a>
+                            <a href="/bills" class="quick-action-btn flex-fill"><i class="bi bi-receipt fs-4 mb-2"></i><div>Bills</div></a>
+                        </div>
+                    </div>
+
+                    <!-- Alerts Widget (Placeholder for dynamic alerts) -->
+                    <div class="glass-panel p-4 mb-4">
+                        <h5 class="mb-3">Alerts</h5>
+                        <div class="alert p-3 d-flex" style="background-color: rgba(255,179,0,0.15); border: 1px solid var(--warning-color);">
+                            <i class="bi bi-exclamation-triangle-fill me-3" style="color: var(--warning-color);"></i>
+                            <div>
+                                <h6 class="mb-1" style="color: var(--warning-color);">Address Verification</h6>
+                                <p class="mb-0 small">Your proof of address is currently under review.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -95,49 +119,58 @@
     </Authorized>
 </AuthorizeView>
 
+<style>
+    /* Scoped styles for dashboard-specific components */
+    .quick-action-btn {
+        background-color: rgba(0,0,0,0.2);
+        border: 1px solid var(--border-glass);
+        color: var(--text-secondary);
+        text-align: center;
+        padding: 1rem;
+        border-radius: 12px;
+        text-decoration: none;
+        transition: all 0.2s ease-in-out;
+    }
+
+        .quick-action-btn:hover {
+            border-color: var(--primary-glow);
+            color: var(--primary-glow);
+            transform: translateY(-4px);
+        }
+</style>
+
+
 @code {
     private bool isLoading = true;
-    private AccountDto? primaryAccount;
-    private List<TransactionDto>? recentTransactions;
+    private List<AccountDto> myAccounts;
+    private List<TransactionDto> recentTransactions;
+    private decimal totalBalance;
 
     protected override async Task OnInitializedAsync()
     {
-        var myAccounts = await ProfileService.GetMyAccounts();
+        myAccounts = await ProfileService.GetMyAccounts();
 
         if (myAccounts != null && myAccounts.Any())
         {
-            primaryAccount = myAccounts.FirstOrDefault();
+            totalBalance = myAccounts.Sum(a => a.CurrentBalance);
 
-            if (primaryAccount != null)
-            {
-                var transactionHistory = await ProfileService.GetTransactionHistory(primaryAccount.Id, 0, 3);
-                recentTransactions = transactionHistory?.Items.ToList();
-            }
+            var primaryAccount = myAccounts.First();
+            var transactionHistory = await ProfileService.GetTransactionHistory(primaryAccount.Id, 0, 3);
+            recentTransactions = transactionHistory?.Items.ToList();
         }
 
         isLoading = false;
     }
 
-    private string MaskAccountNumber(string accountNumber)
-    {
-        if (string.IsNullOrEmpty(accountNumber) || accountNumber.Length < 4)
-        {
-            return "****";
-        }
-        return $"**** **** **** {accountNumber.Substring(accountNumber.Length - 4)}";
-    }
-
-    private bool IsIncoming(TransactionType type) => type == TransactionType.Deposit || type == TransactionType.TransferIn;
-
-    private (string Icon, string IconBg, string IconColor, string AmountSign) GetTransactionTypeDetails(TransactionType type)
+    private (string Icon, string Color, string AmountSign) GetTransactionTypeDetails(TransactionType type)
     {
         return type switch
         {
-            TransactionType.Deposit => ("bi bi-arrow-down-circle-fill", "#f2fbf6", "#81c784", "+$"),
-            TransactionType.TransferIn => ("bi bi-arrow-down-left-circle-fill", "#f2fbf6", "#81c784", "+$"),
-            TransactionType.Withdrawal => ("bi bi-arrow-up-circle-fill", "#fdf4f4", "#e57373", "-$"),
-            TransactionType.TransferOut => ("bi bi-arrow-up-right-circle-fill", "#fdf4f4", "#e57373", "-$"),
-            _ => ("bi bi-question-circle-fill", "#f4f4f4", "#6c757d", "$")
+            TransactionType.Deposit or TransactionType.TransferIn =>
+                ("bi bi-arrow-down-circle-fill", "var(--success-color)", "+ "),
+            TransactionType.Withdrawal or TransactionType.TransferOut =>
+                ("bi bi-arrow-up-circle-fill", "var(--text-primary)", "- "),
+            _ => ("bi bi-receipt-cutoff", "var(--text-primary)", "- ")
         };
     }
 }
