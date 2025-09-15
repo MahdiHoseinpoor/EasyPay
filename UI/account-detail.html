@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyPay - Account Details</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        /* --- Base Theme & App Layout (Reused) --- */
+        :root { --bg-color: #0d0d0d; --surface-glass: rgba(25, 27, 46, 0.5); --primary-glow: #00ffe0; --text-primary: #f0f0f0; --text-secondary: #a0a0a0; --border-glass: rgba(255, 255, 255, 0.15); --success-color: #4caf50; }
+        body { background-color: var(--bg-color); font-family: 'Inter', sans-serif; color: var(--text-primary); background-attachment: fixed; }
+        h1, h2, h3, h4, h5 { font-family: 'Poppins', sans-serif; }
+        .glass-panel { background: var(--surface-glass); backdrop-filter: blur(12px); border: 1px solid var(--border-glass); border-radius: 16px; }
+        .app-wrapper { display: flex; min-height: 100vh; }
+        .sidebar { /* ... */ }
+        .content-wrapper { flex-grow: 1; padding: 1rem; display: flex; flex-direction: column; }
+        .topbar { /* ... */ }
+        @media (min-width: 992px) { .sidebar { position: static; transform: translateX(0); } .content-wrapper { width: calc(100% - 260px); } #sidebar-toggle { display: none; } }
+
+        /* --- New Account Details Styles --- */
+        .balance-chart { stroke: var(--primary-glow); stroke-width: 2; fill: url(#balanceGradient); }
+        .form-control-cyber { background-color: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-glass); color: var(--text-primary); }
+        .form-control-cyber:focus { border-color: var(--primary-glow); box-shadow: 0 0 10px -2px var(--primary-glow); }
+        
+        .transaction-date-header {
+            padding: 0.25rem 0.5rem;
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: var(--text-secondary);
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .transaction-row {
+            padding: 1rem 0.5rem;
+            border-bottom: 1px solid var(--border-glass);
+            transition: background-color 0.2s ease;
+        }
+        .transaction-row:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        .transaction-row:last-of-type {
+            border-bottom: none;
+        }
+        dt { color: var(--text-secondary); }
+        dd { color: var(--text-primary); margin-left: 0; }
+        .action-btn { background-color: rgba(0,0,0,0.2); border: 1px solid var(--border-glass); color: var(--text-primary); transition: all 0.2s ease; }
+        .action-btn:hover { border-color: var(--primary-glow); color: var(--primary-glow); }
+    </style>
+</head>
+<body>
+<div class="app-wrapper">
+    <!-- Sidebar -->
+    <nav class="sidebar glass-panel d-flex flex-column" id="appSidebar">
+        <!-- Re-used sidebar content -->
+    </nav>
+    
+    <div class="content-wrapper">
+        <!-- Topbar -->
+        <header class="topbar glass-panel d-flex align-items-center justify-content-between">
+            <a href="/accounts.html" class="btn btn-dark d-none d-lg-flex align-items-center"><i class="bi bi-arrow-left me-2"></i>Back to Accounts</a>
+            <h4 class="d-none d-lg-block m-0">Personal Savings</h4>
+            <!-- Other Topbar content -->
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+           <div class="row">
+                <!-- Primary Column: Transactions -->
+                <div class="col-lg-8">
+                    <!-- Account Header Panel -->
+                    <div class="glass-panel p-4 mb-4">
+                        <div class="row">
+                            <div class="col-md-7">
+                                <h5 class="text-secondary fw-normal">Account Balance</h5>
+                                <p class="display-4 fw-bold mb-0" style="color: var(--primary-glow);">$1,250.50</p>
+                                <p class="text-secondary">Ending in •••• 5432</p>
+                            </div>
+                            <div class="col-md-5">
+                                 <svg viewBox="0 0 100 40" class="w-100" preserveAspectRatio="none">
+                                    <defs>
+                                        <linearGradient id="balanceGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                            <stop offset="0%" style="stop-color: var(--primary-glow); stop-opacity: 0.3"/>
+                                            <stop offset="100%" style="stop-color: var(--primary-glow); stop-opacity: 0"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <path class="balance-chart" d="M 0 30 L 10 25 L 20 28 L 30 20 L 40 22 L 50 15 L 60 18 L 70 10 L 80 15 L 90 5 L 100 12 L 100 40 L 0 40 Z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filter & Transaction History Panel -->
+                    <div class="glass-panel p-4">
+                        <h4 class="mb-3">Transaction History</h4>
+                        <!-- Filter Controls -->
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-8">
+                                <input type="text" class="form-control form-control-cyber" id="transaction-search" placeholder="Search by name or category...">
+                            </div>
+                            <div class="col-md-4">
+                                <select class="form-select form-control-cyber" id="transaction-type-filter">
+                                    <option value="all" selected>All Types</option>
+                                    <option value="incoming">Incoming</option>
+                                    <option value="outgoing">Outgoing</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Transaction List Container -->
+                        <div id="transaction-list">
+                            <!-- JS will render items here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secondary Column: Actions & Details -->
+                <div class="col-lg-4">
+                     <div class="position-sticky" style="top: 1rem;">
+                        <!-- Actions Panel -->
+                        <div class="glass-panel p-4 mb-4">
+                            <h5 class="mb-3">Actions</h5>
+                            <div class="d-grid gap-2">
+                                <a href="/accounts/topup.html" class="btn action-btn text-start p-3"><i class="bi bi-plus-circle me-2"></i>Add Money</a>
+                                <a href="/accounts/withdraw.html" class="btn action-btn text-start p-3"><i class="bi bi-box-arrow-up-right me-2"></i>Withdraw Funds</a>
+                                <a href="/transfer.html" class="btn action-btn text-start p-3"><i class="bi bi-send me-2"></i>Internal Transfer</a>
+                            </div>
+                        </div>
+
+                        <!-- Details Panel -->
+                        <div class="glass-panel p-4">
+                            <h5 class="mb-3">Account Details</h5>
+                            <dl>
+                                <dt>Account Holder</dt>
+                                <dd>Alex Example</dd>
+                                <dt>Account Number</dt>
+                                <dd>9876 5432 10</dd>
+                                <dt>Status</dt>
+                                <dd><span class="badge" style="background-color: rgba(76, 175, 80, 0.2); color: var(--success-color); border: 1px solid var(--success-color);">Active</span></dd>
+                                <dt>Opening Date</dt>
+                                <dd>Jan 10, 2024</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- MOCK TRANSACTION DATA ---
+        const transactions = [
+            { date: 'Today', type: 'incoming', amount: 500.00, desc: 'Incoming Transfer', category: 'Transfers', balance: 1250.50, icon: 'bi-arrow-down-circle-fill', color: 'var(--success-color)' },
+            { date: 'Yesterday', type: 'outgoing', amount: 5.75, desc: 'Coffee Shop', category: 'Food & Drink', balance: 750.50, icon: 'bi-cup-hot-fill' },
+            { date: 'Yesterday', type: 'outgoing', amount: 85.20, desc: 'Utility Bill', category: 'Bills', balance: 756.25, icon: 'bi-receipt-cutoff' },
+            { date: 'Jan 20, 2024', type: 'outgoing', amount: 120.00, desc: 'Amazon Purchase', category: 'Shopping', balance: 841.45, icon: 'bi-cart-fill' },
+            { date: 'Jan 18, 2024', type: 'incoming', amount: 1500.00, desc: 'Paycheck Deposit', category: 'Income', balance: 961.45, icon: 'bi-arrow-down-circle-fill', color: 'var(--success-color)' }
+        ];
+
+        // --- DOM ELEMENTS ---
+        const listContainer = document.getElementById('transaction-list');
+        const searchInput = document.getElementById('transaction-search');
+        const typeFilter = document.getElementById('transaction-type-filter');
+
+        // --- RENDER & FILTER LOGIC ---
+        function renderTransactions() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const typeValue = typeFilter.value;
+            
+            let currentGroupDate = null;
+            let html = '';
+
+            const filteredTransactions = transactions.filter(t => {
+                const searchMatch = t.desc.toLowerCase().includes(searchTerm) || t.category.toLowerCase().includes(searchTerm);
+                const typeMatch = (typeValue === 'all') || (t.type === typeValue);
+                return searchMatch && typeMatch;
+            });
+
+            if (filteredTransactions.length === 0) {
+                 listContainer.innerHTML = '<p class="text-center text-secondary p-4">No transactions found.</p>';
+                 return;
+            }
+
+            filteredTransactions.forEach(t => {
+                // Add date header if it's a new date group
+                if (t.date !== currentGroupDate) {
+                    currentGroupDate = t.date;
+                    html += `<div class="transaction-date-header">${currentGroupDate}</div>`;
+                }
+                
+                // Construct the transaction row
+                html += `
+                    <div class="transaction-row row align-items-center">
+                        <div class="col-1 text-center"><i class="bi ${t.icon} fs-4" style="color: ${t.color || 'inherit'}"></i></div>
+                        <div class="col-5">
+                            <div class="fw-bold text-light">${t.desc}</div>
+                            <small class="text-secondary">${t.category}</small>
+                        </div>
+                        <div class="col-3 text-end fw-bold ${t.type === 'incoming' ? 'text-success' : ''}">
+                            ${t.type === 'incoming' ? '+' : '-'} $${t.amount.toFixed(2)}
+                        </div>
+                        <div class="col-3 text-end text-secondary">
+                            $${t.balance.toFixed(2)}
+                        </div>
+                    </div>
+                `;
+            });
+            listContainer.innerHTML = html;
+        }
+
+        // --- EVENT LISTENERS ---
+        searchInput.addEventListener('input', renderTransactions);
+        typeFilter.addEventListener('change', renderTransactions);
+
+        // Initial render
+        renderTransactions();
+    });
+</script>
+</body>
+</html>

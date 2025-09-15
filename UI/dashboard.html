@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyPay - Dashboard</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        /* --- Base Theme & App Layout (Reused) --- */
+        :root { --bg-color: #0d0d0d; --surface-glass: rgba(25, 27, 46, 0.5); --primary-glow: #00ffe0; --text-primary: #f0f0f0; --text-secondary: #a0a0a0; --border-glass: rgba(255, 255, 255, 0.15); --success-color: #4caf50; --warning-color: #ffb300; }
+        body { background-color: var(--bg-color); font-family: 'Inter', sans-serif; color: var(--text-primary); background-attachment: fixed; }
+        h1, h2, h3, h4, h5 { font-family: 'Poppins', sans-serif; }
+        .glass-panel { background: var(--surface-glass); backdrop-filter: blur(12px); border: 1px solid var(--border-glass); border-radius: 16px;}
+        .app-wrapper { display: flex; min-height: 100vh; }
+        .sidebar { width: 260px; padding: 1.5rem 1rem; position: fixed; top: 0; left: 0; bottom: 0; transform: translateX(-100%); z-index: 1000; }
+        .sidebar.is-open { transform: translateX(0); }
+        .sidebar .nav-link { color: var(--text-secondary); display: flex; align-items: center; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 0.5rem; }
+        .sidebar .nav-link.active, .sidebar .nav-link:hover { background-color: rgba(0, 255, 224, 0.1); color: var(--primary-glow); }
+        .sidebar .nav-link i { font-size: 1.25rem; margin-right: 1rem; }
+        .content-wrapper { flex-grow: 1; padding: 1rem; display: flex; flex-direction: column; }
+        .topbar { padding: 0.75rem 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; }
+        @media (min-width: 992px) { .sidebar { position: static; transform: translateX(0); } .content-wrapper { width: calc(100% - 260px); } #sidebar-toggle { display: none; } }
+
+        /* --- Dashboard Specific Styles --- */
+        .quick-action-btn {
+            background-color: rgba(0,0,0,0.2);
+            border: 1px solid var(--border-glass);
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 1rem;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: all 0.2s ease-in-out;
+        }
+        .quick-action-btn:hover {
+            border-color: var(--primary-glow);
+            color: var(--primary-glow);
+            transform: translateY(-4px);
+        }
+        .transaction-item {
+            padding: 0.75rem 0.25rem;
+            border-bottom: 1px solid var(--border-glass);
+        }
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+<div class="app-wrapper">
+    <!-- Sidebar (Active on Dashboard) -->
+    <nav class="sidebar glass-panel d-flex flex-column" id="appSidebar">
+        <div>
+            <a href="/dashboard" class="sidebar-brand nav-link text-light mb-4"><i class="bi bi-shield-check"></i><span class="nav-link-text">EasyPay</span></a>
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link active" href="/dashboard"><i class="bi bi-grid-1x2-fill"></i><span class="nav-link-text">Dashboard</span></a></li>
+                <li class="nav-item"><a class="nav-link" href="/accounts.html"><i class="bi bi-wallet2"></i><span class="nav-link-text">Accounts</span></a></li>
+                <li class="nav-item"><a class="nav-link" href="/transfer.html"><i class="bi bi-arrow-left-right"></i><span class="nav-link-text">Transfer</span></a></li>
+                <!-- Other links -->
+            </ul>
+        </div>
+        <!-- Logout etc. -->
+    </nav>
+    
+    <div class="content-wrapper">
+        <!-- Topbar -->
+        <header class="topbar glass-panel d-flex align-items-center justify-content-between">
+            <button class="btn btn-dark d-lg-none" id="sidebar-toggle" aria-controls="appSidebar" aria-expanded="false" aria-label="Toggle navigation"><i class="bi bi-list"></i></button>
+            <h4 class="d-none d-lg-block m-0">Dashboard</h4>
+            <div class="d-flex align-items-center"><span class="me-3 d-none d-md-inline">Welcome, Alex</span><img src="https://i.pravatar.cc/40" class="rounded-circle" alt="User Avatar"></div>
+        </header>
+
+        <!-- Main Content: Dashboard Grid -->
+        <main class="main-content">
+            <div class="row">
+                <!-- Main Column -->
+                <div class="col-lg-8">
+                    <!-- Accounts Summary Widget -->
+                    <div class="glass-panel p-4 mb-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                           <div>
+                                <h5 class="text-secondary mb-0">Total Balance</h5>
+                                <h1 class="display-5" style="color: var(--primary-glow);">$6,250.50 <span class="h5 text-secondary">USD</span></h1>
+                           </div>
+                           <a href="/accounts.html" class="btn btn-outline-light">Manage Accounts</a>
+                        </div>
+                        <hr style="border-color: var(--border-glass);">
+                        <!-- Individual Account List -->
+                        <div class="d-flex justify-content-between align-items-center py-2">
+                           <div><i class="bi bi-wallet me-2"></i>Personal Savings</div>
+                           <div class="fw-bold">$1,250.50</div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center py-2">
+                           <div><i class="bi bi-briefcase me-2"></i>Business Account</div>
+                           <div class="fw-bold">$5,000.00</div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Transactions Widget -->
+                    <div class="glass-panel p-4 mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">Recent Activity</h5>
+                            <a href="/transactions.html" class="btn-link text-secondary">View All</a>
+                        </div>
+                        <!-- Transaction List -->
+                        <div>
+                            <div class="transaction-item d-flex align-items-center">
+                                <i class="bi bi-arrow-down-circle-fill fs-4 me-3" style="color: var(--success-color);"></i>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold">Incoming Transfer</div>
+                                    <small class="text-secondary">From J. Doe</small>
+                                </div>
+                                <div class="text-end">
+                                    <div class="fw-bold" style="color: var(--success-color);">+ $500.00</div>
+                                    <small class="text-secondary">Jan 22, 2024</small>
+                                </div>
+                            </div>
+                             <div class="transaction-item d-flex align-items-center">
+                                <i class="bi bi-arrow-up-circle-fill fs-4 me-3"></i>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold">Coffee Shop</div>
+                                    <small class="text-secondary">Card Purchase</small>
+                                </div>
+                                <div class="text-end">
+                                    <div class="fw-bold">- $5.75</div>
+                                    <small class="text-secondary">Jan 21, 2024</small>
+                                </div>
+                            </div>
+                            <div class="transaction-item d-flex align-items-center">
+                                <i class="bi bi-receipt-cutoff fs-4 me-3"></i>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold">Utility Bill</div>
+                                    <small class="text-secondary">Bill Payment</small>
+                                </div>
+                                <div class="text-end">
+                                    <div class="fw-bold">- $85.20</div>
+                                    <small class="text-secondary">Jan 20, 2024</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Side Column -->
+                <div class="col-lg-4">
+                    <!-- Quick Actions Widget -->
+                    <div class="glass-panel p-4 mb-4">
+                        <h5 class="mb-3">Quick Actions</h5>
+                        <div class="d-flex justify-content-around gap-2">
+                            <a href="/transfer.html" class="quick-action-btn flex-fill"><i class="bi bi-send-fill fs-4 mb-2"></i><div>Send</div></a>
+                            <a href="/accounts/topup.html" class="quick-action-btn flex-fill"><i class="bi bi-plus-circle-fill fs-4 mb-2"></i><div>Add</div></a>
+                            <a href="/bills.html" class="quick-action-btn flex-fill"><i class="bi bi-receipt fs-4 mb-2"></i><div>Bills</div></a>
+                        </div>
+                    </div>
+                    
+                    <!-- Alerts Widget -->
+                    <div class="glass-panel p-4 mb-4">
+                        <h5 class="mb-3">Alerts</h5>
+                        <div class="alert p-3 d-flex" style="background-color: rgba(255,179,0,0.15); border: 1px solid var(--warning-color);">
+                           <i class="bi bi-exclamation-triangle-fill me-3" style="color: var(--warning-color);"></i>
+                           <div>
+                                <h6 class="mb-1" style="color: var(--warning-color);">Address Verification</h6>
+                                <p class="mb-0 small">Your proof of address is currently under review.</p>
+                           </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+<script>
+    // Minimal JS for sidebar toggle
+    document.getElementById('sidebar-toggle')?.addEventListener('click', () => document.getElementById('appSidebar').classList.toggle('is-open'));
+</script>
+</body>
+</html>

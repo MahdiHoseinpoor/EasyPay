@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyPay - Secure Access</title>
+    
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- Base Theme & Typography --- */
+        :root {
+            --bg-color: #0d0d0d;
+            --surface-glass: rgba(25, 27, 46, 0.5);
+            --primary-glow: #00ffe0;
+            --secondary-glow: #ff007f;
+            --text-primary: #f0f0f0;
+            --text-secondary: #a0a0a0;
+            --border-glass: rgba(255, 255, 255, 0.15);
+            --error-color: #ff5252;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at 1% 1%, var(--secondary-glow), transparent 25%), radial-gradient(circle at 99% 99%, var(--primary-glow), transparent 25%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+        }
+
+        /* --- Glassmorphism Panel --- */
+        .glass-panel {
+            background: var(--surface-glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid var(--border-glass);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        /* --- Cyberpunk Form & Button Styles --- */
+        .form-control-cyber {
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-glass);
+            color: var(--text-primary);
+            border-radius: 8px;
+        }
+        .form-control-cyber:focus {
+            background-color: rgba(0, 0, 0, 0.3);
+            color: var(--text-primary);
+            border-color: var(--primary-glow);
+            box-shadow: 0 0 10px -2px var(--primary-glow);
+        }
+        .form-control-cyber::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .btn-glow {
+            border-radius: 8px;
+            border: 1px solid var(--primary-glow);
+            background-color: transparent;
+            color: var(--primary-glow);
+            transition: all 0.2s ease-in-out;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+        }
+        .btn-glow:hover, .btn-glow:focus {
+            background-color: var(--primary-glow);
+            color: var(--bg-color);
+            box-shadow: 0 0 5px var(--primary-glow), 0 0 15px var(--primary-glow), 0 0 25px var(--primary-glow);
+        }
+        .btn-glow:disabled {
+             border-color: var(--text-secondary);
+             color: var(--text-secondary);
+             cursor: not-allowed;
+             opacity: 0.5;
+        }
+        .btn-glow:disabled:hover{
+            background-color: transparent;
+            box-shadow: none;
+        }
+
+        .btn-link-cyber {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+        .btn-link-cyber:hover {
+            color: var(--primary-glow);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<main class="container d-flex align-items-center justify-content-center min-vh-100 py-5">
+    <div class="row align-items-center w-100" style="max-width: 960px;">
+        
+        <!-- Left Column: Visual/Branding (Hidden on mobile) -->
+        <div class="col-lg-6 d-none d-lg-block text-center text-lg-start pe-lg-5">
+             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 48px; height: 48px; color: var(--primary-glow);">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+             </svg>
+            <h1 class="display-4 mt-2" style="text-shadow: 0 0 10px var(--primary-glow-alpha);">Secure, Swift, Seamless.</h1>
+            <p class="lead text-secondary mt-3">Enter the future of finance. Your digital wallet is just a step away.</p>
+        </div>
+
+        <!-- Right Column: Auth Form -->
+        <div class="col-lg-6 col-md-12">
+            <div class="glass-panel p-4 p-sm-5">
+                
+                <!-- STATE 1: Enter Mobile Number -->
+                <div id="enter-mobile-state">
+                    <h2 class="text-center mb-1">Welcome</h2>
+                    <p class="text-center text-secondary mb-4">Enter your mobile to sign in or create an account.</p>
+                    
+                    <form id="mobile-form">
+                        <div class="mb-3">
+                            <label for="mobileNumber" class="form-label">Mobile Number</label>
+                            <div class="input-group">
+                                <span class="input-group-text form-control-cyber" id="country-code">+1</span>
+                                <input type="tel" class="form-control form-control-cyber" id="mobileNumber" placeholder="555 123 4567" aria-label="Mobile Number" required>
+                            </div>
+                            <!-- Error message placeholder -->
+                             <div id="mobile-error" class="text-danger mt-2" style="font-size: 0.875rem; display: none;">Please enter a valid mobile number.</div>
+                        </div>
+                        <p class="text-secondary text-center small mt-3">By continuing, you agree to our Terms of Service. We'll send an SMS to verify your number.</p>
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-glow">Send Code</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- STATE 2: Enter Verification Code (Initially Hidden) -->
+                <div id="enter-code-state" style="display: none;">
+                    <h2 class="text-center mb-1">Verify Code</h2>
+                    <p class="text-center text-secondary mb-4">A 6-digit code was sent to <strong id="user-mobile-display" class="text-light">+1 555 123 4567</strong>. <a href="#" id="change-number-link" class="btn-link-cyber">Change</a></p>
+                    
+                    <form id="code-form">
+                         <div class="mb-3">
+                            <label for="verificationCode" class="form-label">Verification Code</label>
+                            <input type="text" class="form-control form-control-cyber text-center" id="verificationCode" placeholder="_ _ _ _ _ _" maxlength="6" inputmode="numeric" required>
+                             <!-- Error message placeholder -->
+                             <div id="code-error" class="text-danger mt-2" style="font-size: 0.875rem; display: none;">Invalid verification code.</div>
+                         </div>
+                        
+                        <div class="text-center mt-3">
+                           <button type="button" id="resend-code-btn" class="btn btn-link-cyber" disabled>Resend Code (0:59)</button>
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-glow">Verify & Continue</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    // --- Minimal Vanilla JS for State Management ---
+
+    // DOM Elements
+    const mobileForm = document.getElementById('mobile-form');
+    const mobileInput = document.getElementById('mobileNumber');
+    const mobileError = document.getElementById('mobile-error');
+    const enterMobileState = document.getElementById('enter-mobile-state');
+
+    const codeForm = document.getElementById('code-form');
+    const enterCodeState = document.getElementById('enter-code-state');
+    const userMobileDisplay = document.getElementById('user-mobile-display');
+    const changeNumberLink = document.getElementById('change-number-link');
+    const resendBtn = document.getElementById('resend-code-btn');
+    
+    // Event listener for the first form (mobile number)
+    mobileForm.addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent actual form submission
+        
+        // Basic validation
+        if (mobileInput.value.length < 7) {
+            mobileError.style.display = 'block';
+            return;
+        }
+        mobileError.style.display = 'none';
+
+        // --- MOCK API CALL ---
+        console.log(`Sending verification code to: +1 ${mobileInput.value}`);
+        
+        // Update the UI
+        userMobileDisplay.textContent = `+1 ${mobileInput.value}`;
+        enterMobileState.style.display = 'none';
+        enterCodeState.style.display = 'block';
+        
+        // Start resend cooldown timer
+        startResendTimer(59);
+    });
+
+    // Event listener to go back and change number
+    changeNumberLink.addEventListener('click', function(event) {
+        event.preventDefault();
+        enterCodeState.style.display = 'none';
+        enterMobileState.style.display = 'block';
+    });
+
+    // Mock verification (assuming existing user with 2FA)
+    codeForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        // Redirect to the next step
+        console.log('Verification successful! Redirecting to /auth/verify...');
+        // window.location.href = '/auth/verify'; // In a real app
+    });
+
+    // Resend Timer Logic
+    function startResendTimer(duration) {
+        let timer = duration;
+        resendBtn.disabled = true;
+        const interval = setInterval(() => {
+            let seconds = timer;
+            resendBtn.textContent = `Resend Code (0:${seconds < 10 ? '0' : ''}${seconds})`;
+            if (--timer < 0) {
+                clearInterval(interval);
+                resendBtn.textContent = 'Resend Code';
+                resendBtn.disabled = false;
+            }
+        }, 1000);
+    }
+</script>
+
+</body>
+</html>
