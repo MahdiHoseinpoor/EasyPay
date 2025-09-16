@@ -7,7 +7,14 @@
     <div class="content-wrapper">
         <Topbar Title="Dashboard" OnToggleSidebar="ToggleSidebar" />
         <main class="main-content">
-            @Body
+         <ErrorBoundary>
+            <ChildContent>
+                @Body
+            </ChildContent>
+            <ErrorContent Context="ex">
+                <EasyPay.Web.Pages.Errors.InternalServerError Exception="ex" />
+            </ErrorContent>
+        </ErrorBoundary>
         </main>
     </div>
 </div>

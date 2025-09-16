@@ -3,7 +3,7 @@ using System;
 using EasyPay.Shared.DTOs.Report;
 namespace EasyPay.Application.Queries.Report.TransactionEntity
 {
-    public class GetMyTransactionHistoryQuery : IRequest<Result<IPagedList<TransactionDto>>>
+    public class GetMyTransactionHistoryQuery : IRequest<Result<PagedList<TransactionDto>>>
     {
         public Guid AccountId { get; set; }
         public int PageIndex { get; set; } = 0;

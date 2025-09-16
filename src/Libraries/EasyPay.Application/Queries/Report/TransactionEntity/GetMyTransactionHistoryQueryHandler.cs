@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace EasyPay.Application.Queries.Report.TransactionEntity
 {
-    public class GetMyTransactionHistoryQueryHandler : IRequestHandler<GetMyTransactionHistoryQuery, Result<IPagedList<TransactionDto>>>
+    public class GetMyTransactionHistoryQueryHandler : IRequestHandler<GetMyTransactionHistoryQuery, Result<PagedList<TransactionDto>>>
     {
         private readonly ITransactionRepository _transactionRepository;
         private readonly IAccountRepository _accountRepository;
@@ -26,16 +26,16 @@ namespace EasyPay.Application.Queries.Report.TransactionEntity
             _currentUserService = currentUserService;
         }
 
-        public async Task<Result<IPagedList<TransactionDto>>> Handle(GetMyTransactionHistoryQuery request, CancellationToken cancellationToken)
+        public async Task<Result<PagedList<TransactionDto>>> Handle(GetMyTransactionHistoryQuery request, CancellationToken cancellationToken)
         {
             var userId = _currentUserService.UserId;
 
             var account = await _accountRepository.GetByIdAsync(request.AccountId);
             if (account == null)
-                return Result<IPagedList<TransactionDto>>.Failure(new NotFoundError("Account not found."));
+                return Result<PagedList<TransactionDto>>.Failure(new NotFoundError("Account not found."));
 
             if (account.OwnerUserId != userId)
-                return Result<IPagedList<TransactionDto>>.Failure(new Error(403, "Forbidden: You do not have access to this account's history."));
+                return Result<PagedList<TransactionDto>>.Failure(new Error(403, "Forbidden: You do not have access to this account's history."));
 
             var pagedTransactions = await _transactionRepository.GetPagedListAsync(
                 predicate: t => t.AccountId == request.AccountId,
@@ -44,10 +44,10 @@ namespace EasyPay.Application.Queries.Report.TransactionEntity
                 pageSize: request.PageSize
             );
 
-            var transactionDtos = _mapper.Map<IReadOnlyList<TransactionDto>>(pagedTransactions.Items);
+            var transactionDtos = _mapper.Map<List<TransactionDto>>(pagedTransactions.Items);
             var pagedResult = new PagedList<TransactionDto>(transactionDtos, pagedTransactions.PageIndex, pagedTransactions.PageSize, pagedTransactions.TotalCount);
 
-            return Result<IPagedList<TransactionDto>>.Success(pagedResult);
+            return Result<PagedList<TransactionDto>>.Success(pagedResult);
         }
     }
 }

@@ -15,25 +15,28 @@ namespace EasyPay.Web.Services
     {
         Task<List<AccountDto>> GetMyAccounts();
         Task<List<BankCardDto>> GetMyBankCards();
-        Task<IPagedList<TransactionDto>> GetTransactionHistory(Guid accountId, int page, int pageSize);
+        Task<PagedList<TransactionDto>> GetTransactionHistory(Guid accountId, int page, int pageSize);
         Task<List<AuthItemValueDto>> GetMySubmittedDocuments();
     }
 
     public class ProfileService : IProfileService
     {
         private readonly HttpClient _httpClient;
+        private readonly AppState _appState;
         private readonly ILogger<ProfileService> _logger;
 
-        public ProfileService(HttpClient httpClient, ILogger<ProfileService> logger)
+        public ProfileService(HttpClient httpClient, ILogger<ProfileService> logger, AppState appState)
         {
             _httpClient = httpClient;
             _logger = logger;
+            _appState = appState;
         }
 
         public async Task<List<AccountDto>> GetMyAccounts()
         {
             try
             {
+                _appState.ClearError();
                 var result = await _httpClient.GetFromJsonAsync<Result<List<AccountDto>>>(ApiEndpoints.Profile.MyAccounts);
                 if (result != null && result.IsSuccess)
                 {
@@ -45,6 +48,16 @@ namespace EasyPay.Web.Services
                 }
 
                 return new List<AccountDto>();
+            }
+            catch (HttpRequestException ex)
+            {
+                _appState.SetError(
+                    AppErrorType.ServerUnreachable,
+                    "Server Error",
+                    "We couldn't connect to our services. Our team has been notified. Please try again in a few moments."
+                );
+
+                return null;
             }
             catch (Exception ex)
             {
@@ -74,15 +87,15 @@ namespace EasyPay.Web.Services
                 return new List<BankCardDto>();
             }
         }
-        public async Task<IPagedList<TransactionDto>> GetTransactionHistory(Guid accountId, int page, int pageSize)
+        public async Task<PagedList<TransactionDto>> GetTransactionHistory(Guid accountId, int page, int pageSize)
         {
             var url = $"{ApiEndpoints.Profile.MyTransactionHistory(accountId)}?pageIndex={page}&pageSize={pageSize}";
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<Result<IPagedList<TransactionDto>>>(url);
+                var result = await _httpClient.GetFromJsonAsync<Result<PagedList<TransactionDto>>>(url);
                 if (result != null && result.IsSuccess)
                 {
-                    return result.Value;
+                    return result.Value ?? new PagedList<TransactionDto>();
                 }
 
                 if (result != null)

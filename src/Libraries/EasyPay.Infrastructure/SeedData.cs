@@ -304,7 +304,7 @@ namespace EasyPay.Infrastructure.Data
 
         private static async Task SeedUserSpecificDataAsync(ApplicationDbContext context, UserManager<ApplicationUser> userManager, ILogger logger)
         {
-            var user1 = await userManager.FindByNameAsync("09123456789") as NaturalUser;
+            var user1 = await userManager.FindByNameAsync("+989123456789") as NaturalUser;
             if (user1 == null) return;
 
             // Seed Account for User 1

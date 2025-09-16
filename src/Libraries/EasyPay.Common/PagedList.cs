@@ -11,16 +11,18 @@ namespace EasyPay.Common
         public int PageIndex { get; }
         public int PageSize { get; }
         public int TotalCount { get; }
-        public int TotalPages => (int)Math.Ceiling(TotalCount * 1.0 / PageSize);
+        public int TotalPages => PageSize != 0 ? (int)Math.Ceiling(TotalCount * 1.0 / PageSize) : 0;
         public bool HasPreviousPage => PageIndex > 0;
         public bool HasNextPage => PageIndex + 1 < TotalPages;
-        public IReadOnlyList<T> Items { get; }
-
-        public PagedList(IReadOnlyList<T> source, int pageIndex, int pageSize, int totalCount)
+        public List<T> Items { get; } = new List<T>();
+        public PagedList() { }
+        public PagedList(List<T> source, int pageIndex, int pageSize, int totalCount)
         {
+            Items = source ?? new List<T>();
             PageIndex = pageIndex;
             PageSize = pageSize;
             TotalCount = totalCount;
+
         }
     }
 }

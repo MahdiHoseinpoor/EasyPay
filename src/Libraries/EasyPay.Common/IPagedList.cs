@@ -14,6 +14,6 @@ namespace EasyPay.Common
         int TotalPages { get; }
         bool HasPreviousPage { get; }
         bool HasNextPage { get; }
-        IReadOnlyList<T> Items { get; }
+        List<T> Items { get; }
     }
 }

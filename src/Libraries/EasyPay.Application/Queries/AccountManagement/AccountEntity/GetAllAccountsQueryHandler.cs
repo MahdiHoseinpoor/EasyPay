@@ -29,7 +29,7 @@ namespace EasyPay.Application.Queries.AccountManagement.AccountEntity
                 disableTracking: true
             );
 
-            var accountDtos = _mapper.Map<IReadOnlyList<AccountDto>>(pagedAccounts.Items);
+            var accountDtos = _mapper.Map<List<AccountDto>>(pagedAccounts.Items);
 
             var pagedAccountDtos = new PagedList<AccountDto>(
                 accountDtos,

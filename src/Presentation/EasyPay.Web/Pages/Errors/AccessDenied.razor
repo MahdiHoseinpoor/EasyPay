@@ -1,0 +1,30 @@
+﻿@page "/403"
+@layout Layout.ErrorLayout
+
+<PageTitle>Access Denied</PageTitle>
+
+<div class="glass-panel">
+    <i class="bi bi-shield-lock-fill fs-1" style="color: var(--primary-glow);"></i>
+    <h1 class="error-code mt-3">403</h1>
+    <h2 class="h3">Access Denied</h2>
+    <p class="text-secondary mt-3 mb-4">
+        You do not have the necessary permissions to view this page. This is a security feature to keep your account safe.
+    </p>
+    <a href="/" class="btn btn-glow"><i class="bi bi-arrow-left me-2"></i>Go to Dashboard</a>
+</div>
+
+<style>
+    .glass-panel {
+        text-align: center;
+        max-width: 500px;
+        width: 100%;
+        padding: 2.5rem;
+    }
+
+    .error-code {
+        font-size: 5rem;
+        font-weight: 700;
+        color: var(--primary-glow);
+        text-shadow: 0 0 15px var(--primary-glow);
+    }
+</style>

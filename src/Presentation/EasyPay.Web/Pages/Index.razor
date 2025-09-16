@@ -156,6 +156,7 @@
 
             var primaryAccount = myAccounts.First();
             var transactionHistory = await ProfileService.GetTransactionHistory(primaryAccount.Id, 0, 3);
+            
             recentTransactions = transactionHistory?.Items.ToList();
         }
 
