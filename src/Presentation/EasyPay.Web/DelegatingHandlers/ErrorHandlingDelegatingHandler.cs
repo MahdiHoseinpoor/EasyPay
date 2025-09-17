@@ -1,5 +1,4 @@
 ﻿using EasyPay.Common.Errors;
-using EasyPay.Web.Exceptions;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;

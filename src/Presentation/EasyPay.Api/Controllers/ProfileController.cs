@@ -5,6 +5,7 @@ using EasyPay.Application.Queries.AccountManagement.BankCardEntity;
 using EasyPay.Application.Queries.Identity.AuthItemValueEntity;
 using EasyPay.Application.Queries.Report.TransactionEntity;
 using EasyPay.Common;
+using EasyPay.Common.Errors.Business;
 using EasyPay.Shared.DTOs.AccountManagement;
 using EasyPay.Shared.DTOs.Identity;
 using EasyPay.Shared.DTOs.Report;
@@ -19,7 +20,7 @@ namespace EasyPay.Api.Controllers
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [Authorize]
-    public class ProfileController : ControllerBase
+    public class ProfileController : ApiControllerBase
     {
         private readonly IMediator _mediator;
 
@@ -59,7 +60,7 @@ namespace EasyPay.Api.Controllers
         {
             var query = new GetMyAccountsQuery();
             var result = await _mediator.Send(query);
-            return Ok(result);
+            return HandleResult(result);
         }
 
         /// <summary>
@@ -75,11 +76,7 @@ namespace EasyPay.Api.Controllers
         {
             var query = new GetMyTransactionHistoryQuery { AccountId = accountId, PageIndex = pageIndex, PageSize = pageSize };
             Result<PagedList<TransactionDto>> result = await _mediator.Send(query);
-            return result.Match<ActionResult>(success => Ok(success), failure => failure switch
-            {
-                NotFoundError => NotFound(failure),
-                _ => BadRequest(failure)
-            });
+            return HandleResult(result);
         }
 
         /// <summary>

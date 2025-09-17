@@ -1,6 +1,6 @@
 ﻿using EasyPay.Common.Errors;
 
-namespace EasyPay.Web.Exceptions
+namespace EasyPay.Web
 {
     public class ApiException : Exception
     {

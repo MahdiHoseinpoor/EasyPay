@@ -32,30 +32,8 @@ namespace EasyPay.Web.Services
 
         public async Task<List<AccountDto>> GetMyAccounts()
         {
-            try
-            {
-                var result = await _httpClient.GetFromJsonAsync<Result<List<AccountDto>>>(ApiEndpoints.Profile.MyAccounts);
-                if (result != null && result.IsSuccess)
-                {
-                    return result.Value ?? new List<AccountDto>();
-                }
-                if (result != null)
-                {
-                    _logger.LogWarning("API call to get accounts failed with message: {ErrorMessage}", result.error.message);
-                }
-
-                return new List<AccountDto>();
-            }
-            catch (HttpRequestException ex)
-            {
-               
-                return null;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Exception occurred while fetching user accounts.");
-                return new List<AccountDto>();
-            }
+           var result = await _httpClient.GetFromJsonAsync<List<AccountDto>>(ApiEndpoints.Profile.MyAccounts);
+           return result ?? new List<AccountDto>();              
         }
         public async Task<List<BankCardDto>> GetMyBankCards()
         {
@@ -82,25 +60,9 @@ namespace EasyPay.Web.Services
         public async Task<PagedList<TransactionDto>> GetTransactionHistory(Guid accountId, int page, int pageSize)
         {
             var url = $"{ApiEndpoints.Profile.MyTransactionHistory(accountId)}?pageIndex={page}&pageSize={pageSize}";
-            try
-            {
-                var result = await _httpClient.GetFromJsonAsync<Result<PagedList<TransactionDto>>>(url);
-                if (result != null && result.IsSuccess)
-                {
-                    return result.Value ?? new PagedList<TransactionDto>();
-                }
+            var result = await _httpClient.GetFromJsonAsync<PagedList<TransactionDto>>(url);            
+            return result ?? new PagedList<TransactionDto>();
 
-                if (result != null)
-                {
-                    _logger.LogWarning("API call to get transaction history failed: {ErrorMessage}", result.error.message);
-                }
-                return null;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Exception occurred while fetching transaction history for account {AccountId}", accountId);
-                return null;
-            }
         }
         public async Task<List<AuthItemValueDto>> GetMySubmittedDocuments()
         {

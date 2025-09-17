@@ -148,19 +148,39 @@
 
     protected override async Task OnInitializedAsync()
     {
-        myAccounts = await ProfileService.GetMyAccounts();
-
+        try
+        {
+            myAccounts = await ProfileService.GetMyAccounts();
+        }
+        catch (ApiException ex)
+        {
+            throw;
+        }
         if (myAccounts != null && myAccounts.Any())
         {
             totalBalance = myAccounts.Sum(a => a.CurrentBalance);
-
             var primaryAccount = myAccounts.First();
-            var transactionHistory = await ProfileService.GetTransactionHistory(primaryAccount.Id, 0, 3);
-            if (transactionHistory != null && transactionHistory.Items != null)
-                recentTransactions = transactionHistory.Items.ToList();
+            try
+            {
+                var transactionHistory = await ProfileService.GetTransactionHistory(primaryAccount.Id, 0, 3);
+                if (transactionHistory != null && transactionHistory.Items != null)
+                    recentTransactions = transactionHistory.Items.ToList();
+            }
+            catch (ApiException ex)
+            {
+                switch (ex.ApiError.code)
+                {
+                    case 404:
+                        recentTransactions = new List<TransactionDto>();
+                        break;
+                }
+            }
+
         }
 
         isLoading = false;
+
+
     }
 
     private (string Icon, string Color, string AmountSign) GetTransactionTypeDetails(TransactionType type)

@@ -161,7 +161,7 @@ namespace EasyPay.Common
                 .Take(pageSize)
                 .ToListAsync();
 
-            return new PagedList<TEntity>(items, totalCount, pageIndex, pageSize);
+            return new PagedList<TEntity>(items, pageIndex, pageSize, totalCount);
 
         }
 
@@ -183,7 +183,7 @@ namespace EasyPay.Common
                 .Take(pageSize)
                 .ToListAsync();
 
-            return new PagedList<TResult>(items, totalCount, pageIndex, pageSize);
+            return new PagedList<TResult>(items, pageIndex, pageSize, totalCount);
         }
         #endregion
 
