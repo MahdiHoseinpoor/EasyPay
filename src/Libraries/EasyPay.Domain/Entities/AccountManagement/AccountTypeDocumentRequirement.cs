@@ -12,8 +12,8 @@ namespace EasyPay.Domain.Entities.AccountManagement
         public virtual AuthItem AuthItem { get; set; }
 
         public bool IsRequired { get; set; } = true; 
-        public int? Order { get; set; } 
-        public string ValidationRules { get; set; }
+        public int? Order { get; set; }
+        public string ValidationRules { get; set; } = string.Empty;
 
         [SetsRequiredMembers]
         public AccountTypeDocumentRequirement()

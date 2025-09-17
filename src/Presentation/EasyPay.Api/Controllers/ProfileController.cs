@@ -70,11 +70,16 @@ namespace EasyPay.Api.Controllers
         /// <param name="pageSize">The page size for pagination.</param>
         [HttpGet("accounts/{accountId}/transactions")]
         [ProducesResponseType(typeof(PagedList<TransactionDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(NotFoundError), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetMyTransactionHistory(Guid accountId, [FromQuery] int pageIndex = 0, [FromQuery] int pageSize = 20)
         {
             var query = new GetMyTransactionHistoryQuery { AccountId = accountId, PageIndex = pageIndex, PageSize = pageSize };
             Result<PagedList<TransactionDto>> result = await _mediator.Send(query);
-            return Ok(result);
+            return result.Match<ActionResult>(success => Ok(success), failure => failure switch
+            {
+                NotFoundError => NotFound(failure),
+                _ => BadRequest(failure)
+            });
         }
 
         /// <summary>

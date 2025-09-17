@@ -1,6 +1,7 @@
 ﻿using EasyPay.Domain.Entities.AccountManagement;
-using EasyPay.Shared.Enums.Report;
 using EasyPay.Domain.ValueObjects.Report;
+using EasyPay.Shared.DTOs.Report;
+using EasyPay.Shared.Enums.Report;
 using System.Diagnostics.CodeAnalysis;
 
 namespace EasyPay.Domain.Entities.Report
@@ -22,7 +23,18 @@ namespace EasyPay.Domain.Entities.Report
             Status = TransactionStatus.Completed;
             TransactionDate = DateTime.UtcNow;
         }
-
+        [SetsRequiredMembers]
+        public Transaction(Guid accountId, decimal amount, TransactionType transactionType, string referenceId,DateTime transactionDate, TransactionMetadata metadata, string description = null)
+        {
+            AccountId = accountId;
+            Amount = amount;
+            TransactionType = transactionType;
+            ReferenceId = referenceId;
+            Description = description;
+            TransactionMetadata = metadata;
+            Status = TransactionStatus.Completed;
+            TransactionDate = transactionDate;
+        }
         public Guid AccountId { get; set; }
         public decimal Amount { get; set; }
         public TransactionType TransactionType { get; set; }

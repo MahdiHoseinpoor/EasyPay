@@ -22,21 +22,18 @@ namespace EasyPay.Web.Services
     public class ProfileService : IProfileService
     {
         private readonly HttpClient _httpClient;
-        private readonly AppState _appState;
         private readonly ILogger<ProfileService> _logger;
 
-        public ProfileService(HttpClient httpClient, ILogger<ProfileService> logger, AppState appState)
+        public ProfileService(HttpClient httpClient, ILogger<ProfileService> logger)
         {
             _httpClient = httpClient;
             _logger = logger;
-            _appState = appState;
         }
 
         public async Task<List<AccountDto>> GetMyAccounts()
         {
             try
             {
-                _appState.ClearError();
                 var result = await _httpClient.GetFromJsonAsync<Result<List<AccountDto>>>(ApiEndpoints.Profile.MyAccounts);
                 if (result != null && result.IsSuccess)
                 {
@@ -51,12 +48,7 @@ namespace EasyPay.Web.Services
             }
             catch (HttpRequestException ex)
             {
-                _appState.SetError(
-                    AppErrorType.ServerUnreachable,
-                    "Server Error",
-                    "We couldn't connect to our services. Our team has been notified. Please try again in a few moments."
-                );
-
+               
                 return null;
             }
             catch (Exception ex)
