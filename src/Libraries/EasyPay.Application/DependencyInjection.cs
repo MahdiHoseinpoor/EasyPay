@@ -16,7 +16,6 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.Configure<StorageSettings>(builder.Configuration.GetSection(StorageSettings.SectionName));
             builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
             builder.Services.AddScoped<IAccountNumberService, AccountNumberService>();
-            builder.Services.AddScoped<IBillInquiryService, FakeBillInquiryService>();
             builder.Services.AddScoped<ISmsService, FakeSmsService>();
             builder.Services.AddScoped<ITokenService, JwtTokenService>();
             builder.Services.AddSingleton<IVerificationCodeCacheService, VerificationCodeCacheService>();

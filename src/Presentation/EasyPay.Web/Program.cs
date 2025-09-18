@@ -26,7 +26,6 @@ builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddScoped<IBillService, BillService>();
 builder.Services.AddScoped<IAuthItemsService, AuthItemsService>();
 builder.Services.AddScoped<IBankCardService, BankCardService>();
 builder.Services.AddSingleton<AuthState>();

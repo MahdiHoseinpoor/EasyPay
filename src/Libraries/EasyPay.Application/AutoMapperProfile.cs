@@ -6,16 +6,11 @@ using EasyPay.Application.Commands.AccountManagement.AccountTypeEntity.CreateAcc
 using EasyPay.Application.Commands.AccountManagement.AccountTypeEntity.UpdateAccountType;
 using EasyPay.Application.Commands.AccountManagement.BankCardEntity.CreateBankCard;
 using EasyPay.Application.Commands.AccountManagement.BankCardEntity.UpdateBankCard;
-using EasyPay.Application.Commands.Payment.MobileBillEntity.CreateMobileBill;
-using EasyPay.Application.Commands.Payment.MobileBillEntity.UpdateMobileBill;
-using EasyPay.Application.Commands.Payment.UtilityBillEntity.CreateUtilityBill;
-using EasyPay.Application.Commands.Payment.UtilityBillEntity.UpdateUtilityBill;
 using EasyPay.Shared.DTOs.AccountManagement;
 using EasyPay.Shared.DTOs.Identity;
 using EasyPay.Shared.DTOs.Report;
 using EasyPay.Domain.Entities.AccountManagement;
 using EasyPay.Domain.Entities.Identity;
-using EasyPay.Domain.Entities.Payment;
 using EasyPay.Domain.Entities.Report;
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
@@ -35,10 +30,6 @@ namespace EasyPay.Application
             CreateMap<UpdateAccountCommand, Account>();
             CreateMap<CreateBankCardCommand, BankCard>();
             CreateMap<UpdateBankCardCommand, BankCard>();
-            CreateMap<CreateMobileBillCommand, MobileBill>();
-            CreateMap<UpdateMobileBillCommand, MobileBill>();
-            CreateMap<CreateUtilityBillCommand, UtilityBill>();
-            CreateMap<UpdateUtilityBillCommand, UtilityBill>();
             CreateMap<IdentityRole, RoleDto>();
             CreateMap<CreateAccountCommand, Account>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())

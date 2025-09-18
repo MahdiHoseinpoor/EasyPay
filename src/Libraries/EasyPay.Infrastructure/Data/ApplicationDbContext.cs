@@ -1,6 +1,5 @@
 ﻿using EasyPay.Domain.Entities.AccountManagement;
 using EasyPay.Domain.Entities.Identity;
-using EasyPay.Domain.Entities.Payment;
 using EasyPay.Domain.Entities.Report;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -26,9 +25,6 @@ namespace EasyPay.Infrastructure.Data
         public virtual DbSet<NaturalUser> NaturalUsers { get; set; }
 
         public virtual DbSet<Transaction> Transaction { get; set; }
-        public virtual DbSet<BillBase> BillBase { get; set; }
-        public virtual DbSet<MobileBill> MobileBills { get; set; }
-        public virtual DbSet<UtilityBill> UtilityBills { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
