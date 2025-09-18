@@ -55,4 +55,8 @@ public static class ApiEndpoints
         public static string MyTransactionHistory(Guid accountId) => $"{MyAccounts}/{accountId}/transactions";
         public const string MySubmittedDocuments = $"{Base}/profile/auth-item-values";
     }
+    public static class Payment
+    {
+        public const string RequestGatewayDeposit = $"{Base}/payment/deposit/gateway";
+    }
 }

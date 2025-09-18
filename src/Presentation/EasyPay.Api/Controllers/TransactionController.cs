@@ -13,7 +13,7 @@ namespace EasyPay.Api.Controllers
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [Authorize]
-    public class TransactionController : ControllerBase
+    public class TransactionController : ApiControllerBase
     {
         private readonly IMediator _mediator;
 

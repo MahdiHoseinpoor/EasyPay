@@ -1,6 +1,7 @@
 ﻿using EasyPay.Api.Services;
 using EasyPay.Application.Behaviors;
 using EasyPay.Application.Services;
+using EasyPay.Application.Services.PaymentGateways;
 using FluentValidation;
 using Microsoft.Extensions.Hosting;
 using System.Reflection;
@@ -20,6 +21,10 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddScoped<ITokenService, JwtTokenService>();
             builder.Services.AddSingleton<IVerificationCodeCacheService, VerificationCodeCacheService>();
             builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+            builder.Services.Configure<ZarinpalSettings>(builder.Configuration.GetSection(ZarinpalSettings.SectionName));
+            builder.Services.AddHttpClient<ZarinpalGatewayService>();
+            builder.Services.AddScoped<IPaymentGatewayService, ZarinpalGatewayService>();
+            builder.Services.AddScoped<IPaymentGatewayFactory, PaymentGatewayFactory>();
             builder.Services.AddMediatR(cfg =>
             {
                 cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());

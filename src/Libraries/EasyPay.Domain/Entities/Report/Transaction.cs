@@ -42,6 +42,10 @@ namespace EasyPay.Domain.Entities.Report
         public string ReferenceId { get; set; }
         public string Description { get; set; }
         public TransactionStatus Status { get; set; }
+
+        public string? GatewayName { get; set; }
+        public string? GatewayToken { get; set; }
+
         public TransactionMetadata TransactionMetadata { get; set; }
         public virtual Account Account { get; set; }
     }
