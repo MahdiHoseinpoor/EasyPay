@@ -173,8 +173,8 @@ namespace EasyPay.Infrastructure.Data
             {
                 logger.LogInformation("Seeding AccountTypes...");
                 context.AccountTypes.AddRange(
-                    new AccountType { Title = "Standard Current Account", Code = "SCA", Description = "For daily transactions.", MinimumOpeningBalance = 50, IsActive = true, CreatedBy = "System", ModifiedBy = "System" },
-                    new AccountType { Title = "High-Interest Savings", Code = "HIS", Description = "Grow your savings.", MinimumOpeningBalance = 500, InterestRate = 2.5m, IsActive = true, CreatedBy = "System", ModifiedBy = "System" },
+                    new AccountType { Title = "Standard Current Account", Code = "SCA", Description = "For daily transactions.", MinimumOpeningBalance = 500000m, IsActive = true, CreatedBy = "System", ModifiedBy = "System" },
+                    new AccountType { Title = "High-Interest Savings", Code = "HIS", Description = "Grow your savings.", MinimumOpeningBalance = 5000000m, InterestRate = 2.5m, IsActive = true, CreatedBy = "System", ModifiedBy = "System" },
                     new AccountType { Title = "Student Advantage Account", Code = "SAA", Description = "No fees for students.", MinimumOpeningBalance = 0, MaximumAgeRequirement = 25, IsActive = true, CreatedBy = "System", ModifiedBy = "System" }
                 );
                 await context.SaveChangesAsync();
@@ -260,9 +260,9 @@ namespace EasyPay.Infrastructure.Data
             var savingsAccType = await context.AccountTypes.SingleAsync(at => at.Code == "HIS");
             var studentAccType = await context.AccountTypes.SingleAsync(at => at.Code == "SAA");
 
-            var account1 = new Account { Title = "Primary Checking", AccountNumber = "6270000001", AccountType = standardAccType, OwnerUser = user, Status = AccountStatus.Active, CurrentBalance = 1250.50m };
-            var account2 = new Account { Title = "High-Yield Savings", AccountNumber = "6270000002", AccountType = savingsAccType, OwnerUser = user, Status = AccountStatus.Active, CurrentBalance = 15000.75m };
-            var account3 = new Account { Title = "College Fund", AccountNumber = "6270000003", AccountType = studentAccType, OwnerUser = user, Status = AccountStatus.Active, CurrentBalance = 800.00m };
+            var account1 = new Account { Title = "Primary Checking", AccountNumber = "6270000001", AccountType = standardAccType, OwnerUser = user, Status = AccountStatus.Active, CurrentBalance = 12500000m };
+            var account2 = new Account { Title = "High-Yield Savings", AccountNumber = "6270000002", AccountType = savingsAccType, OwnerUser = user, Status = AccountStatus.Active, CurrentBalance = 150000000m };
+            var account3 = new Account { Title = "College Fund", AccountNumber = "6270000003", AccountType = studentAccType, OwnerUser = user, Status = AccountStatus.Active, CurrentBalance = 8000000m };
             context.Accounts.AddRange(account1, account2, account3);
 
             // --- Bank Cards ---
@@ -285,13 +285,13 @@ namespace EasyPay.Infrastructure.Data
             var rnd = new Random();
             var transactions = new List<Transaction>
             {
-                CreateTransaction(account1, 2000, TransactionType.Deposit, "Paycheck Deposit", -30),
-                CreateTransaction(account1, -25.50m, TransactionType.BillPayment, "Spotify Subscription", -28),
-                CreateTransaction(account1, -85.20m, TransactionType.Withdrawal, "ATM Withdrawal", -25),
-                CreateTransaction(account2, 5000, TransactionType.Deposit, "Initial Savings Deposit", -20),
-                CreateTransaction(account1, -250, TransactionType.TransferOut, "Transfer to Savings", -15, account2.Id.ToString()),
-                CreateTransaction(account2, 250, TransactionType.TransferIn, "Transfer from Checking", -15, account1.Id.ToString()),
-                CreateTransaction(account1, -12.75m, TransactionType.Withdrawal, "Coffee Shop", -5),
+                CreateTransaction(account1, 20000000, TransactionType.Deposit, "Paycheck Deposit", -30),
+                CreateTransaction(account1, -250000, TransactionType.BillPayment, "Spotify Subscription", -28),
+                CreateTransaction(account1, -850000, TransactionType.Withdrawal, "ATM Withdrawal", -25),
+                CreateTransaction(account2, 50000000, TransactionType.Deposit, "Initial Savings Deposit", -20),
+                CreateTransaction(account1, -2500000, TransactionType.TransferOut, "Transfer to Savings", -15, account2.Id.ToString()),
+                CreateTransaction(account2, 2500000, TransactionType.TransferIn, "Transfer from Checking", -15, account1.Id.ToString()),
+                CreateTransaction(account1, -120000, TransactionType.Withdrawal, "Coffee Shop", -5),
             };
             context.Transaction.AddRange(transactions);
 
@@ -307,7 +307,7 @@ namespace EasyPay.Infrastructure.Data
 
             // --- Account (She can only open one without approved docs) ---
             var standardAccType = await context.AccountTypes.SingleAsync(at => at.Code == "SCA");
-            context.Accounts.Add(new Account { Title = "Everyday Spending", AccountNumber = "6270000004", AccountType = standardAccType, OwnerUser = user, Status = AccountStatus.Active, CurrentBalance = 540.80m });
+            context.Accounts.Add(new Account { Title = "Everyday Spending", AccountNumber = "6270000004", AccountType = standardAccType, OwnerUser = user, Status = AccountStatus.Active, CurrentBalance = 5400000m });
 
             // --- Bank Card ---
             context.BankCards.Add(new BankCard { Title = "Primary Debit", CardNumber = "4111111111111111", AccountNumber = "5555555555", OwnerUserId = user.Id });
@@ -329,7 +329,7 @@ namespace EasyPay.Infrastructure.Data
                 account.Id,
                 Math.Abs(amount),
                 type,
-                refId ?? Guid.NewGuid().ToString(), 
+                refId ?? Guid.NewGuid().ToString(),
                 DateTime.UtcNow.AddDays(daysAgo),
                 new TransactionMetadata("127.0.0.1", "SeedData"),
                 description

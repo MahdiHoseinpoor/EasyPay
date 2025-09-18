@@ -1,5 +1,6 @@
 ﻿@using EasyPay.Shared.DTOs.AccountManagement
 @using EasyPay.Shared.Enums.AccountManagement
+@inject EasyPay.Web.Services.CurrencyService CurrencyService
 
 <div class="glass-panel p-4 h-100" @onclick="OnClickCallback">
     <div class="d-flex justify-content-between align-items-start">
@@ -15,8 +16,8 @@
             }
         </div>
         <div class="text-end">
-            <h4 class="mb-1" style="color: var(--primary-glow);">@Account.CurrentBalance.ToString("C")</h4>
-            <small class="text-secondary">Rial</small>
+            <h4 class="mb-1" style="color: var(--primary-glow);">@CurrencyService.Format(Account.CurrentBalance)</h4>
+            <small class="text-secondary">@CurrencyService.GetCurrencySymbol()</small>
         </div>
     </div>
     <hr style="border-color: var(--border-glass);">

@@ -21,7 +21,7 @@ namespace EasyPay.Infrastructure.Configurations.Report
             builder.HasIndex(p => p.ReferenceId);
             builder.Property(p => p.Amount)
                 .IsRequired()
-                .HasColumnType(SqlColumnTypes.Decimal());
+                .HasColumnType(SqlColumnTypes.RialDecimal());
 
             builder.Property(p => p.GatewayName)
                 .HasMaxLength(50);

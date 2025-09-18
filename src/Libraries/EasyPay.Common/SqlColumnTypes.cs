@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,6 +12,7 @@ namespace EasyPay.Common
 
         public static string Decimal(int precision = 18, int scale = 2)
             => $"decimal({precision},{scale})";
+        public static string RialDecimal() => Decimal(18,0);
 
         public static string Varchar(int length)
             => $"varchar({length})";

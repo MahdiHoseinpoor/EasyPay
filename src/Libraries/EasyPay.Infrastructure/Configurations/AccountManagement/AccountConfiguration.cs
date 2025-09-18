@@ -22,7 +22,7 @@ namespace EasyPay.Infrastructure.Configurations.AccountManagement
                 .IsUnicode(false);
 
             builder.Property(p => p.CurrentBalance)
-                .HasColumnType(SqlColumnTypes.Decimal())
+                .HasColumnType(SqlColumnTypes.RialDecimal())
                 .HasDefaultValue(0);
 
             builder.Property(p => p.OpeningDate)

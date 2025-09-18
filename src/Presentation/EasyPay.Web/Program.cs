@@ -28,6 +28,7 @@ builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IAuthItemsService, AuthItemsService>();
 builder.Services.AddScoped<IBankCardService, BankCardService>();
+builder.Services.AddScoped<CurrencyService>();
 builder.Services.AddSingleton<AuthState>();
 var app = builder.Build();
 await app.RunAsync();

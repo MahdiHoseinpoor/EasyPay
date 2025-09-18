@@ -8,6 +8,7 @@
 @using EasyPay.Web.Services
 @inject IProfileService ProfileService
 @inject IJSRuntime JSRuntime
+@inject CurrencyService CurrencyService
 
 <PageTitle>Transaction History</PageTitle>
 
@@ -74,7 +75,7 @@ else
             <div class="col-lg-3">DATE</div>
             <div class="col-lg-4">DESCRIPTION</div>
             <div class="col-lg-3">ACCOUNT</div>
-            <div class="col-lg-2 text-end">AMOUNT(USD)</div>
+            <div class="col-lg-2 text-end">AMOUNT(@CurrencyService.GetCurrencySymbol())</div>
         </div>
 
         @if (!filteredTransactions.Any())
@@ -101,7 +102,7 @@ else
                         </div>
                         <div class="col-lg-3 d-none d-lg-block text-secondary">@tx.AccountTitle</div>
                         <div class="col-12 col-lg-2 text-end fw-bold mt-1 mt-lg-0" style="color: @color;">
-                            @amountSign @tx.Dto.Amount.ToString("N2")
+                            @amountSign @CurrencyService.Format(tx.Dto.Amount)
                         </div>
                     </div>
                 </div>
@@ -143,7 +144,7 @@ else
                     <dl class="row">
                         <dt class="col-sm-5">Amount</dt>
                         <dd class="col-sm-7 fs-5 fw-bold" style="color: @GetTransactionTypeDetails(selectedTransaction.Dto.TransactionType).Color;">
-                            @GetTransactionTypeDetails(selectedTransaction.Dto.TransactionType).AmountSign @selectedTransaction.Dto.Amount.ToString("N2")
+                            @GetTransactionTypeDetails(selectedTransaction.Dto.TransactionType).AmountSign @CurrencyService.Format(selectedTransaction.Dto.Amount)
                         </dd>
 
                         <dt class="col-sm-5">Description</dt>
@@ -194,6 +195,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        CurrencyService.OnCurrencyChange += StateHasChanged;
         myAccounts = await ProfileService.GetMyAccounts();
         if (myAccounts.Any())
         {
@@ -335,6 +337,7 @@ else
 
     public async ValueTask DisposeAsync()
     {
+        CurrencyService.OnCurrencyChange -= StateHasChanged;
         if (_debounceTimer is not null)
         {
             await _debounceTimer.DisposeAsync();

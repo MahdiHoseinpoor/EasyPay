@@ -1,4 +1,7 @@
-﻿<nav class="sidebar glass-panel d-flex flex-column" id="appSidebar">
+﻿@inject EasyPay.Web.Services.CurrencyService CurrencyService
+@implements IDisposable
+
+<nav class="sidebar glass-panel d-flex flex-column" id="appSidebar">
     <div>
         <a href="/" class="nav-link text-light mb-4 d-flex align-items-center">
             <i class="bi bi-shield-check fs-2 me-3"></i>
@@ -18,7 +21,7 @@
                 <a class="nav-link" href="/transfer"><i class="bi bi-arrow-left-right"></i><span>Transfer</span></a>
             </li>
             <li class="nav-item">
-               <NavLink class="nav-link" href="/deposit"><i class="bi bi-plus-circle-fill"></i><span>Deposit</span></NavLink>
+                <NavLink class="nav-link" href="/deposit"><i class="bi bi-plus-circle-fill"></i><span>Deposit</span></NavLink>
             </li>
             <li class="nav-item">
                 <NavLink class="nav-link" href="/history"><i class="bi bi-clock-history"></i><span>History</span></NavLink>
@@ -27,6 +30,11 @@
         </ul>
     </div>
     <div class="mt-auto">
+        <div class="px-3 mb-3">
+            <button class="btn btn-outline-secondary w-100" @onclick="ToggleCurrency">
+                Display: <strong>@CurrencyService.GetCurrencySymbol()</strong>
+            </button>
+        </div>
         <ul class="nav flex-column">
             <li class="nav-item">
                 <a class="nav-link" href="/settings"><i class="bi bi-gear-fill"></i><span>Settings</span></a>
@@ -48,13 +56,32 @@
         margin-bottom: 0.5rem;
         transition: color 0.2s ease, background-color 0.2s ease;
     }
-    .sidebar .nav-link i {
-        font-size: 1.25rem;
-        margin-right: 1rem;
-        width: 24px;
-    }
-    .sidebar .nav-link.active, .sidebar .nav-link:hover {
-        background-color: rgba(0, 255, 224, 0.1);
-        color: var(--primary-glow);
-    }
+
+        .sidebar .nav-link i {
+            font-size: 1.25rem;
+            margin-right: 1rem;
+            width: 24px;
+        }
+
+        .sidebar .nav-link.active, .sidebar .nav-link:hover {
+            background-color: rgba(0, 255, 224, 0.1);
+            color: var(--primary-glow);
+        }
 </style>
+
+@code {
+    protected override void OnInitialized()
+    {
+        CurrencyService.OnCurrencyChange += StateHasChanged;
+    }
+
+    private async Task ToggleCurrency()
+    {
+        await CurrencyService.ToggleCurrencyAsync();
+    }
+
+    public void Dispose()
+    {
+        CurrencyService.OnCurrencyChange -= StateHasChanged;
+    }
+}

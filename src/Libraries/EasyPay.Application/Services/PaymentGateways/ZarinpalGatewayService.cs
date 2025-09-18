@@ -45,17 +45,22 @@ namespace EasyPay.Application.Services.PaymentGateways
                 return Result<PaymentRequestResult>.Failure(new BusinessRuleError("Payment gateway is not configured."));
             }
 
+            // Zarinpal API expects the amount in Toman. The system works with Rial.
+            // We must convert Rial to Toman by dividing by 10.
+            var amountInToman = (long)(request.Amount / 10);
+
             var apiRequest = new
             {
                 merchant_id = _settings.MerchantId,
-                amount = (long)request.Amount,
+                amount = amountInToman,
                 currency = request.Currency,
                 description = request.Description,
                 callback_url = request.CallbackUrl,
                 metadata = new { order_id = request.TransactionId }
             };
 
-            _logger.LogInformation("Sending payment request to Zarinpal for TransactionId: {TransactionId}", request.TransactionId);
+            _logger.LogInformation("Sending payment request to Zarinpal for TransactionId: {TransactionId}. Amount (Rial): {RialAmount}, Amount (Toman): {TomanAmount}",
+                request.TransactionId, request.Amount, amountInToman);
 
             var response = await _httpClient.PostAsJsonAsync(_requestUrl, apiRequest);
 
@@ -97,14 +102,19 @@ namespace EasyPay.Application.Services.PaymentGateways
 
         public async Task<Result<PaymentVerificationResult>> VerifyPaymentAsync(PaymentVerificationRequest request)
         {
+            // Zarinpal API expects the amount in Toman. The system works with Rial.
+            // We must convert Rial to Toman by dividing by 10 for verification.
+            var amountInToman = (long)(request.Amount / 10);
+
             var apiRequest = new
             {
                 merchant_id = _settings.MerchantId,
-                amount = (long)request.Amount,
+                amount = amountInToman,
                 authority = request.Token
             };
 
-            _logger.LogInformation("Sending payment verification to Zarinpal for Authority: {Authority}", request.Token);
+            _logger.LogInformation("Sending payment verification to Zarinpal for Authority: {Authority}. Amount (Rial): {RialAmount}, Amount (Toman): {TomanAmount}",
+                request.Token, request.Amount, amountInToman);
 
             var response = await _httpClient.PostAsJsonAsync(_verifyUrl, apiRequest);
 
@@ -140,17 +150,13 @@ namespace EasyPay.Application.Services.PaymentGateways
             }
         }
 
-        // --- CORRECTED AND ROBUST DTOs ---
-
         private class ZarinpalRequestResponse
         {
             [JsonPropertyName("data")]
             public ZarinpalRequestData? Data { get; init; }
 
             [JsonPropertyName("errors")]
-            public JsonElement Errors { get; init; } // The property bound to the JSON
-
-            // A method to safely get the error object, avoiding property name collision
+            public JsonElement Errors { get; init; } 
             public ZarinpalError? GetErrorObject() =>
                 Errors.ValueKind == JsonValueKind.Object
                 ? Errors.Deserialize<ZarinpalError>()

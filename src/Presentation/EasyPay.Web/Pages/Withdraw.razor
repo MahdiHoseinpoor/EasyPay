@@ -1,5 +1,6 @@
 ﻿@page "/accounts/{AccountId:guid}/withdraw"
 @attribute [Authorize]
+@implements IDisposable
 
 @using EasyPay.Shared.DTOs.AccountManagement
 @using EasyPay.Shared.DTOs.Report
@@ -10,6 +11,7 @@
 @inject IProfileService ProfileService
 @inject ITransactionService TransactionService
 @inject NavigationManager NavigationManager
+@inject CurrencyService CurrencyService
 
 <PageTitle>Withdraw Funds</PageTitle>
 
@@ -64,7 +66,7 @@
                     <div class="mb-4 text-center">
                         <label class="form-label text-secondary">From Account</label>
                         <p class="fs-4 mb-0">@sourceAccount.Title</p>
-                        <strong style="color: var(--primary-glow);">@sourceAccount.CurrentBalance.ToString("C") <span class="text-secondary">USD</span></strong>
+                        <strong style="color: var(--primary-glow);">@CurrencyService.Format(sourceAccount.CurrentBalance) <span class="text-secondary">@CurrencyService.GetCurrencySymbol()</span></strong>
                     </div>
 
                     <!-- Saved Cards Selector -->
@@ -88,10 +90,10 @@
 
                     <!-- Amount Input -->
                     <div class="mb-3">
-                        <label for="withdrawAmount" class="form-label">Amount</label>
+                        <label for="withdrawAmount" class="form-label">Amount (@CurrencyService.GetCurrencySymbol())</label>
                         <div class="input-group">
-                            <span class="input-group-text form-control-cyber">$</span>
-                            <InputNumber id="withdrawAmount" class="form-control form-control-cyber" @bind-Value="Model.Amount" step="0.01" TValue="decimal" />
+                            <span class="input-group-text form-control-cyber">@CurrencyService.GetCurrencySymbol()</span>
+                            <InputNumber id="withdrawAmount" class="form-control form-control-cyber" @bind-Value="Model.Amount" TValue="decimal" />
                         </div>
                         <ValidationMessage For="@(() => Model.Amount)" />
                     </div>
@@ -100,12 +102,12 @@
                     <div class="p-3 rounded-3 mb-4" style="background-color: rgba(0,0,0,0.2);">
                         <div class="d-flex justify-content-between text-secondary">
                             <span>Processing Fee (1.5%):</span>
-                            <span>@Fee.ToString("C")</span>
+                            <span>@CurrencyService.Format(Fee)</span>
                         </div>
                         <hr style="border-color: var(--border-glass);">
                         <div class="d-flex justify-content-between fw-bold fs-5">
                             <span>You will receive:</span>
-                            <span>@TotalReceived.ToString("C")</span>
+                            <span>@CurrencyService.Format(TotalReceived)</span>
                         </div>
                     </div>
 
@@ -148,13 +150,13 @@
     private List<BankCardDto> savedCards = new();
     private WithdrawModel Model = new();
 
-    private decimal Fee => Model.Amount * 0.015m;
-    private decimal TotalReceived => Model.Amount - Fee;
+    private decimal AmountInRial => (CurrencyService.CurrentCurrency == CurrencyDisplay.Toman) ? Model.Amount * 10 : Model.Amount;
+    private decimal Fee => AmountInRial * 0.015m;
+    private decimal TotalReceived => AmountInRial - Fee;
 
     protected override async Task OnInitializedAsync()
     {
-        // In a real app, you would fetch a single account securely.
-        // We simulate this by getting all and finding the one we need.
+        CurrencyService.OnCurrencyChange += StateHasChanged;
         var allMyAccounts = await ProfileService.GetMyAccounts();
         sourceAccount = allMyAccounts?.FirstOrDefault(a => a.Id == AccountId);
 
@@ -175,7 +177,7 @@
             return;
         }
 
-        if (Model.Amount > sourceAccount.CurrentBalance)
+        if (AmountInRial > sourceAccount.CurrentBalance)
         {
             errorMessage = "Insufficient funds for this withdrawal.";
             isSubmitting = false;
@@ -185,7 +187,7 @@
         var request = new WithdrawToBankCardRequest(
             AccountId,
             Model.DestinationBankCardId,
-            Model.Amount,
+            AmountInRial,
             $"Withdrawal to card"
         );
 
@@ -193,7 +195,7 @@
 
         if (success)
         {
-            successMessage = $"Successfully initiated withdrawal of {Model.Amount:C}.";
+            successMessage = $"Successfully initiated withdrawal of {Model.Amount:N0} {CurrencyService.GetCurrencySymbol()}.";
             Model = new();
             var allMyAccounts = await ProfileService.GetMyAccounts();
             sourceAccount = allMyAccounts?.FirstOrDefault(a => a.Id == AccountId);
@@ -213,7 +215,12 @@
         public int DestinationBankCardId { get; set; }
 
         [Required(ErrorMessage = "Please enter an amount.")]
-        [Range(typeof(decimal), "1.00", "10000.00", ErrorMessage = "Amount must be between $1.00 and $10,000.")]
+        [Range(typeof(decimal), "1000", "100000000", ErrorMessage = "Amount is outside the valid range.")]
         public decimal Amount { get; set; }
+    }
+
+    public void Dispose()
+    {
+        CurrencyService.OnCurrencyChange -= StateHasChanged;
     }
 }
