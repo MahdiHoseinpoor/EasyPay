@@ -39,7 +39,7 @@ namespace EasyPay.Application.Queries.Report.TransactionEntity
 
             var pagedTransactions = await _transactionRepository.GetPagedListAsync(
                 predicate: t => t.AccountId == request.AccountId,
-                orderBy: q => q.TransactionDate,
+                orderByDescending: q => q.TransactionDate,
                 pageIndex: request.PageIndex,
                 pageSize: request.PageSize
             );

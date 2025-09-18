@@ -36,6 +36,7 @@ namespace EasyPay.Common
         Task<IPagedList<TEntity>> GetPagedListAsync(
             Expression<Func<TEntity, bool>> predicate = null,
             Expression<Func<TEntity, object>> orderBy = null,
+            Expression<Func<TEntity, object>> orderByDescending = null,
             int pageIndex = 0,
             int pageSize = 20,
             bool disableTracking = true);
@@ -43,6 +44,7 @@ namespace EasyPay.Common
         Task<IPagedList<TResult>> GetPagedListAsync<TResult>(
             Expression<Func<TEntity, bool>> predicate = null,
             Expression<Func<TEntity, object>> orderBy = null,
+            Expression<Func<TEntity, object>> orderByDescending = null,
             Expression<Func<TEntity, TResult>> selector = null,
             int pageIndex = 0,
             int pageSize = 20,

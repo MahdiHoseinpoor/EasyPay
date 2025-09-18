@@ -147,12 +147,13 @@ namespace EasyPay.Common
         public async Task<IPagedList<TEntity>> GetPagedListAsync(
             Expression<Func<TEntity, bool>> predicate = null,
             Expression<Func<TEntity, object>> orderBy = null,
+            Expression<Func<TEntity, object>> orderByDescending = null,
             int pageIndex = 0,
             int pageSize = 20,
             bool disableTracking = true)
         {
 
-            IQueryable<TEntity> query = Query(predicate, orderBy, disableTracking: disableTracking);
+            IQueryable<TEntity> query = Query(predicate, orderBy, orderByDescending, disableTracking: disableTracking);
 
             var totalCount = await query.CountAsync();
 
@@ -168,12 +169,13 @@ namespace EasyPay.Common
         public async Task<IPagedList<TResult>> GetPagedListAsync<TResult>(
             Expression<Func<TEntity, bool>> predicate = null,
             Expression<Func<TEntity, object>> orderBy = null,
+            Expression<Func<TEntity, object>> orderByDescending = null,
             Expression<Func<TEntity, TResult>> selector = null,
             int pageIndex = 0,
             int pageSize = 20,
             bool disableTracking = true) where TResult : class
         {
-            IQueryable<TEntity> query = Query(predicate, orderBy, disableTracking: disableTracking);
+            IQueryable<TEntity> query = Query(predicate, orderBy, orderByDescending, disableTracking: disableTracking);
 
             var totalCount = await query.CountAsync();
 
