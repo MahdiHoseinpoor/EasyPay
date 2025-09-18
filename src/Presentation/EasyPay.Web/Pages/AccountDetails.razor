@@ -1,0 +1,165 @@
+﻿@page "/accounts/{AccountId:guid}"
+@attribute [Authorize]
+
+@using EasyPay.Shared.DTOs.AccountManagement
+@using EasyPay.Shared.DTOs.Report
+@using EasyPay.Shared.Enums.Report
+@using EasyPay.Web.Services
+@inject IAccountService AccountService
+@inject IProfileService ProfileService
+@inject NavigationManager NavigationManager
+@inject CurrencyService CurrencyService
+
+<PageTitle>Account Details</PageTitle>
+
+@if (isLoading)
+{
+    <div class="text-center mt-5">
+        <div class="spinner-border" style="width: 3rem; height: 3rem; color: var(--primary-glow);" role="status">
+            <span class="visually-hidden">Loading account details...</span>
+        </div>
+    </div>
+}
+else if (account is null)
+{
+    <div class="glass-panel p-5 text-center">
+        <i class="bi bi-x-circle-fill fs-1 text-danger"></i>
+        <h3 class="mt-3">Account Not Found</h3>
+        <p class="text-secondary">The account you are looking for does not exist or you do not have permission to view it.</p>
+        <button class="btn btn-outline-light mt-2" @onclick='() => NavigationManager.NavigateTo("/accounts")'>
+            <i class="bi bi-arrow-left me-2"></i>Back to My Accounts
+        </button>
+    </div>
+}
+else
+{
+    <!-- Account Header Panel -->
+    <div class="glass-panel p-4 mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="h2 mb-1">@account.Title</h1>
+                <p class="text-secondary mb-0">@account.AccountTypeName</p>
+                <small class="text-secondary">@account.AccountNumber</small>
+            </div>
+            <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                <h5 class="text-secondary mb-0">Current Balance</h5>
+                <h1 class="display-5" style="color: var(--primary-glow);">
+                    @CurrencyService.Format(account.CurrentBalance)
+                    <span class="h5 text-secondary">@CurrencyService.GetCurrencySymbol()</span>
+                </h1>
+            </div>
+        </div>
+        <hr style="border-color: var(--border-glass);" />
+        <div class="d-flex flex-wrap gap-2">
+            <button class="btn btn-glow flex-grow-1" @onclick='() => NavigationManager.NavigateTo("/deposit")'><i class="bi bi-plus-circle me-2"></i>Deposit</button>
+            <button class="btn btn-outline-light flex-grow-1" @onclick='() => NavigationManager.NavigateTo($"/accounts/{AccountId}/withdraw")'><i class="bi bi-arrow-up-right-circle me-2"></i>Withdraw</button>
+            <button class="btn btn-outline-light flex-grow-1" @onclick='() => NavigationManager.NavigateTo("/transfer")'><i class="bi bi-arrow-left-right me-2"></i>Transfer</button>
+        </div>
+    </div>
+
+    <!-- Transactions Panel -->
+    <div class="glass-panel p-4">
+        <h3 class="h4 mb-3">Transaction History</h3>
+        
+        @if (!transactions.Any())
+        {
+            <div class="p-5 text-center text-secondary">
+                <i class="bi bi-clock-history fs-1"></i>
+                <h4 class="mt-3">No Transactions Yet</h4>
+                <p>Once you start using this account, your transaction history will appear here.</p>
+            </div>
+        }
+        else
+        {
+            foreach (var tx in transactions)
+            {
+                var (icon, color, amountSign) = GetTransactionTypeDetails(tx.TransactionType);
+                <div class="d-flex align-items-center py-2" style="border-bottom: 1px solid var(--border-glass);">
+                    <i class="@icon fs-4 me-3" style="color: @color;"></i>
+                    <div class="flex-grow-1">
+                        <div class="fw-bold">@tx.Description</div>
+                        <small class="text-secondary">@tx.TransactionDate.ToString("MMM dd, yyyy")</small>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold" style="color: @color;">@amountSign@CurrencyService.Format(tx.Amount)</div>
+                    </div>
+                </div>
+            }
+        }
+        
+        @if (canLoadMore)
+        {
+            <div class="p-3 text-center">
+                <button class="btn btn-outline-secondary" @onclick="LoadMoreTransactions" disabled="@isMoreLoading">
+                    @if (isMoreLoading)
+                    {
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span class="ms-2">Loading...</span>
+                    }
+                    else
+                    {
+                        <span>Load More</span>
+                    }
+                </button>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter]
+    public Guid AccountId { get; set; }
+
+    private bool isLoading = true;
+    private bool isMoreLoading = false;
+    private bool canLoadMore = true;
+    private int currentPage = 0;
+    private const int PageSize = 15;
+
+    private AccountDto? account;
+    private List<TransactionDto> transactions = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        isLoading = true;
+        transactions.Clear();
+        currentPage = 0;
+        
+        account = await AccountService.GetAccountById(AccountId);
+        if (account != null)
+        {
+            await FetchTransactions(isLoadMore: false);
+        }
+
+        isLoading = false;
+    }
+
+    private async Task FetchTransactions(bool isLoadMore)
+    {
+        var pagedResult = await ProfileService.GetTransactionHistory(AccountId, currentPage, PageSize);
+        if (pagedResult != null && pagedResult.Items.Any())
+        {
+            transactions.AddRange(pagedResult.Items);
+            canLoadMore = pagedResult.HasNextPage;
+        }
+        else
+        {
+            canLoadMore = false;
+        }
+    }
+
+    private async Task LoadMoreTransactions()
+    {
+        isMoreLoading = true;
+        currentPage++;
+        await FetchTransactions(isLoadMore: true);
+        isMoreLoading = false;
+    }
+    
+    private (string Icon, string Color, string AmountSign) GetTransactionTypeDetails(TransactionType type) => type switch
+    {
+        TransactionType.Deposit or TransactionType.TransferIn => ("bi bi-arrow-down-circle-fill", "var(--success-color)", "+"),
+        TransactionType.Withdrawal or TransactionType.TransferOut or TransactionType.BillPayment => ("bi bi-arrow-up-circle-fill", "var(--text-primary)", "-"),
+        _ => ("bi bi-receipt-cutoff", "var(--text-primary)", "-")
+    };
+}

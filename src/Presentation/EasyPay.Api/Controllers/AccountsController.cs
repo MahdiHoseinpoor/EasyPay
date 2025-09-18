@@ -16,7 +16,7 @@ namespace EasyPay.Api.Controllers
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [Authorize]
-    public class AccountsController : ControllerBase
+    public class AccountsController : ApiControllerBase
     {
         private readonly IMediator _mediator;
 
@@ -58,10 +58,7 @@ namespace EasyPay.Api.Controllers
             var query = new GetAccountByIdQuery { Id = id };
             var result = await _mediator.Send(query);
 
-            return result.Match<ActionResult>(
-                success => Ok(success),
-                failure => NotFound(failure)
-            );
+            return HandleResult(result);
         }
 
         /// <summary>

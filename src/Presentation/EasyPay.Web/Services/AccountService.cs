@@ -10,7 +10,7 @@ namespace EasyPay.Web.Services
         Task<List<AccountTypeDto>> GetAccountTypes();
         Task<List<AccountTypeDocumentRequirementDto>> GetRequirementsForAccountType(int accountTypeId);
         Task<bool> CreateAccount(CreateAccountRequest command);
-
+        Task<AccountDto?> GetAccountById(Guid accountId);
     }
     public class AccountService : IAccountService
     {
@@ -23,25 +23,13 @@ namespace EasyPay.Web.Services
 
         public async Task<List<AccountTypeDto>> GetAccountTypes()
         {
-            try
-            {
                 var result = await _httpClient.GetFromJsonAsync<Result<List<AccountTypeDto>>>(ApiEndpoints.AccountTypes.GetAll);
                 return result.IsSuccess ? result.Value : new List<AccountTypeDto>();
-            }
-            catch
-            {
-                // Log exception
-                return new List<AccountTypeDto>();
-            }
         }
         public async Task<List<AccountTypeDocumentRequirementDto>> GetRequirementsForAccountType(int accountTypeId)
         {
-            try
-            {
                 var result = await _httpClient.GetFromJsonAsync<Result<List<AccountTypeDocumentRequirementDto>>>(ApiEndpoints.AccountTypes.GetRequirements(accountTypeId));
                 return result is { IsSuccess: true } ? result.Value ?? new List<AccountTypeDocumentRequirementDto>() : new List<AccountTypeDocumentRequirementDto>();
-            }
-            catch { return new List<AccountTypeDocumentRequirementDto>(); }
         }
 
 
@@ -49,6 +37,11 @@ namespace EasyPay.Web.Services
         {
             var response = await _httpClient.PostAsJsonAsync(ApiEndpoints.Accounts.Create, command);
             return response.IsSuccessStatusCode;
+        }
+        public async Task<AccountDto?> GetAccountById(Guid accountId)
+        {
+          var result = await _httpClient.GetFromJsonAsync<AccountDto>(ApiEndpoints.Accounts.GetById(accountId));
+          return result;
         }
     }
 }
