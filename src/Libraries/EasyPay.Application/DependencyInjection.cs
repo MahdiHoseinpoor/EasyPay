@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static void AddApplicationServices(this IHostApplicationBuilder builder)
         {
-            builder.Services.AddAutoMapper(_ => { },Assembly.GetExecutingAssembly());
+            builder.Services.AddAutoMapper(_ => { }, Assembly.GetExecutingAssembly());
             builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             builder.Services.Configure<StorageSettings>(builder.Configuration.GetSection(StorageSettings.SectionName));
             builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
@@ -27,6 +27,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddMediatR(cfg =>
             {
                 cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+                cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
                 cfg.AddOpenBehavior(typeof(AuthorizationBehavior<,>));
             });
         }

@@ -29,6 +29,12 @@ namespace EasyPay.Api
         {
             return error switch
             {
+                ValidationError validationError =>
+                    new BadRequestObjectResult(new ValidationProblemDetails(validationError.Errors)
+                    {
+                        Title = validationError.message,
+                        Status = StatusCodes.Status400BadRequest
+                    }),
                 { code: 400 } => BadRequest(error),
                 { code: 401 } => Unauthorized(error),
                 { code: 403 } => Forbid(),
