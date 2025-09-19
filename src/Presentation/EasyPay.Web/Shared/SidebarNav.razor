@@ -1,72 +1,237 @@
 ﻿@inject EasyPay.Web.Services.CurrencyService CurrencyService
+@inject EasyPay.Web.Services.IAuthService AuthService
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @implements IDisposable
 
 <nav class="sidebar glass-panel d-flex flex-column" id="appSidebar">
-    <div>
-        <a href="/" class="nav-link text-light mb-4 d-flex align-items-center">
-            <i class="bi bi-shield-check fs-2 me-3"></i>
-            <span style="font-size: 1.5rem; font-family: 'Poppins', sans-serif;">EasyPay</span>
+    <div class="sidebar-main">
+        <a href="/" class="sidebar-header">
+            <i class="bi bi-shield-shaded logo-icon"></i>
+            <span class="logo-text">EasyPay</span>
         </a>
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <NavLink class="nav-link" href="/" Match="NavLinkMatch.All"><i class="bi bi-grid-1x2-fill"></i><span>Dashboard</span></NavLink>
-            </li>
-            <li class="nav-item">
-                <NavLink class="nav-link" href="/accounts"><i class="bi bi-wallet2"></i><span>Accounts</span></NavLink>
-            </li>
-            <li class="nav-item">
-                <NavLink class="nav-link" href="/verification-center"><i class="bi bi-patch-check-fill"></i><span>Verification</span></NavLink>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/transfer"><i class="bi bi-arrow-left-right"></i><span>Transfer</span></a>
-            </li>
-            <li class="nav-item">
-                <NavLink class="nav-link" href="/deposit"><i class="bi bi-plus-circle-fill"></i><span>Deposit</span></NavLink>
-            </li>
-            <li class="nav-item">
-                <NavLink class="nav-link" href="/history"><i class="bi bi-clock-history"></i><span>History</span></NavLink>
-            </li>
-
-        </ul>
-    </div>
-    <div class="mt-auto">
-        <div class="px-3 mb-3">
-            <button class="btn btn-outline-secondary w-100" @onclick="ToggleCurrency">
-                Display: <strong>@CurrencyService.GetCurrencySymbol()</strong>
-            </button>
+        
+        <div class="nav-section">
+            <h6 class="nav-section-title">MENU</h6>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/" Match="NavLinkMatch.All"><i class="bi bi-grid-1x2-fill"></i><span>Dashboard</span></NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/accounts"><i class="bi bi-wallet2"></i><span>Accounts</span></NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/verification-center"><i class="bi bi-patch-check-fill"></i><span>Verification</span></NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/transfer"><i class="bi bi-send-fill"></i><span>Transfer</span></NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/deposit"><i class="bi bi-plus-circle-fill"></i><span>Deposit</span></NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/history"><i class="bi bi-clock-history"></i><span>History</span></NavLink>
+                </li>
+            </ul>
         </div>
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a class="nav-link" href="/settings"><i class="bi bi-gear-fill"></i><span>Settings</span></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/logout"><i class="bi bi-box-arrow-right"></i><span>Logout</span></a>
-            </li>
-        </ul>
+    </div>
+
+    <div class="sidebar-footer">
+        <AuthorizeView>
+            <Authorized>
+                <div class="user-profile">
+                    <div class="user-info">
+                        <span class="user-name">@context.User.FindFirst("FirstName")?.Value</span>
+                        <span class="user-role">Verified User</span>
+                    </div>
+                </div>
+                <div class="footer-actions">
+                    <button class="action-btn" @onclick="ToggleCurrency" title="Toggle Currency">
+                        <i class="bi bi-coin"></i>
+                        <span>@CurrencyService.GetCurrencySymbol()</span>
+                    </button>
+                    <button class="action-btn" @onclick='() => NavigationManager.NavigateTo("/settings")' title="Settings">
+                        <i class="bi bi-gear-fill"></i>
+                    </button>
+                    <button class="action-btn logout-btn" @onclick="HandleLogout" title="Logout">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </button>
+                </div>
+            </Authorized>
+        </AuthorizeView>
     </div>
 </nav>
 
 <style>
+    .sidebar {
+        padding: 1.5rem 1.25rem;
+        transition: all 0.3s ease;
+    }
+
+    .sidebar-main {
+        flex-grow: 1;
+    }
+
+    .sidebar-header {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0.75rem;
+        margin-bottom: 2rem;
+        text-decoration: none;
+        color: var(--text-primary);
+    }
+
+    .logo-icon {
+        font-size: 2.5rem;
+        color: var(--primary-glow);
+        margin-right: 0.75rem;
+        transition: transform 0.3s ease;
+    }
+
+    .logo-text {
+        font-size: 1.75rem;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+
+    .sidebar-header:hover .logo-icon {
+        transform: rotate(10deg) scale(1.1);
+    }
+
+    .nav-section-title {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        padding: 0 0.75rem;
+        margin-bottom: 0.75rem;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+    }
+
     .sidebar .nav-link {
         color: var(--text-secondary);
         display: flex;
         align-items: center;
-        padding: 0.75rem 1rem;
-        border-radius: 8px;
-        margin-bottom: 0.5rem;
-        transition: color 0.2s ease, background-color 0.2s ease;
+        padding: 0.8rem 1rem;
+        border-radius: 10px;
+        margin-bottom: 0.25rem;
+        transition: all 0.2s ease-in-out;
+        position: relative;
+        overflow: hidden;
     }
 
         .sidebar .nav-link i {
             font-size: 1.25rem;
-            margin-right: 1rem;
+            margin-right: 1.25rem;
             width: 24px;
+            z-index: 2;
+            transition: all 0.2s ease;
+        }
+        
+        .sidebar .nav-link span {
+            z-index: 2;
         }
 
-        .sidebar .nav-link.active, .sidebar .nav-link:hover {
-            background-color: rgba(0, 255, 224, 0.1);
-            color: var(--primary-glow);
+        .sidebar .nav-link:hover {
+            color: var(--text-primary);
+            background-color: rgba(148, 163, 184, 0.1);
         }
+
+        .sidebar .nav-link.active {
+            color: var(--primary-glow);
+            background-color: rgba(12, 242, 177, 0.1);
+        }
+        
+            .sidebar .nav-link.active::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 4px;
+                height: 60%;
+                background-color: var(--primary-glow);
+                border-radius: 0 4px 4px 0;
+                box-shadow: 0 0 8px var(--primary-glow);
+            }
+            
+            .sidebar .nav-link.active i {
+                color: var(--primary-glow);
+            }
+
+    .sidebar-footer {
+        margin-top: auto;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-glass);
+    }
+
+    .user-profile {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 0.75rem;
+        border: 2px solid var(--border-glass);
+    }
+
+    .user-info {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.2;
+    }
+
+    .user-name {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .user-role {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }
+    
+    .footer-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 0.5rem;
+    }
+
+    .action-btn {
+        background-color: rgba(148, 163, 184, 0.1);
+        color: var(--text-secondary);
+        border: 1px solid transparent;
+        border-radius: 10px;
+        padding: 0.6rem;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+        .action-btn:hover {
+            color: var(--text-primary);
+            background-color: rgba(148, 163, 184, 0.2);
+            border-color: var(--border-glass);
+        }
+
+    .action-btn span {
+        margin-left: 0.5rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .logout-btn:hover {
+        color: var(--error-color);
+        background-color: rgba(248, 113, 113, 0.1);
+        border-color: rgba(248, 113, 113, 0.2);
+    }
 </style>
 
 @code {
@@ -78,6 +243,12 @@
     private async Task ToggleCurrency()
     {
         await CurrencyService.ToggleCurrencyAsync();
+    }
+
+    private async Task HandleLogout()
+    {
+        await AuthService.Logout();
+        NavigationManager.NavigateTo("/login-phone");
     }
 
     public void Dispose()

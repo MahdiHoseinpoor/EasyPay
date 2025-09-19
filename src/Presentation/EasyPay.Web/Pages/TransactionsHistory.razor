@@ -14,12 +14,7 @@
 
 @if (isLoading)
 {
-    <div class="text-center mt-5">
-        <div class="spinner-border" style="width: 3rem; height: 3rem; color: var(--primary-glow);" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-        <p class="mt-3 text-secondary">Loading your transaction history...</p>
-    </div>
+    <LoadingIndicator Message="Loading your transaction history..." />
 }
 else
 {
@@ -80,17 +75,15 @@ else
 
         @if (!filteredTransactions.Any())
         {
-            <div class="p-5 text-center text-secondary">
-                <i class="bi bi-search fs-1"></i>
-                <h4 class="mt-3">No Transactions Found</h4>
-                <p>Try adjusting your search filters or select an account with recent activity.</p>
-            </div>
+            <EmptyState Title="No Transactions Found"
+                        IconClass="bi bi-search"
+                        Message="Try adjusting your search filters or select an account with recent activity." />
         }
         else
         {
             @foreach (var tx in filteredTransactions)
             {
-                var (icon, color, amountSign) = GetTransactionTypeDetails(tx.Dto.TransactionType);
+                var (icon, color, amountSign) = tx.Dto.TransactionType.GetDisplayDetails();
                 <div class="transaction-row p-3" @onclick="() => ShowDetails(tx)">
                     <div class="row align-items-center">
                         <div class="col-6 col-lg-3">
@@ -136,6 +129,7 @@ else
             @if (selectedTransaction is not null)
             {
                 var selectedAccount = myAccounts.FirstOrDefault(a => a.Id == selectedTransaction.AccountId);
+                var displayDetails = selectedTransaction.Dto.TransactionType.GetDisplayDetails();
                 <div class="modal-header">
                     <h5 class="modal-title" id="detailsModalLabel">Transaction Details</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -143,8 +137,8 @@ else
                 <div class="modal-body">
                     <dl class="row">
                         <dt class="col-sm-5">Amount</dt>
-                        <dd class="col-sm-7 fs-5 fw-bold" style="color: @GetTransactionTypeDetails(selectedTransaction.Dto.TransactionType).Color;">
-                            @GetTransactionTypeDetails(selectedTransaction.Dto.TransactionType).AmountSign @CurrencyService.Format(selectedTransaction.Dto.Amount)
+                        <dd class="col-sm-7 fs-5 fw-bold" style="color: @displayDetails.Color;">
+                            @displayDetails.AmountSign @CurrencyService.Format(selectedTransaction.Dto.Amount)
                         </dd>
 
                         <dt class="col-sm-5">Description</dt>
@@ -319,13 +313,6 @@ else
         selectedTransaction = tx;
         await JSRuntime.InvokeVoidAsync("showModal", "detailsModal");
     }
-
-    private (string Icon, string Color, string AmountSign) GetTransactionTypeDetails(TransactionType type) => type switch
-    {
-        TransactionType.Deposit or TransactionType.TransferIn => ("bi bi-arrow-down-circle-fill", "var(--success-color)", "+"),
-        TransactionType.Withdrawal or TransactionType.TransferOut or TransactionType.BillPayment => ("bi bi-arrow-up-circle-fill", "var(--text-primary)", "-"),
-        _ => ("bi bi-receipt-cutoff", "var(--text-primary)", "-")
-    };
 
     private class TransactionFilterModel
     {

@@ -14,22 +14,19 @@
 
 @if (isLoading)
 {
-    <div class="text-center mt-5">
-        <div class="spinner-border" style="width: 3rem; height: 3rem; color: var(--primary-glow);" role="status">
-            <span class="visually-hidden">Loading account details...</span>
-        </div>
-    </div>
+    <LoadingIndicator Message="Loading account details..." />
 }
 else if (account is null)
 {
-    <div class="glass-panel p-5 text-center">
-        <i class="bi bi-x-circle-fill fs-1 text-danger"></i>
-        <h3 class="mt-3">Account Not Found</h3>
-        <p class="text-secondary">The account you are looking for does not exist or you do not have permission to view it.</p>
-        <button class="btn btn-outline-light mt-2" @onclick='() => NavigationManager.NavigateTo("/accounts")'>
-            <i class="bi bi-arrow-left me-2"></i>Back to My Accounts
-        </button>
-    </div>
+    <EmptyState Title="Account Not Found"
+                IconClass="bi bi-x-circle-fill text-danger"
+                Message="The account you are looking for does not exist or you do not have permission to view it.">
+        <ActionContent>
+            <button class="btn btn-outline-light" @onclick='() => NavigationManager.NavigateTo("/accounts")'>
+                <i class="bi bi-arrow-left me-2"></i>Back to My Accounts
+            </button>
+        </ActionContent>
+    </EmptyState>
 }
 else
 {
@@ -60,20 +57,18 @@ else
     <!-- Transactions Panel -->
     <div class="glass-panel p-4">
         <h3 class="h4 mb-3">Transaction History</h3>
-        
+
         @if (!transactions.Any())
         {
-            <div class="p-5 text-center text-secondary">
-                <i class="bi bi-clock-history fs-1"></i>
-                <h4 class="mt-3">No Transactions Yet</h4>
-                <p>Once you start using this account, your transaction history will appear here.</p>
-            </div>
+            <EmptyState Title="No Transactions Yet"
+                        IconClass="bi bi-clock-history"
+                        Message="Once you start using this account, your transaction history will appear here." />
         }
         else
         {
             foreach (var tx in transactions)
             {
-                var (icon, color, amountSign) = GetTransactionTypeDetails(tx.TransactionType);
+                var (icon, color, amountSign) = tx.TransactionType.GetDisplayDetails();
                 <div class="d-flex align-items-center py-2" style="border-bottom: 1px solid var(--border-glass);">
                     <i class="@icon fs-4 me-3" style="color: @color;"></i>
                     <div class="flex-grow-1">
@@ -86,7 +81,7 @@ else
                 </div>
             }
         }
-        
+
         @if (canLoadMore)
         {
             <div class="p-3 text-center">
@@ -124,7 +119,7 @@ else
         isLoading = true;
         transactions.Clear();
         currentPage = 0;
-        
+
         account = await AccountService.GetAccountById(AccountId);
         if (account != null)
         {
@@ -155,11 +150,4 @@ else
         await FetchTransactions(isLoadMore: true);
         isMoreLoading = false;
     }
-    
-    private (string Icon, string Color, string AmountSign) GetTransactionTypeDetails(TransactionType type) => type switch
-    {
-        TransactionType.Deposit or TransactionType.TransferIn => ("bi bi-arrow-down-circle-fill", "var(--success-color)", "+"),
-        TransactionType.Withdrawal or TransactionType.TransferOut or TransactionType.BillPayment => ("bi bi-arrow-up-circle-fill", "var(--text-primary)", "-"),
-        _ => ("bi bi-receipt-cutoff", "var(--text-primary)", "-")
-    };
 }

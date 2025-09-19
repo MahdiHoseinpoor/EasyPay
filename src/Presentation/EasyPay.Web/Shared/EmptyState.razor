@@ -1,0 +1,31 @@
+﻿<div class="glass-panel text-center p-5">
+    @if (!string.IsNullOrWhiteSpace(IconClass))
+    {
+        <i class="@IconClass fs-1" style="color: var(--primary-glow);"></i>
+    }
+    <h3 class="mt-3">@Title</h3>
+    @if (!string.IsNullOrWhiteSpace(Message))
+    {
+        <p class="text-secondary">@Message</p>
+    }
+    @if (ActionContent is not null)
+    {
+        <div class="mt-3">
+            @ActionContent
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = string.Empty;
+
+    [Parameter]
+    public string? Message { get; set; }
+
+    [Parameter]
+    public string? IconClass { get; set; }
+
+    [Parameter]
+    public RenderFragment? ActionContent { get; set; }
+}

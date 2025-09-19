@@ -16,26 +16,19 @@
     <Authorized>
         @if (isLoading)
         {
-            <div class="d-flex justify-content-center align-items-center" style="min-height: 50vh;">
-                <div class="text-center">
-                    <div class="spinner-border" style="width: 3rem; height: 3rem; color: var(--primary-glow);" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    <p class="mt-3 text-secondary">Loading your dashboard...</p>
-                </div>
-            </div>
+            <LoadingIndicator Message="Loading your dashboard..." />
         }
         else if (myAccounts is not { Count: > 0 })
         {
-            <!-- Enhanced Empty State -->
-            <div class="glass-panel text-center p-5">
-                <i class="bi bi-wallet2 fs-1" style="color: var(--primary-glow);"></i>
-                <h2 class="mt-3">Welcome to EasyPay!</h2>
-                <p class="text-secondary lead">Your financial dashboard is ready. Let's get started by creating your first account.</p>
-                <button class="btn btn-glow btn-lg mt-3" @onclick='() => NavigationManager.NavigateTo("/accounts/create")'>
-                    Create Your First Account
-                </button>
-            </div>
+            <EmptyState Title="Welcome to EasyPay!"
+                        IconClass="bi bi-wallet2"
+                        Message="Your financial dashboard is ready. Let's get started by creating your first account.">
+                <ActionContent>
+                    <button class="btn btn-glow btn-lg" @onclick='() => NavigationManager.NavigateTo("/accounts/create")'>
+                        Create Your First Account
+                    </button>
+                </ActionContent>
+            </EmptyState>
         }
         else
         {
@@ -80,7 +73,7 @@
                         {
                             @foreach (var tx in recentTransactions)
                             {
-                                var (icon, color, amountSign) = GetTransactionTypeDetails(tx.TransactionType);
+                                var (icon, color, amountSign) = tx.TransactionType.GetDisplayDetails();
                                 <div class="d-flex align-items-center py-2" style="border-bottom: 1px solid var(--border-glass);">
                                     <i class="@icon fs-4 me-3" style="color: @color;"></i>
                                     <div class="flex-grow-1">
@@ -137,11 +130,11 @@
         transition: all 0.2s ease-in-out;
     }
 
-    .quick-action-btn:hover {
-        border-color: var(--primary-glow);
-        color: var(--primary-glow);
-        transform: translateY(-4px);
-    }
+        .quick-action-btn:hover {
+            border-color: var(--primary-glow);
+            color: var(--primary-glow);
+            transform: translateY(-4px);
+        }
 </style>
 
 
@@ -179,18 +172,6 @@
         {
             isLoading = false;
         }
-    }
-
-    private (string Icon, string Color, string AmountSign) GetTransactionTypeDetails(TransactionType type)
-    {
-        return type switch
-        {
-            TransactionType.Deposit or TransactionType.TransferIn =>
-                ("bi bi-arrow-down-circle-fill", "var(--success-color)", "+ "),
-            TransactionType.Withdrawal or TransactionType.TransferOut or TransactionType.BillPayment =>
-                ("bi bi-arrow-up-circle-fill", "var(--text-primary)", "- "),
-            _ => ("bi bi-receipt-cutoff", "var(--text-primary)", "- ")
-        };
     }
 
     public void Dispose()
