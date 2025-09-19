@@ -97,24 +97,31 @@ else
     private int completionLevel = 0;
     private double progressPercentage = 0;
 
-    protected override async Task OnInitializedAsync()
+     protected override async Task OnInitializedAsync()
     {
         var submittedDocs = await ProfileService.GetMySubmittedDocuments() ?? new List<AuthItemValueDto>();
-
         var allPossibleAuthItems = await AuthItemsService.getAllAuthItems() ?? new List<AuthItemDto>();
 
         authItems = allPossibleAuthItems.Select(possibleItem => 
         {
             var userAuthItemStatusViewModel = new UserAuthItemStatusViewModel()
             {
+                AuthItemId = possibleItem.Id, 
                 Title = possibleItem.Title,
                 Description = possibleItem.Description
             };
-            var submittedVersion = submittedDocs.FirstOrDefault(s => s.AuthItemTitle.Equals(possibleItem.Title, StringComparison.OrdinalIgnoreCase));
+            
+            var submittedVersion = submittedDocs
+                .Where(s => s.AuthItemTitle.Equals(possibleItem.Title, StringComparison.OrdinalIgnoreCase))
+                .OrderByDescending(s => s.UploadDate)
+                .FirstOrDefault();
+
             if (submittedVersion != null)
             {
                 userAuthItemStatusViewModel.Status = submittedVersion.Status;
-                userAuthItemStatusViewModel.LastStatusChangeDate = submittedVersion.VerificationDate;
+                userAuthItemStatusViewModel.LastStatusChangeDate = submittedVersion.Status == VerificationStatus.Approved 
+                    ? submittedVersion.VerificationDate 
+                    : submittedVersion.UploadDate;
             }
             else
             {

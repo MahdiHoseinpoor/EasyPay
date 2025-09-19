@@ -57,11 +57,18 @@
     };
     public class UserAuthItemStatusViewModel
     {
+        public int AuthItemId { get; set; } 
         public string Title { get; set; }
         public string Description { get; set; }
         public VerificationStatus Status { get; set; }
         public DateTime? LastStatusChangeDate { get; set; }
-        public string ActionText { get; set; } = "Complete Now";
-        public string ActionLink { get; set; } = "/profile";
+
+        public string ActionText => Status switch
+        {
+            VerificationStatus.Rejected => "Resubmit",
+            _ => "Submit Document"
+        };
+
+        public string ActionLink => $"/verification-center/submit/{AuthItemId}";
     }
 }

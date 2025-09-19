@@ -1,7 +1,9 @@
 using Asp.Versioning;
 using EasyPay.Api.Extensions;
 using EasyPay.Api.Middleware;
+using EasyPay.Application.Services;
 using EasyPay.Infrastructure.Data;
+using EasyPay.Infrastructure.Services;
 using Serilog;
 const string BlazorAppCorsPolicy = "BlazorAppCorsPolicy";
 Log.Logger = new LoggerConfiguration()
@@ -22,6 +24,7 @@ try
     builder.Services.AddHttpContextAccessor();
     builder.Services.AddMemoryCache();
     builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
+    builder.Services.AddScoped<IFileStorageService, LocalStorageService>();
     builder.Services.AddControllers();
     builder.Services.AddHealthChecks()
         .AddDbContextCheck<ApplicationDbContext>("database");

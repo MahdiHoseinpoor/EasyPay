@@ -48,12 +48,17 @@ public static class ApiEndpoints
     {
         public const string GetAll = $"{Base}/auth-items";
     }
+    public static class Files
+    {
+        public const string UploadDocument = $"{Base}/files/upload-document";
+    }
     public static class Profile
     {
         public const string MyAccounts = $"{Base}/profile/accounts";
         public const string MyBankCards = $"{Base}/profile/bank-cards";
         public static string MyTransactionHistory(Guid accountId) => $"{MyAccounts}/{accountId}/transactions";
         public const string MySubmittedDocuments = $"{Base}/profile/auth-item-values";
+        public const string SubmitAuthItemValue = $"{Base}/profile/auth-item-values";
     }
     public static class Payment
     {

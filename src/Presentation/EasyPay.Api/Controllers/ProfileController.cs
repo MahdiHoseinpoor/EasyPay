@@ -9,6 +9,7 @@ using EasyPay.Common.Errors.Business;
 using EasyPay.Shared.DTOs.AccountManagement;
 using EasyPay.Shared.DTOs.Identity;
 using EasyPay.Shared.DTOs.Report;
+using EasyPay.Shared.Models.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -41,8 +42,14 @@ namespace EasyPay.Api.Controllers
         [HttpPost("auth-item-values")]
         [ProducesResponseType(typeof(long), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(Error), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> SubmitAuthItemValue([FromBody] SubmitAuthItemValueCommand command)
+        public async Task<IActionResult> SubmitAuthItemValue([FromBody] SubmitAuthItemValueRequset request)
         {
+            var command = new SubmitAuthItemValueCommand()
+            {
+                AuthItemId = request.AuthItemId,
+                Value = request.Value,
+                ExtraInfo = request.ExtraInfo
+            };
             var result = await _mediator.Send(command);
 
             return result.Match<ActionResult>(

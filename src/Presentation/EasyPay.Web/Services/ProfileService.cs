@@ -2,6 +2,7 @@
 using EasyPay.Shared.DTOs.AccountManagement;
 using EasyPay.Shared.DTOs.Identity;
 using EasyPay.Shared.DTOs.Report;
+using EasyPay.Shared.Models.Identity;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ namespace EasyPay.Web.Services
         Task<List<BankCardDto>> GetMyBankCards();
         Task<PagedList<TransactionDto>> GetTransactionHistory(Guid accountId, int page, int pageSize);
         Task<List<AuthItemValueDto>> GetMySubmittedDocuments();
+        Task<bool> SubmitAuthItemValue(SubmitAuthItemValueRequset command);
     }
 
     public class ProfileService : IProfileService
@@ -76,6 +78,11 @@ namespace EasyPay.Web.Services
                 _logger.LogError(ex, "Exception occurred while fetching user's submitted documents.");
                 return new List<AuthItemValueDto>();
             }
+        }
+        public async Task<bool> SubmitAuthItemValue(SubmitAuthItemValueRequset command)
+        {
+           var response = await _httpClient.PostAsJsonAsync(ApiEndpoints.Profile.SubmitAuthItemValue, command);
+           return response.IsSuccessStatusCode;
         }
     }
 }

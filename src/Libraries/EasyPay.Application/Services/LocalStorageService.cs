@@ -29,6 +29,10 @@ namespace EasyPay.Infrastructure.Services
         {
             ValidateFile(file);
 
+            if (string.IsNullOrEmpty(_env.WebRootPath))
+            {
+                throw new InvalidOperationException("WebRootPath is not configured. Ensure the 'wwwroot' folder exists in the startup project (EasyPay.Api).");
+            }
             var uploadsRootFolder = Path.Combine(_env.WebRootPath, _storageSettings.UploadsFolderPath);
             var targetFolder = Path.Combine(uploadsRootFolder, subfolder);
             Directory.CreateDirectory(targetFolder); 
