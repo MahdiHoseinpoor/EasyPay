@@ -26,6 +26,10 @@ namespace EasyPay.Application.Commands.Report.TransactionEntity.CreateTransactio
 
         public async Task<Result<Guid>> Handle(WithdrawMoneyCommand request, CancellationToken cancellationToken)
         {
+            if (request.RequestMetadata is null)
+            {
+                return Result<Guid>.Failure(new BusinessRuleError("Request metadata (IP, UserAgent) is missing."));
+            }
             var userId = _currentUserService.UserId;
             var account = await _accountRepository.GetByIdAsync(request.AccountId);
 

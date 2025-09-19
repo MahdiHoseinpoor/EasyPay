@@ -69,12 +69,11 @@ namespace EasyPay.Api.Controllers
                 SourceAccountId = request.SourceAccountId,
                 Amount = request.Amount,
                 Description = request.Description,
-                DestinationAccountNumber = request.DestinationAccountNumber
-            };
-            command.RequestMetadata = new TransactionRequestMetadata(
+                DestinationAccountNumber = request.DestinationAccountNumber,
+                RequestMetadata = new TransactionRequestMetadata(
                 HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown",
-                HttpContext.Request.Headers["User-Agent"].ToString()
-            );
+                HttpContext.Request.Headers["User-Agent"].ToString())
+            };
 
             var result = await _mediator.Send(command);
 

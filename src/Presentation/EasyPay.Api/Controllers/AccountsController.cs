@@ -129,5 +129,20 @@ namespace EasyPay.Api.Controllers
                 failure => failure is NotFoundError ? NotFound(failure) : BadRequest(failure)
             );
         }
+        /// <summary>
+        /// Gets the details of an account holder by their account number for transfer confirmation.
+        /// </summary>
+        /// <param name="accountNumber">The destination account number.</param>
+        /// <returns>The account holder's name and account title.</returns>
+        [HttpGet("inquire/{accountNumber}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> InquireAccountHolder(string accountNumber)
+        {
+            var query = new GetAccountHolderInfoByNumberQuery { AccountNumber = accountNumber };
+            var result = await _mediator.Send(query);
+            return HandleResult(result);
+        }
+
     }
 }

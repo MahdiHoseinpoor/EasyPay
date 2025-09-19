@@ -28,6 +28,10 @@ namespace EasyPay.Application.Commands.Report.TransactionEntity.CreateTransactio
 
         public async Task<Result<Guid>> Handle(TransferMoneyCommand request, CancellationToken cancellationToken)
         {
+            if (request.RequestMetadata is null)
+            {
+                return Result<Guid>.Failure(new BusinessRuleError("Request metadata (IP, UserAgent) is missing."));
+            }
             var userId = _currentUserService.UserId;
 
             var sourceAccount = await _accountRepository.GetByIdAsync(request.SourceAccountId);
@@ -61,14 +65,25 @@ namespace EasyPay.Application.Commands.Report.TransactionEntity.CreateTransactio
                 destinationAccount.LastActivityDate = DateTime.UtcNow;
                 await _accountRepository.UpdateAsync(destinationAccount);
 
-                var metadata = new TransactionMetadata(request.RequestMetadata.IpAddress, request.RequestMetadata.UserAgent);
                 var referenceId = Guid.NewGuid().ToString();
 
-                var withdrawal = new Transaction(sourceAccount.Id, request.Amount, TransactionType.TransferOut, referenceId, metadata,
-                    request.Description ?? $"Transfer to {destinationAccount.AccountNumber}");
+                var withdrawal = new Transaction(
+                     sourceAccount.Id,
+                     request.Amount,
+                     TransactionType.TransferOut,
+                     referenceId,
+                     new TransactionMetadata(request.RequestMetadata.IpAddress, request.RequestMetadata.UserAgent),
+                     request.Description ?? $"Transfer to {destinationAccount.AccountNumber}"
+                 );
 
-                var deposit = new Transaction(destinationAccount.Id, request.Amount, TransactionType.TransferIn, referenceId, metadata,
-                    request.Description ?? $"Transfer from {sourceAccount.AccountNumber}");
+                var deposit = new Transaction(
+                    destinationAccount.Id,
+                    request.Amount,
+                    TransactionType.TransferIn,
+                    referenceId,
+                    new TransactionMetadata(request.RequestMetadata.IpAddress, request.RequestMetadata.UserAgent),
+                    request.Description ?? $"Transfer from {sourceAccount.AccountNumber}"
+                );
 
                 await _transactionRepository.AddAsync(withdrawal);
                 await _transactionRepository.AddAsync(deposit);

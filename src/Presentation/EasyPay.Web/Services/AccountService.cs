@@ -11,6 +11,7 @@ namespace EasyPay.Web.Services
         Task<List<AccountTypeDocumentRequirementDto>> GetRequirementsForAccountType(int accountTypeId);
         Task<bool> CreateAccount(CreateAccountRequest command);
         Task<AccountDto?> GetAccountById(Guid accountId);
+        Task<AccountHolderDto?> InquireAccountHolderAsync(string accountNumber);
     }
     public class AccountService : IAccountService
     {
@@ -38,10 +39,17 @@ namespace EasyPay.Web.Services
             var response = await _httpClient.PostAsJsonAsync(ApiEndpoints.Accounts.Create, command);
             return response.IsSuccessStatusCode;
         }
+
         public async Task<AccountDto?> GetAccountById(Guid accountId)
         {
           var result = await _httpClient.GetFromJsonAsync<AccountDto>(ApiEndpoints.Accounts.GetById(accountId));
           return result;
+        }
+
+        public async Task<AccountHolderDto?> InquireAccountHolderAsync(string accountNumber)
+        {
+            var result = await _httpClient.GetFromJsonAsync<AccountHolderDto>(ApiEndpoints.Accounts.Inquire(accountNumber));
+            return result;
         }
     }
 }

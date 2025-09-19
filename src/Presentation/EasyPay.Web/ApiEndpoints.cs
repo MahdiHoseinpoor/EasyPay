@@ -32,6 +32,7 @@ public static class ApiEndpoints
         public const string Create = $"{Base}/accounts";
         public static string Update(Guid accountId) => $"{GetAll}/{accountId}";
         public static string Delete(Guid accountId) => $"{GetAll}/{accountId}";
+        public static string Inquire(string accountNumber) => $"{GetAll}/inquire/{accountNumber}";
     }
 
     public static class Transaction

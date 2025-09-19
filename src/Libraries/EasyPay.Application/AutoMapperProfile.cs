@@ -24,7 +24,7 @@ namespace EasyPay.Application
             // Commands to Entities
             CreateMap<CreateAccountCommand, Account>()
     .ForMember(dest => dest.Id, opt => opt.Ignore())
-    .ForMember(dest => dest.AccountNumber, opt => opt.Ignore()); 
+    .ForMember(dest => dest.AccountNumber, opt => opt.Ignore());
             CreateMap<CreateAccountTypeCommand, AccountType>();
             CreateMap<UpdateAccountTypeCommand, AccountType>();
             CreateMap<UpdateAccountCommand, Account>();
@@ -62,7 +62,9 @@ namespace EasyPay.Application
                 .ForMember(dest => dest.UserPhoneNumber, opt => opt.MapFrom(src => src.User.PhoneNumber))
                 .ForMember(dest => dest.UserEmail, opt => opt.MapFrom(src => src.User.Email))
                 .ForMember(dest => dest.UserRegistrationDate, opt => opt.MapFrom(src => src.User.RegistrationDate));
-
+            CreateMap<Account, AccountHolderDto>()
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.OwnerUser.FullName))
+                .ForMember(dest => dest.AccountTitle, opt => opt.MapFrom(src => src.Title));
         }
 
         private static string MaskCardNumber(string cardNumber)
