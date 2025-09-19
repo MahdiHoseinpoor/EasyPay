@@ -71,7 +71,7 @@ namespace EasyPay.Application.Commands.Report.TransactionEntity.CreateTransactio
                 account.LastActivityDate = System.DateTime.UtcNow;
                 await _accountRepository.UpdateAsync(account);
                 pendingTransaction.Status = Shared.Enums.Report.TransactionStatus.Completed;
-                pendingTransaction.Description = $"Deposit of {pendingTransaction.Amount:C} via {pendingTransaction.GatewayName}";
+                pendingTransaction.Description = $"Deposit via {pendingTransaction.GatewayName}";
                 pendingTransaction.ReferenceId = verificationResult.Value.FinalReferenceId; 
                 pendingTransaction.TransactionDate = System.DateTime.UtcNow;
                 await _transactionRepository.UpdateAsync(pendingTransaction);

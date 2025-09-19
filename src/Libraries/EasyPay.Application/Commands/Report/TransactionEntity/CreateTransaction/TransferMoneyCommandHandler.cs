@@ -73,7 +73,7 @@ namespace EasyPay.Application.Commands.Report.TransactionEntity.CreateTransactio
                      TransactionType.TransferOut,
                      referenceId,
                      new TransactionMetadata(request.RequestMetadata.IpAddress, request.RequestMetadata.UserAgent),
-                     request.Description ?? $"Transfer to {destinationAccount.AccountNumber}"
+                     !string.IsNullOrEmpty(request.Description) ? request.Description : $"Transfer to {destinationAccount.AccountNumber}"
                  );
 
                 var deposit = new Transaction(
@@ -82,7 +82,7 @@ namespace EasyPay.Application.Commands.Report.TransactionEntity.CreateTransactio
                     TransactionType.TransferIn,
                     referenceId,
                     new TransactionMetadata(request.RequestMetadata.IpAddress, request.RequestMetadata.UserAgent),
-                    request.Description ?? $"Transfer from {sourceAccount.AccountNumber}"
+                    !string.IsNullOrEmpty(request.Description) ? request.Description : $"Transfer from {sourceAccount.AccountNumber}"
                 );
 
                 await _transactionRepository.AddAsync(withdrawal);
