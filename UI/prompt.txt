@@ -1,0 +1,291 @@
+{
+"system_instructions": "You are a front-end developer that writes production-ready HTML and CSS using a class-based UI framework (Bootstrap, Bulma, Foundation etc.). Build a responsive, accessible fintech website with auth flows, account lifecycle, money movement, bills, and transaction history., When writing code, consider that the codes given to you in the codebase are already implemented, build upon them",
+"CodeBase": {
+"explanation": "This is the entire code base, the required files you may need in the process",
+"files": {
+"codes": {
+"AccountManagement/Account.cs": "using EasyPay.Domain.Entities.Identity;\r\nusing EasyPay.Domain.Entities.Report;\r\nusing EasyPay.Shared.Enums.AccountManagement;\r\nusing System.ComponentModel.DataAnnotations;\r\nusing System.ComponentModel.DataAnnotations.Schema;\r\nusing System.Diagnostics.CodeAnalysis;\r\n\r\nnamespace EasyPay.Domain.Entities.AccountManagement\r\n{\r\n    public class Account : EntityBase<Guid>\r\n    {\r\n        public int AccountTypeId { get; set; }\r\n        public string Title { get; set; }\r\n        public string AccountNumber { get; set; }\r\n\r\n        public virtual AccountType AccountType { get; set; }\r\n\r\n        public string OwnerUserId { get; set; }\r\n\r\n        public virtual ApplicationUser OwnerUser { get; set; }\r\n\r\n        public AccountStatus Status { get; set; }\r\n\r\n        public decimal CurrentBalance { get; set; } = 0;\r\n\r\n        public DateTime OpeningDate { get; set; } = DateTime.Now;\r\n\r\n        public DateTime? ClosingDate { get; set; }\r\n\r\n        public DateTime? LastActivityDate { get; set; }\r\n\r\n        public virtual ICollection<Transaction> Transactions { get; set; }\r\n\r\n        [SetsRequiredMembers]\r\n        public Account()\r\n        {\r\n            \r\n        }\r\n\r\n    }\r\n}\r\n",
+"AccountManagement/AccountType.cs": "using System.Diagnostics.CodeAnalysis;\r\n\r\nnamespace EasyPay.Domain.Entities.AccountManagement\r\n{\r\n    public class AccountType : EntityBase<int>\r\n    {\r\n        public string Title { get; set; }\r\n        public string Description { get; set; }\r\n        public string Code { get; set; } \r\n\r\n        public bool IsActive { get; set; } = true;\r\n        public bool AllowsOverdraft { get; set; }\r\n        public decimal? MaximumOverdraftLimit { get; set; }\r\n        public decimal? MinimumOpeningBalance { get; set; }\r\n        public decimal? MinimumBalanceRequirement { get; set; }\r\n\r\n        public decimal? InterestRate { get; set; } \r\n        public InterestCalculationMethod InterestCalculationMethod { get; set; }\r\n        public decimal? MonthlyMaintenanceFee { get; set; }\r\n\r\n        public int? DailyTransactionLimit { get; set; }\r\n        public decimal? DailyWithdrawalLimit { get; set; }\r\n        public decimal? SingleTransactionLimit { get; set; }\r\n\r\n        public string CreatedBy { get; set; }\r\n        public string ModifiedBy { get; set; }\r\n\r\n        public int? MinimumAgeRequirement { get; set; }\r\n        public int? MaximumAgeRequirement { get; set; }\r\n\r\n        public virtual ICollection<Account> Accounts { get; set; }\r\n        [SetsRequiredMembers]\r\n        public AccountType()\r\n        {\r\n            \r\n        }\r\n    }\r\n    public enum InterestCalculationMethod\r\n    {\r\n        DailyBalance,\r\n        MonthlyAverage,\r\n        MinimumBalance,\r\n        Quarterly,\r\n        Yearly,\r\n        None\r\n    }\r\n}\r\n",
+"AccountManagement/AccountTypeDocumentRequirement.cs": "using EasyPay.Domain.Entities.Identity;\r\nusing System.Diagnostics.CodeAnalysis;\r\n\r\nnamespace EasyPay.Domain.Entities.AccountManagement\r\n{\r\n    public class AccountTypeDocumentRequirement : EntityBase<int>\r\n    {\r\n        public int AccountTypeId { get; set; }\r\n        public virtual AccountType AccountType { get; set; }\r\n\r\n        public int AuthItemId { get; set; }\r\n        public virtual AuthItem AuthItem { get; set; }\r\n\r\n        public bool IsRequired { get; set; } = true; \r\n        public int? Order { get; set; } \r\n        public string ValidationRules { get; set; }\r\n\r\n        [SetsRequiredMembers]\r\n        public AccountTypeDocumentRequirement()\r\n        {\r\n            \r\n        }\r\n    }\r\n}\r\n",
+"AccountManagement/BankCard.cs": "using System;\r\nusing System.Collections.Generic;\r\nusing System.Linq;\r\nusing System.Text;\r\nusing System.Threading.Tasks;\r\n\r\nnamespace EasyPay.Domain.Entities.AccountManagement\r\n{\r\n    public class BankCard:EntityBase<int>\r\n    {\r\n        public string Title { get; set; }\r\n        public string CardNumber { get; set; }\r\n        public string AccountNumber { get; set; }\r\n        public string InternationalBankAccountNumber { get; set; }\r\n    }\r\n}\r\n",
+"Identity/AdminUser.cs": "using EasyPay.Shared.Enums.Identity;\r\n\r\nnamespace EasyPay.Domain.Entities.Identity\r\n{\r\n    public class AdminUser : ApplicationUser\r\n    {\r\n        public string EmployeeCode { get; set; }\r\n\r\n        public AdminLevel AdminLevel { get; set; }\r\n\r\n        public string Department { get; set; }\r\n    }\r\n}\r\n",
+"Identity/ApplicationUser.cs": "using EasyPay.Domain.Entities.AccountManagement;\r\nusing EasyPay.Shared.Enums.Identity;\r\nusing Microsoft.AspNetCore.Identity;\r\nusing System;\r\nusing System.Collections.Generic;\r\nusing System.ComponentModel.DataAnnotations;\r\n\r\nnamespace EasyPay.Domain.Entities.Identity\r\n{\r\n    public class ApplicationUser : IdentityUser, IEntityBase\r\n    {\r\n\r\n        public RegistrationStep CurrentStep { get; set; }\r\n\r\n        public string? FirstName { get; set; }\r\n\r\n        public string? LastName { get; set; }\r\n\r\n        public UserType UserType { get; set; }\r\n\r\n        public string? Address { get; set; }\r\n\r\n        public bool IsActive { get; set; } = true;\r\n        public bool IsAuthorized { get; set; } = true;\r\n        public DateTime RegistrationDate { get; set; } = DateTime.Now;\r\n        public DateTime? LastVerifyPasswordDate { get; set; }\r\n\r\n        public DateTime? PasswordChangeDate { get; set; }\r\n        public bool ForcePasswordChange { get; set; }\r\n\r\n        public virtual ICollection<AuthItemValue> AuthItemValues { get; set; }\r\n        public virtual ICollection<Account> Accounts { get; set; }\r\n        public virtual ICollection<VerifyPasswordHistory> VerifyPasswordHistories { get; set; }\r\n\r\n        public string FullName => $"{FirstName} {LastName}";\r\n\r\n    }\r\n\r\n\r\n}",
+"Identity/AuthItem.cs": "using EasyPay.Shared.Enums.Identity;\r\nusing System.Diagnostics.CodeAnalysis;\r\n\r\nnamespace EasyPay.Domain.Entities.Identity\r\n{\r\n    public class AuthItem:EntityBase<int>\r\n    {\r\n        public string Title { get; set; }\r\n        public string Description { get; set; }\r\n        public AuthItemType AuthItemType { get; set; }\r\n        public AuthItemValueType AuthItemValueType { get; set; }\r\n\r\n        public virtual ICollection<AuthItemValue> AuthItemValues { get; set; }\r\n\r\n        [SetsRequiredMembers]\r\n        public AuthItem()\r\n        {\r\n            \r\n        }\r\n    }\r\n}\r\n",
+"Identity/AuthItemValue.cs": "using EasyPay.Shared.Enums.Identity;\r\nusing System;\r\nusing System.Collections.Generic;\r\nusing System.Diagnostics.CodeAnalysis;\r\nusing System.Linq;\r\nusing System.Text;\r\nusing System.Threading.Tasks;\r\n\r\nnamespace EasyPay.Domain.Entities.Identity\r\n{\r\n    public class AuthItemValue : EntityBase<long>\r\n    {\r\n        private AuthItemValue() { }\r\n\r\n        [SetsRequiredMembers]\r\n        public AuthItemValue(int authItemId, string userId, string value)\r\n        {\r\n            AuthItemId = authItemId;\r\n            UserId = userId;\r\n            Value = value;\r\n            Status = VerificationStatus.Pending;\r\n            UploadDate = DateTime.UtcNow;\r\n            LastStatusChangeDate = DateTime.UtcNow;\r\n            Version = 1;\r\n            IsLatestVersion = true;\r\n        }\r\n\r\n        public int AuthItemId { get; set; }\r\n        public virtual AuthItem AuthItem { get; set; }\r\n\r\n        public string UserId { get; set; }\r\n        public virtual ApplicationUser User { get; set; }\r\n\r\n        public string Value { get; set; }\r\n        public string? ExtraInfo { get; set; }\r\n        public VerificationStatus Status { get; set; }\r\n        public string? RejectionReason { get; set; }\r\n        public DateTime? VerificationDate { get; set; }\r\n        public string? VerifiedByUserId { get; set; }\r\n        public virtual ApplicationUser VerifiedByUser { get; set; }\r\n\r\n        public DateTime UploadDate { get; set; }\r\n        public DateTime? LastStatusChangeDate { get; set; }\r\n\r\n        public int Version { get; set; }\r\n        public bool IsLatestVersion { get; set; }\r\n    }\r\n}",
+"Identity/LoginHistory.cs": "using EasyPay.Common;\r\nusing EasyPay.Shared.Enums.Identity;\r\nusing System;\r\nusing System.ComponentModel.DataAnnotations;\r\nusing System.ComponentModel.DataAnnotations.Schema;\r\n\r\nnamespace EasyPay.Domain.Entities.Identity\r\n{\r\n    public class VerifyPasswordHistory : EntityBase<long>\r\n    {\r\n        [Required]\r\n        public string UserId { get; set; }\r\n\r\n        [ForeignKey(nameof(UserId))]\r\n        public virtual ApplicationUser User { get; set; }\r\n\r\n        [Required]\r\n        public DateTime VerifyPasswordTime { get; set; } = DateTime.Now;\r\n\r\n        public DateTime? LogoutTime { get; set; }\r\n\r\n        [MaxLength(45)]\r\n        public string IPAddress { get; set; }\r\n\r\n        [MaxLength(500)]\r\n        public string UserAgent { get; set; }\r\n\r\n        [MaxLength(100)]\r\n        public string DeviceType { get; set; }\r\n\r\n        [MaxLength(100)]\r\n        public string OperatingSystem { get; set; }\r\n\r\n        [MaxLength(100)]\r\n        public string Browser { get; set; }\r\n\r\n        [MaxLength(100)]\r\n        public string Location { get; set; }\r\n\r\n        public VerifyPasswordStatus Status { get; set; } = VerifyPasswordStatus.Success;\r\n\r\n        [MaxLength(500)]\r\n        public string FailureReason { get; set; }\r\n\r\n        [MaxLength(100)]\r\n        public string SessionId { get; set; }\r\n\r\n        public bool IsPersistent { get; set; }\r\n\r\n        [MaxLength(100)]\r\n        public string AuthenticationMethod { get; set; }\r\n\r\n        public bool TwoFactorUsed { get; set; }\r\n        public string TwoFactorType { get; set; }\r\n\r\n        public TimeSpan? Duration\r\n        {\r\n            get\r\n            {\r\n                if (VerifyPasswordTime != default && LogoutTime.HasValue)\r\n                    return LogoutTime.Value - VerifyPasswordTime;\r\n                return null;\r\n            }\r\n        }\r\n    }\r\n}",
+"Identity/NaturalUser.cs": "using EasyPay.Shared.Enums.Identity;\r\nusing System;\r\nusing System.ComponentModel.DataAnnotations;\r\n\r\nnamespace EasyPay.Domain.Entities.Identity\r\n{\r\n    public class NaturalUser : ApplicationUser\r\n    {\r\n\r\n        public string? NationalCode { get; set; }\r\n\r\n        public DateTime BirthDate { get; set; }\r\n\r\n        public string? BirthCertificateNumber { get; set; }\r\n\r\n        public string? FatherName { get; set; }\r\n\r\n        public GenderType Gender { get; set; }\r\n\r\n        public string? PlaceOfBirth { get; set; }\r\n\r\n        public MaritalStatus MaritalStatus { get; set; }\r\n\r\n        public string? Occupation { get; set; }\r\n\r\n        public string? EducationLevel { get; set; }\r\n\r\n    }\r\n}",
+"Payment/BillBase.cs": "using EasyPay.Domain.Entities.Identity;\r\nusing EasyPay.Shared.Enums.Payment;\r\n\r\nnamespace EasyPay.Domain.Entities.Payment\r\n{\r\n    public abstract class BillBase : EntityBase<Guid>\r\n    {\r\n        public decimal Amount { get; set; }\r\n        public BillType Type { get; set; }\r\n\r\n        public string UserId { get; set; }\r\n        public virtual ApplicationUser User { get; set; }\r\n    }\r\n}",
+"Payment/MobileBill.cs": "namespace EasyPay.Domain.Entities.Payment\r\n{\r\n    public class MobileBill : BillBase\r\n    {\r\n        public string PhoneNumber { get; set; }\r\n    }\r\n}\r\n",
+"Payment/UtilityBill.cs": "using EasyPay.Shared.Enums.Payment;\r\n\r\nnamespace EasyPay.Domain.Entities.Payment\r\n{\r\n    public class UtilityBill : BillBase\r\n    {\r\n        public UtilityType UtilityType { get; set; }\r\n\r\n        public string BillNumber { get; set; }\r\n    }\r\n}\r\n",
+"Report/Transaction.cs": "using EasyPay.Domain.Entities.AccountManagement;\r\nusing EasyPay.Shared.Enums.Report;\r\nusing EasyPay.Domain.ValueObjects.Report;\r\nusing System.Diagnostics.CodeAnalysis;\r\n\r\nnamespace EasyPay.Domain.Entities.Report\r\n{\r\n    public class Transaction : EntityBase<Guid>\r\n    {\r\n\r\n        private Transaction() { }\r\n\r\n        [SetsRequiredMembers]\r\n        public Transaction(Guid accountId, decimal amount, TransactionType transactionType, string referenceId, TransactionMetadata metadata, string description = null)\r\n        {\r\n            AccountId = accountId;\r\n            Amount = amount;\r\n            TransactionType = transactionType;\r\n            ReferenceId = referenceId;\r\n            Description = description;\r\n            TransactionMetadata = metadata;\r\n            Status = TransactionStatus.Completed;\r\n            TransactionDate = DateTime.UtcNow;\r\n        }\r\n\r\n        public Guid AccountId { get; set; }\r\n        public decimal Amount { get; set; }\r\n        public TransactionType TransactionType { get; set; }\r\n        public DateTime TransactionDate { get; set; }\r\n        public string ReferenceId { get; set; }\r\n        public string Description { get; set; }\r\n        public TransactionStatus Status { get; set; }\r\n        public TransactionMetadata TransactionMetadata { get; set; }\r\n        public virtual Account Account { get; set; }\r\n    }\r\n}"
+}
+}
+},
+{
+"title": "Fintech Web App — Frontend Design + Implementation Prompt",
+"persona": {
+"role": "front-end developer",
+"style": "clean, modern fintech UI; professional yet friendly; mobile-first; accessible (WCAG AA)",
+"output_format": [
+"standalone HTML files per page (responsive)",
+"single CSS file (or framework classes only + minimal custom CSS)",
+"component breakdown (HTML snippets)",
+"short README describing choices + how to swap framework (Bootstrap/Bulma)",
+"sample mock-data JSON used in UI"
+]
+},
+"ui_library": {
+"preferred": ["bootstrap", "bulma"],
+"selection_rule": "choose the library that best fits each view; default to Bootstrap 5 if unspecified",
+"note": "Use only class-based components (no JS frameworks). If component needs JS, use minimal vanilla JS and clearly label it."
+},
+"global_requirements": {
+"responsive": "mobile-first, breakpoints for tablet and desktop",
+"accessibility": "semantic HTML, keyboard focus states, aria labels where needed",
+"rtl_support": false,
+"i18n_ready": true,
+"colors": "use a fintech-appropriate palette; ensure contrast >= 4.5:1 for text",
+"icons": "use SVG icons or a neutral icon set (e.g., heroicons) — include inline examples"
+},
+"pages_and_routes": [
+{
+"name": "Auth / Entry",
+"route": "/auth",
+"description": "Unified page where user enters mobile number and receives a verification code. This page serves sign-in and sign-up start.",
+"components": [
+"mobile input (country code + number)",
+"send-code CTA",
+"info text: 'we will send an SMS code'",
+"error messages for invalid number"
+],
+"states": [
+"enter-mobile -> show 'code sent' state with code input",
+"enter-code -> verify -> if existing user go to login-second-step; if new user go to profile completion",
+"resend-code cooldown"
+],
+"ui_notes": "compact single-column layout on mobile, two-column (visual on left, form on right) on desktop"
+},
+{
+"name": "Login Second Step / 2FA",
+"route": "/auth/verify",
+"description": "After code verification: if user is returning and has 2FA enabled, show password + 2FA input. If 2FA is off and account complete, log in immediately.",
+"states": [
+"returning_with_2fa -> require password (and optionally OTP depending on flags)",
+"returning_no_2fa -> login success -> redirect to dashboard",
+"new_user -> redirect to profile completion / signup flow"
+],
+"ui_elements": ["password input", "remember device toggle", "help link 'I forgot password'"]
+},
+{
+"name": "Complete Profile",
+"route": "/profile/complete",
+"description": "Profile completion for new users or partially-registered users. Required to create accounts.",
+"fields": ["full name", "date of birth", "address", "national id (masked)", "KYC document upload (optional UI placeholder)"],
+"validation": "show progress, required fields highlight, accessibility for uploads"
+},
+{
+"name": "Dashboard (Main Layout)",
+"route": "/dashboard",
+"description": "Main user landing after login. Global header, navigation, quick balances, activity feed and main content area for selected account.",
+"layout": "left navigation (collapsible) + top bar + main content",
+"widgets": ["quick send", "add money", "recent transactions", "alerts"]
+},
+{
+"name": "Accounts List & Account Details",
+"route": "/accounts",
+"description": "Users can create multiple accounts. Each account shows details and its required auth items.",
+"account_card": {
+"fields": ["account name", "balance", "type", "status (active/pending)"],
+"actions": ["View", "Transfer", "Top-up", "Withdraw"]
+},
+"account_detail": {
+"auth_items_section": {
+"behavior": "When user selects an account type in 'Create Account', UI dynamically shows all required auth items. Each auth item that is already satisfied shows a green tick; missing items show red cross or 'Missing'. The Create Account action is disabled until all required auth items are satisfied.",
+"visual": "list with icon + label + status pill"
+}
+}
+},
+{
+"name": "Create Account Wizard",
+"route": "/accounts/create",
+"description": "Choose account type -> dynamically reveal required auth items -> validate completion -> create",
+"flow": [
+"select account type",
+"show required auth items with current user completion state",
+"links to 'Complete Auth Items' page for missing items",
+"CTA disabled until all required items satisfied"
+]
+},
+{
+"name": "Auth Items / KYC",
+"route": "/auth-items",
+"description": "Page where user sets required authentication items (e.g., phone verified, ID uploaded, address confirmed, 2FA enabled). Each item toggles to satisfied state when completed.",
+"components": ["status list", "action buttons to complete (open modal or step)"]
+},
+{
+"name": "Top-up / Add Money",
+"route": "/accounts/:id/topup",
+"description": "Add money to an account (card, bank transfer, or external payment).",
+"flow": ["select method", "enter amount", "confirm", "show success + transaction entry"],
+"ui_notes": "use modal for quick top-up and a full page for bank transfers"
+},
+{
+"name": "Withdraw / Payout",
+"route": "/accounts/:id/withdraw",
+"description": "Withdraw money to saved bank cards. User must select which saved bank card to send to.",
+"components": ["saved cards list with masked numbers", "amount input", "fees display", "confirm"]
+},
+{
+"name": "Transfer Between Accounts",
+"route": "/transfer",
+"description": "Internal transfers between user accounts. Choose source account, destination account, amount, optional note, confirm.",
+"edge_cases": ["insufficient funds", "same account selection", "limits"]
+},
+{
+"name": "Bills (Mobile / Utility)",
+"route": "/bills",
+"description": "List of added bills. Each bill has 'Update' to fetch latest cost and 'Pay'.",
+"components": ["bill card (name, last amount, due date)", "Update button (refresh amount)", "Pay CTA (modal)"]
+},
+{
+"name": "Transaction History / Activity Wall",
+"route": "/transactions",
+"description": "List or timeline of transactions, with filters (date, account, type). Clicking a transaction opens a detail drawer/modal.",
+"columns": ["date", "type", "counterparty", "amount", "balance_after", "status"]
+}
+],
+"ui_behaviors_and_interactions": {
+"dynamic_ui": "When user selects account type, the 'Create Account' UI should update in-place to show required auth items and their statuses.",
+"status_indicators": {
+"completed": "green tick icon + 'Completed'",
+"missing": "red cross or red 'Missing' badge",
+"pending_verification": "orange clock icon + 'Pending'"
+},
+"form_validation": "client-side validation with clear inline messages and screen-reader friendly alerts",
+"toasts_and_modals": "use toasts for ephemeral success/failure; modals for multi-step flows (bank linking, KYC upload)"
+},
+"data_and_api_mocks": {
+"sample_user": {
+"id": "user_123",
+"name": "Alex Example",
+"phone": "+447700900000",
+"2fa_enabled": true,
+"profile_complete": false,
+"auth_items": {
+"phone_verified": true,
+"id_uploaded": false,
+"address_confirmed": false,
+"2fa_enabled": true
+}
+},
+"sample_accounts": [
+{
+"id": "acc_1",
+"type": "Personal Savings",
+"balance": 1250.5,
+"currency": "USD",
+"auth_requirements": ["id_uploaded", "address_confirmed"]
+},
+{
+"id": "acc_2",
+"type": "Business Account",
+"balance": 5000,
+"currency": "USD",
+"auth_requirements": ["id_uploaded", "address_confirmed", "business_registration"]
+}
+],
+"sample_transactions_endpoint": "/api/mock/transactions?account_id=acc_1"
+},
+"edge_cases_and_security": {
+"auth_edge_cases": [
+"expired verification code",
+"rate limit resend",
+"partially completed registration (redirect to profile completion)",
+"2FA fallback flows (lost device)"
+],
+"security_notes": [
+"never include real secrets in front-end code",
+"mask sensitive data (e.g., card numbers)",
+"show permissions / consent text for KYC uploads"
+]
+},
+"visual_and_design_guidelines": {
+"typography": "clear hierarchy: h1-h4, body, small; readable font-size on mobile",
+"spacing": "consistent spacing scale (4/8/16 px)",
+"buttons": "primary CTA, secondary, ghost; disabled state visually distinct",
+"forms": "labels above inputs, helper text for sensitive fields"
+},
+"deliverables_and_acceptance_criteria": {
+"deliverables": [
+"HTML files for each page described in 'pages_and_routes' that can run locally",
+"CSS (either a small custom file + using chosen UI framework classes) — no external build step required",
+"vanilla JS only where needed (code snippets in <script> tags) for dynamic flows",
+"README with instructions to run locally and where to swap Bootstrap <-> Bulma"
+],
+"acceptance_criteria": [
+"Auth flow works in-browser with mock data: entering phone -> code -> correct redirect depending on user state",
+"Create Account UI blocks creation when required auth items are missing and visually indicates missing items",
+"Withdraw requires selecting a saved bank card; top-up flow uses modal and confirms transaction",
+"Transaction history shows at least 10 mock entries and opens a detail view on click",
+"All pages responsive and accessible (semantic HTML and basic aria attributes present)"
+]
+},
+"format_request_for_response": {
+"first_response_should_include": [
+"choice of UI library (Bootstrap or Bulma) and reason",
+"single-page HTML mock for the Auth Entry -> Code verify flow (complete working snippet)",
+"component snippets for 'auth items status list' and 'account card' with sample HTML",
+"mock-data JSON and endpoints used by the snippets"
+],
+"subsequent_outputs": "If asked, produce the rest of the pages as separate HTML files and a single CSS file."
+},
+"tone_and_nonfunctional": {
+"tone": "concise, developer-focused, comment-rich in HTML snippets",
+"nonfunctional": "keep bundle small, avoid external dependencies except CSS framework CDN"
+}
+}
+"visual_and_design_guidelines": {
+"theme": "neo-modern, dark mode by default",
+"style": "glassmorphism (frosted glass panels with transparency, blur, and subtle shadows), cyberpunk accents (neon glow, gradient highlights, subtle animations)",
+"color_palette": {
+"background": "#0d0d0d",
+"surface_glass": "rgba(255, 255, 255, 0.08)",
+"primary": "#00ffe0",
+"secondary": "#ff007f",
+"accent": "#f5a623",
+"text_primary": "#f0f0f0",
+"text_secondary": "#a0a0a0",
+"success": "#4caf50",
+"error": "#ff5252",
+"warning": "#ffb300"
+},
+"effects": {
+"glass_blur": "backdrop-filter: blur(12px)",
+"glass_border": "1px solid rgba(255, 255, 255, 0.2)",
+"glass_shadow": "0 8px 32px rgba(0, 0, 0, 0.37)",
+"hover_glow": "neon outer glow on primary/secondary buttons and active nav items"
+},
+"typography": {
+"font_family": "'Inter', 'Poppins', sans-serif",
+"headings": "bold, geometric",
+"body": "regular, clean, high legibility",
+"sizes": {
+"h1": "2.5rem",
+"h2": "2rem",
+"h3": "1.5rem",
+"body": "1rem",
+"small": "0.875rem"
+}
+},
+"animations": {
+"page_transition": "fade + scale (200ms)",
+"button_hover": "subtle neon glow pulse",
+"cards": "hover lift with glass reflection"
+},
+"icons": "line-based neon icons (SVG preferred) with hover glow",
+"examples": [
+"login form sits on a glass panel with neon border glow",
+"dashboard sidebar has semi-transparent frosted background with neon hover indicators",
+"transaction history cards float on glass panels with blurred backgrounds"
+]
+}

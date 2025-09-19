@@ -1,0 +1,36 @@
+﻿@page "/500"
+@layout Layout.ErrorLayout
+
+<div class="d-flex align-items-center justify-content-center" style="min-height: 70vh;">
+    <div class="glass-panel" style="text-align: center; max-width: 500px; width: 100%; padding: 2.5rem;">
+        <i class="bi bi-exclamation-triangle-fill fs-1" style="color: var(--primary-glow);"></i>
+        <h1 class="error-code mt-3">Error</h1>
+        <h2 class="h3">Something Went Wrong</h2>
+        <p class="text-secondary mt-3 mb-4">
+            An unexpected error has occurred on our end. Our team has been notified. Please try again in a few moments.
+        </p>
+        <a href="" class="btn btn-glow" @onclick="() => NavManager.NavigateTo(NavManager.Uri, true)" @onclick:preventDefault>
+            <i class="bi bi-arrow-clockwise me-2"></i>Try Again
+        </a>
+
+                <div class="mt-4 p-3 text-start bg-dark rounded-3" style="border: 1px solid var(--border-glass);">
+                <h6 class="text-danger">Developer Details:</h6>
+                <pre class="text-white small" style="white-space: pre-wrap; word-break: break-all;">@Exception?.ToString()</pre>
+                </div>
+
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Exception? Exception { get; set; }
+
+    [Inject]
+    private NavigationManager NavManager { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        // In a real application, you would log the exception here to your logging service
+        Console.Error.WriteLine(Exception);
+    }
+}

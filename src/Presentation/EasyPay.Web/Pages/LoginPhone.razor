@@ -1,0 +1,74 @@
+﻿@page "/login-phone"
+@layout AuthLayout
+
+@using System.ComponentModel.DataAnnotations
+@using EasyPay.Shared.Models.Identity
+@using EasyPay.Web.Services
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+@inject AuthState AuthState
+
+<PageTitle>Sign In or Sign Up</PageTitle>
+
+<div id="enter-mobile-state">
+    <h2 class="text-center mb-1">Welcome</h2>
+    <p class="text-center text-secondary mb-4">Enter your mobile to sign in or create an account.</p>
+
+    <EditForm Model="@Model" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+        <div class="mb-3">
+            <label for="mobileNumber" class="form-label">Mobile Number</label>
+            <div class="input-group">
+                <span class="input-group-text form-control-cyber" id="country-code">+98</span>
+                <InputText id="phone" @bind-Value="Model.PhoneNumber" class="form-control form-control-cyber" placeholder="9123456789" />
+            </div>
+            <div id="mobile-error" class="text-danger mt-2" style="font-size: 0.875rem; display: none;">Please enter a valid mobile number.</div>
+        </div>
+        <p class="text-secondary text-center small mt-3">By continuing, you agree to our Terms of Service. We'll send an SMS to verify your number.</p>
+        <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-glow" disabled="@isSubmitting">
+                @if (isSubmitting)
+                {
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                }
+                else
+                {
+                    <span>Send Code</span>
+                }
+            </button>
+        </div>
+    </EditForm>
+</div>
+
+
+@code {
+    // C# code remains the same
+    private PhoneModel Model = new();
+    private bool isSubmitting = false;
+    private string errorMessage;
+
+    private async Task HandleSubmit()
+    {
+        isSubmitting = true;
+        errorMessage = null;
+        var request = new RegisterPhoneRequest("+98" + Model.PhoneNumber);
+        var success = await AuthService.RequestPhoneVerification(request);
+
+        if (success)
+        {
+            AuthState.PhoneNumber = "+98"+Model.PhoneNumber;
+            NavigationManager.NavigateTo("/login-verify");
+        }
+        else
+        {
+            errorMessage = "Failed to send code. Please check the number and try again.";
+            isSubmitting = false;
+        }
+    }
+
+    public class PhoneModel
+    {
+        [Required, Phone]
+        public string PhoneNumber { get; set; }
+    }
+}

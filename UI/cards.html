@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyPay - Saved Cards</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        /* --- Base Theme & App Layout (Reused) --- */
+        :root { --bg-color: #0d0d0d; --surface-glass: rgba(25, 27, 46, 0.5); --primary-glow: #00ffe0; --text-primary: #f0f0f0; --text-secondary: #a0a0a0; --border-glass: rgba(255, 255, 255, 0.15); }
+        body { background-color: var(--bg-color); font-family: 'Inter', sans-serif; color: var(--text-primary); }
+        .glass-panel { background: var(--surface-glass); backdrop-filter: blur(12px); border: 1px solid var(--border-glass); border-radius: 16px; }
+        .app-wrapper { display: flex; min-height: 100vh; }
+        /* Reused sidebar, topbar, etc */
+        .btn-glow { border-radius: 8px; border: 1px solid var(--primary-glow); color: var(--primary-glow); transition: all 0.2s ease; }
+        .btn-glow:hover { background-color: var(--primary-glow); color: var(--bg-color); box-shadow: 0 0 15px var(--primary-glow); }
+        .saved-card-item { border-bottom: 1px solid var(--border-glass); }
+        .saved-card-item:last-child { border-bottom: none; }
+        .modal-content { border-radius: 16px; border: 1px solid var(--border-glass); }
+        .modal-header, .modal-footer { border-color: var(--border-glass); }
+    </style>
+</head>
+<body>
+<div class="app-wrapper">
+    <!-- Sidebar -->
+    <nav class="sidebar glass-panel d-flex flex-column" id="appSidebar"><!-- Reused --></nav>
+    
+    <div class="content-wrapper">
+        <!-- Topbar -->
+        <header class="topbar glass-panel d-flex align-items-center justify-content-between rounded-3 mb-4"><!-- Reused --></header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2">Manage Saved Cards</h1>
+                <a href="/settings/cards/add.html" class="btn btn-glow"><i class="bi bi-plus-lg me-2"></i>Add New Card</a>
+            </div>
+
+            <div class="glass-panel p-4">
+                <!-- Card Item 1 -->
+                <div class="saved-card-item p-3 row align-items-center">
+                    <div class="col-1"><i class="bi bi-credit-card-2-front-fill fs-2"></i></div>
+                    <div class="col-6 col-md-4">
+                        <h5 class="mb-0">Main Debit Card</h5>
+                        <small class="text-secondary">Visa ending in 4242</small>
+                    </div>
+                    <div class="col-md-4 d-none d-md-block text-secondary">Added on Jan 10, 2024</div>
+                    <div class="col-5 col-md-3 text-end">
+                        <button class="btn btn-sm btn-outline-secondary me-2">Edit</button>
+                        <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteCardModal" data-card-name="Main Debit Card (**** 4242)">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- Card Item 2 -->
+                <div class="saved-card-item p-3 row align-items-center">
+                    <div class="col-1"><i class="bi bi-credit-card-2-front-fill fs-2"></i></div>
+                    <div class="col-6 col-md-4">
+                        <h5 class="mb-0">Business Credit</h5>
+                        <small class="text-secondary">Mastercard ending in 5588</small>
+                    </div>
+                    <div class="col-md-4 d-none d-md-block text-secondary">Added on Dec 15, 2023</div>
+                    <div class="col-5 col-md-3 text-end">
+                        <button class="btn btn-sm btn-outline-secondary me-2">Edit</button>
+                        <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteCardModal" data-card-name="Business Credit (**** 5588)">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteCardModal" tabindex="-1" aria-labelledby="deleteCardModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content glass-panel">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteCardModalLabel">Confirm Deletion</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete the card <strong id="card-to-delete-name"></strong>?</p>
+        <p class="text-warning small">This action cannot be undone. You will have to add this card again to use it for withdrawals.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger">Yes, Delete Card</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // JS for passing card name to the delete modal
+    const deleteCardModal = document.getElementById('deleteCardModal');
+    deleteCardModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const cardName = button.getAttribute('data-card-name');
+        const modalBodyName = deleteCardModal.querySelector('#card-to-delete-name');
+        modalBodyName.textContent = cardName;
+    });
+</script>
+</body>
+</html>

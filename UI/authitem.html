@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyPay - Verification Center</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.comcom/css2?family=Inter:wght@400;600;700&family=Poppins:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        /* --- Reused Theme, Layout, and Component Styles --- */
+        :root { --bg-color: #0d0d0d; --surface-glass: rgba(25, 27, 46, 0.5); --primary-glow: #00ffe0; --text-primary: #f0f0f0; --text-secondary: #a0a0a0; --border-glass: rgba(255, 255, 255, 0.15); --success-color: #4caf50; --warning-color: #ffb300; --error-color: #ff5252; }
+        body { background-color: var(--bg-color); font-family: 'Inter', sans-serif; color: var(--text-primary); }
+        h1, h2, h3, h4, h5 { font-family: 'Poppins', sans-serif; }
+        .glass-panel { background: var(--surface-glass); backdrop-filter: blur(12px); border: 1px solid var(--border-glass); }
+        .app-wrapper { display: flex; min-height: 100vh; }
+        .sidebar { /* Reused styles */ width: 260px; padding: 1.5rem 1rem; position: fixed; top: 0; left: 0; bottom: 0; transform: translateX(-100%); z-index: 1000; }
+        .sidebar.is-open { transform: translateX(0); }
+        .content-wrapper { flex-grow: 1; padding: 1rem; display: flex; flex-direction: column; }
+        .topbar { /* Reused styles */ }
+        @media (min-width: 992px) { .sidebar { position: static; transform: translateX(0); } .content-wrapper { width: calc(100% - 260px); } #sidebar-toggle { display: none; } }
+
+        /* --- New Card-Based Auth Item Styles --- */
+        .auth-card {
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+            display: flex;
+            flex-direction: column;
+        }
+        .auth-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 15px -3px var(--primary-glow);
+        }
+
+        .status-pill {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid;
+        }
+        .status-completed { background-color: rgba(76, 175, 80, 0.2); color: var(--success-color); border-color: var(--success-color); }
+        .status-pending { background-color: rgba(255, 179, 0, 0.2); color: var(--warning-color); border-color: var(--warning-color); }
+        .status-missing { background-color: rgba(255, 82, 82, 0.2); color: var(--error-color); border-color: var(--error-color); }
+        
+        .btn-glow-error {
+             border-radius: 8px; border: 1px solid var(--error-color); background-color: transparent; color: var(--error-color); transition: all 0.2s ease-in-out;
+        }
+        .btn-glow-error:hover {
+            background-color: var(--error-color); color: var(--bg-color); box-shadow: 0 0 15px var(--error-color);
+        }
+    </style>
+</head>
+<body>
+<div class="app-wrapper">
+    <!-- Sidebar -->
+    <nav class="sidebar glass-panel d-flex flex-column" id="appSidebar">
+        <!-- Re-used sidebar content -->
+    </nav>
+
+    <div class="content-wrapper">
+        <!-- Topbar -->
+        <header class="topbar glass-panel d-flex align-items-center justify-content-between rounded-3 mb-4">
+            <!-- Re-used topbar content -->
+        </header>
+
+        <!-- Main Content: Verification Center -->
+        <main class="main-content">
+            <!-- Verification Summary Panel -->
+            <div class="glass-panel p-4 rounded-4 mb-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="h2 mb-1">Verification Center</h1>
+                        <p class="text-secondary">Your Verification Level is currently: <strong class="text-light">Level 1</strong> (2 of 4 items completed)</p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="progress" role="progressbar" aria-label="Verification progress" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="height: 12px; background-color: rgba(0,0,0,0.3);">
+                          <div class="progress-bar" style="width: 50%; background-color: var(--primary-glow);"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Auth Items Grid -->
+            <div class="row">
+                <!-- Completed: Phone -->
+                <div class="col-lg-6 mb-4">
+                    <div class="auth-card glass-panel h-100">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <i class="bi bi-patch-check-fill fs-2" style="color: var(--success-color);"></i>
+                            <span class="status-pill status-completed">Completed</span>
+                        </div>
+                        <h5 class="mt-3">Phone Number</h5>
+                        <p class="text-secondary small">Your primary contact number is confirmed and active for alerts.</p>
+                        <div class="mt-auto pt-3 text-secondary text-center small">
+                            Verified on: Jan 15, 2024
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Missing: ID Document -->
+                <div class="col-lg-6 mb-4">
+                    <div class="auth-card glass-panel h-100">
+                        <div class="d-flex justify-content-between align-items-start">
+                             <i class="bi bi-person-vcard fs-2" style="color: var(--error-color);"></i>
+                            <span class="status-pill status-missing">Action Required</span>
+                        </div>
+                        <h5 class="mt-3">ID Document</h5>
+                        <p class="text-secondary small">Upload a government-issued photo ID to verify your identity.</p>
+                        <div class="mt-auto pt-3 d-grid">
+                            <a href="/profile/complete.html" class="btn btn-glow-error">Upload ID Now</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pending: Address -->
+                <div class="col-lg-6 mb-4">
+                    <div class="auth-card glass-panel h-100">
+                        <div class="d-flex justify-content-between align-items-start">
+                             <i class="bi bi-house-check fs-2" style="color: var(--warning-color);"></i>
+                            <span class="status-pill status-pending">Pending Review</span>
+                        </div>
+                        <h5 class="mt-3">Address Confirmation</h5>
+                        <p class="text-secondary small">Our team is reviewing your uploaded proof of address. This usually takes 1-2 business days.</p>
+                         <div class="mt-auto pt-3 text-secondary text-center small">
+                            Submitted on: Jan 20, 2024
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Missing: 2FA -->
+                <div class="col-lg-6 mb-4">
+                    <div class="auth-card glass-panel h-100">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <i class="bi bi-shield-lock fs-2" style="color: var(--error-color);"></i>
+                            <span class="status-pill status-missing">Not Enabled</span>
+                        </div>
+                        <h5 class="mt-3">Two-Factor Authentication (2FA)</h5>
+                        <p class="text-secondary small">Add a critical layer of security to protect your account from unauthorized access.</p>
+                        <div class="mt-auto pt-3 d-grid">
+                            <a href="/settings/security" class="btn btn-glow-error">Enable 2FA</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+<script>
+    // Minimal JS for sidebar toggle
+    document.getElementById('sidebar-toggle')?.addEventListener('click', () => document.getElementById('appSidebar').classList.toggle('is-open'));
+</script>
+</body>
+</html>

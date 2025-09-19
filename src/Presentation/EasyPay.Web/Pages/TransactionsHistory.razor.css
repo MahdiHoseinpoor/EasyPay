@@ -1,0 +1,40 @@
+﻿
+
+.transaction-header {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    padding: 0.75rem 1.5rem;
+    border-bottom: 2px solid var(--border-glass);
+}
+
+.transaction-row {
+    border-bottom: 1px solid var(--border-glass);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    padding: 1rem 1.5rem;
+}
+
+    .transaction-row:last-child {
+        border-bottom: none;
+    }
+
+    .transaction-row:hover {
+        background-color: rgba(0, 255, 224, 0.05);
+    }
+
+.modal-content {
+    border-radius: 16px;
+    border: 1px solid var(--border-glass);
+}
+
+.modal-header, .modal-footer {
+    border-color: var(--border-glass);
+}
+
+dt {
+    color: var(--text-secondary);
+}
+
+dd {
+    color: var(--text-primary);
+}

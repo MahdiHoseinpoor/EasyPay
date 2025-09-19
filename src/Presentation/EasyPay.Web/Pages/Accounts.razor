@@ -1,0 +1,68 @@
+﻿@page "/accounts"
+@attribute [Authorize]
+
+@using EasyPay.Shared.DTOs.AccountManagement
+@using EasyPay.Web.Services
+@inject IProfileService ProfileService
+@inject NavigationManager NavigationManager
+
+<PageTitle>My Accounts</PageTitle>
+
+@if (isLoading)
+{
+    <LoadingIndicator Message="Fetching your accounts..." />
+}
+else
+{
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2">My Accounts</h1>
+        <button class="btn btn-glow" @onclick="NavigateToCreateAccount">
+            <i class="bi bi-plus-lg me-2"></i>Create New Account
+        </button>
+    </div>
+
+    @if (accounts is null || !accounts.Any())
+    {
+        <EmptyState Title="Your Dashboard Awaits"
+                    IconClass="bi bi-wallet2"
+                    Message="You haven't created any accounts yet. Get started by opening your first one!">
+            <ActionContent>
+                <button class="btn btn-glow" @onclick="NavigateToCreateAccount">
+                    Create Your First Account
+                </button>
+            </ActionContent>
+        </EmptyState>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var account in accounts)
+            {
+                <div class="col-lg-6 mb-4">
+                    <AccountCard Account="account" OnClickCallback="() => NavigateToAccountDetails(account.Id)" />
+                </div>
+            }
+        </div>
+    }
+}
+
+@code {
+    private bool isLoading = true;
+    private List<AccountDto> accounts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        accounts = await ProfileService.GetMyAccounts();
+        isLoading = false;
+    }
+
+    private void NavigateToCreateAccount()
+    {
+        NavigationManager.NavigateTo("/accounts/create");
+    }
+
+    private void NavigateToAccountDetails(Guid accountId)
+    {
+        NavigationManager.NavigateTo($"/accounts/{accountId}");
+    }
+}

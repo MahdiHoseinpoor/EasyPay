@@ -1,0 +1,7 @@
+﻿
+.input-group-text {
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-glass);
+    color: var(--text-secondary);
+    border-right: 0;
+}

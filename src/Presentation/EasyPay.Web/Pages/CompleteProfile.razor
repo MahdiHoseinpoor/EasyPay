@@ -1,0 +1,125 @@
+﻿@page "/complete-profile"
+@attribute [Authorize]
+
+@using System.ComponentModel.DataAnnotations
+@using EasyPay.Shared.Enums.Identity
+@using EasyPay.Shared.Models.Identity
+@using EasyPay.Web.Services
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Complete Your Profile</PageTitle>
+
+<AuthorizeView Context="authContext">
+    <Authorized>
+        <div class="main-content d-flex flex-column align-items-center justify-content-center">
+            <div class="w-100" style="max-width: 800px;">
+                <div class="glass-panel p-4 p-md-5 rounded-4">
+                    <div class="text-center">
+                        <h1 class="h2">Complete Your Profile</h1>
+                        <p class="text-secondary">This information is required to verify your identity and create your accounts.</p>
+                    </div>
+
+                    <!-- Progress Bar (Visual only) -->
+                    <div class="progress my-4" style="height: 8px; background-color: rgba(0,0,0,0.3);">
+                        <div class="progress-bar" role="progressbar" style="width: 50%; background-color: var(--primary-glow);" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger" style="background-color: rgba(255, 82, 82, 0.15); border-color: var(--error-color); color: var(--text-primary);">
+                            @errorMessage
+                        </div>
+                    }
+
+                    <EditForm Model="@Model" OnValidSubmit="HandleSubmit">
+                        <DataAnnotationsValidator />
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">First Name</label>
+                                <InputText @bind-Value="Model.FirstName" class="form-control form-control-cyber" />
+                                <ValidationMessage For="@(() => Model.FirstName)" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Last Name</label>
+                                <InputText @bind-Value="Model.LastName" class="form-control form-control-cyber" />
+                                <ValidationMessage For="@(() => Model.LastName)" />
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Father Name</label>
+                            <InputText @bind-Value="Model.FatherName" class="form-control form-control-cyber" />
+                            <ValidationMessage For="@(() => Model.FatherName)" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">National Code</label>
+                            <InputText @bind-Value="Model.NationalCode" class="form-control form-control-cyber" />
+                            <ValidationMessage For="@(() => Model.NationalCode)" />
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Birth Date</label>
+                                <InputDate @bind-Value="Model.BirthDate" class="form-control form-control-cyber" />
+                                <ValidationMessage For="@(() => Model.BirthDate)" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Gender</label>
+                                <InputSelect @bind-Value="Model.Gender" class="form-select form-select-cyber">
+                                    @foreach (var gender in Enum.GetValues<GenderType>())
+                                    {
+                                        <option value="@gender">@gender.ToString()</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                        </div>
+
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-glow btn-lg" disabled="@isSubmitting">
+                                @if (isSubmitting)
+                                {
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    <span class="ms-2">Saving Profile...</span>
+                                }
+                                else
+                                {
+                                    <span>Save & Continue</span>
+                                }
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="glass-panel p-4 p-sm-5 text-center">
+            <h4 class="card-title">Session Expired</h4>
+            <p class="text-secondary">Your session has expired. Please <a href="/login-phone" style="color: var(--primary-glow);">start the registration process again</a>.</p>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private CompleteProfileRequest Model = new();
+    private bool isSubmitting = false;
+    private string? errorMessage;
+
+    private async Task HandleSubmit()
+    {
+        isSubmitting = true;
+        errorMessage = null;
+
+        var success = await AuthService.CompleteProfile(Model);
+
+        if (success)
+        {
+            NavigationManager.NavigateTo("/"); // Navigate to dashboard after successful profile completion
+        }
+        else
+        {
+            errorMessage = "Could not create your profile. Please check your information and try again.";
+            isSubmitting = false;
+        }
+    }
+}

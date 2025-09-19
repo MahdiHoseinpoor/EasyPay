@@ -1,0 +1,227 @@
+﻿@page "/deposit"
+@attribute [Authorize]
+@implements IDisposable
+
+@using System.ComponentModel.DataAnnotations
+@using EasyPay.Shared.DTOs.AccountManagement
+@using EasyPay.Shared.Models.Report
+@using EasyPay.Web.Services
+@inject IProfileService ProfileService
+@inject IPaymentService PaymentService
+@inject NavigationManager NavigationManager
+@inject CurrencyService CurrencyService
+
+<PageTitle>Deposit Funds</PageTitle>
+
+<div class="main-content d-flex flex-column align-items-center justify-content-center">
+    <div class="w-100" style="max-width: 600px;">
+
+        @if (isLoading)
+        {
+            <div class="text-center mt-5">
+                <div class="spinner-border" style="width: 3rem; height: 3rem; color: var(--primary-glow);" role="status">
+                    <span class="visually-hidden">Loading accounts...</span>
+                </div>
+            </div>
+        }
+        else if (!myAccounts.Any())
+        {
+            <div class="glass-panel p-5 text-center">
+                <i class="bi bi-wallet2 fs-1 text-warning"></i>
+                <h3 class="mt-3">No Accounts Found</h3>
+                <p class="text-secondary">You need to create an account before you can deposit funds.</p>
+                <button class="btn btn-glow mt-2" @onclick='() => NavigationManager.NavigateTo("/accounts/create")'>Create an Account</button>
+            </div>
+        }
+        else
+        {
+            <div class="glass-panel p-4 p-md-5 rounded-4">
+                <div class="text-center mb-4">
+                    <i class="bi bi-plus-circle-fill fs-1" style="color: var(--primary-glow);"></i>
+                    <h1 class="h2 mt-2">Deposit Funds</h1>
+                    <p class="text-secondary">Add money to your account securely.</p>
+                </div>
+                
+                <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
+                    <DataAnnotationsValidator />
+
+                    <div class="mb-3">
+                        <label class="form-label">1. Choose Account</label>
+                        <InputSelect @bind-Value="Model.AccountId" class="form-select form-select-lg form-select-cyber">
+                            <option value="@Guid.Empty">-- Select account to deposit into --</option>
+                            @foreach (var account in myAccounts)
+                            {
+                                <option value="@account.Id">@account.Title - @CurrencyService.Format(account.CurrentBalance) @CurrencyService.GetCurrencySymbol()</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => Model.AccountId)" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">2. Enter Amount (@CurrencyService.GetCurrencySymbol())</label>
+                        <InputNumber @bind-Value="Model.Amount" class="form-control form-control-lg form-control-cyber" placeholder="0" />
+                        <ValidationMessage For="@(() => Model.Amount)" />
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2 mb-4">
+                        @foreach (var amount in predefinedAmountsToman)
+                        {
+                            <button type="button" class="btn btn-outline-secondary" @onclick="() => SetAmount(amount)">
+                                @CurrencyService.Format(amount * 10)
+                            </button>
+                        }
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">3. Choose Payment Gateway</label>
+                        <InputRadioGroup @bind-Value="Model.GatewayName">
+                            @foreach (var gateway in availableGateways)
+                            {
+                                <div class="gateway-selector p-3 d-flex align-items-center mb-2 @(Model.GatewayName == gateway ? "selected" : "")">
+                                    <InputRadio class="form-check-input me-3" Value="@gateway" id="@($"gw-{gateway}")" style="transform: scale(1.5);" />
+                                    <label for="@($"gw-{gateway}")" class="w-100 d-flex align-items-center">
+                                        <i class="bi bi-shield-check-fill fs-2 me-3"></i>
+                                        <div>
+                                            <div class="fw-bold">@gateway</div>
+                                            <small class="text-secondary">Secure and reliable payment</small>
+                                        </div>
+                                    </label>
+                                </div>
+                            }
+                        </InputRadioGroup>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger">@errorMessage</div>
+                    }
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-glow btn-lg" disabled="@isSubmitting">
+                            @if (isSubmitting)
+                            {
+                                <span class="spinner-border spinner-border-sm"></span> <span class="ms-2">Processing...</span>
+                            }
+                            else
+                            {
+                                <span>Proceed to Payment</span>
+                            }
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .gateway-selector {
+        border: 1px solid var(--border-glass);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: border-color 0.2s, background-color 0.2s;
+    }
+    .gateway-selector.selected {
+        border-color: var(--primary-glow);
+        background-color: rgba(0, 255, 224, 0.05);
+    }
+</style>
+
+@code {
+    private bool isLoading = true;
+    private bool isSubmitting = false;
+    private string? errorMessage;
+    private List<AccountDto> myAccounts = new();
+    private DepositModel Model = new();
+    private readonly decimal[] predefinedAmountsToman = { 50000, 100000, 250000, 500000, 1000000 };
+    private readonly string[] availableGateways = { "Zarinpal" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        CurrencyService.OnCurrencyChange += StateHasChanged;
+        myAccounts = await ProfileService.GetMyAccounts();
+        if (myAccounts.Any())
+        {
+            Model.AccountId = myAccounts.First().Id;
+        }
+        Model.GatewayName = availableGateways.First();
+        isLoading = false;
+    }
+
+    private void SetAmount(decimal amountInToman)
+    {
+        Model.Amount = (CurrencyService.CurrentCurrency == CurrencyDisplay.Toman)
+            ? amountInToman
+            : amountInToman * 10;
+        StateHasChanged();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        isSubmitting = true;
+        errorMessage = null;
+
+        decimal amountInRial;
+        if (CurrencyService.CurrentCurrency == CurrencyDisplay.Toman)
+        {
+            if(Model.Amount < 1000 || Model.Amount > 50_000_000)
+            {
+                errorMessage = "Amount must be between 1,000 and 50,000,000 Toman.";
+                isSubmitting = false;
+                return;
+            }
+            amountInRial = Model.Amount * 10;
+        }
+        else
+        {
+            if (Model.Amount < 10000 || Model.Amount > 500_000_000)
+            {
+                errorMessage = "Amount must be between 10,000 and 500,000,000 Rial.";
+                isSubmitting = false;
+                return;
+            }
+            amountInRial = Model.Amount;
+        }
+
+        var request = new GatewayDepositRequest(Model.AccountId, amountInRial, Model.GatewayName);
+        try
+        {
+            var response = await PaymentService.RequestGatewayDeposit(request);
+            if (response != null && !string.IsNullOrEmpty(response.RedirectUrl))
+            {
+                NavigationManager.NavigateTo(response.RedirectUrl, forceLoad: true);
+            }
+            else
+            {
+                errorMessage = "Could not initiate the payment process. Please try again.";
+            }
+        }
+        catch (ApiException ex)
+        {
+            errorMessage = ex.ApiError.message;
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    public class DepositModel
+    {
+        [Required(ErrorMessage = "Please select an account.")]
+        [RegularExpression(@"^({)?[a-fA-F0-9]{8}-([a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}(})?$", ErrorMessage = "Please select a valid account.")]
+        public Guid AccountId { get; set; }
+
+        [Required(ErrorMessage = "Please enter an amount.")]
+        [Range(1, double.MaxValue, ErrorMessage = "Amount must be a positive number.")]
+        public decimal Amount { get; set; }
+
+        [Required(ErrorMessage = "Please select a payment gateway.")]
+        public string GatewayName { get; set; }
+    }
+
+    public void Dispose()
+    {
+        CurrencyService.OnCurrencyChange -= StateHasChanged;
+    }
+}

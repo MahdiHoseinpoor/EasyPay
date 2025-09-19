@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyPay - Internal Transfer</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        /* --- Base Theme & App Layout (Reused) --- */
+        :root { --bg-color: #0d0d0d; --surface-glass: rgba(25, 27, 46, 0.5); --primary-glow: #00ffe0; --text-primary: #f0f0f0; --text-secondary: #a0a0a0; --border-glass: rgba(255, 255, 255, 0.15); }
+        body { background-color: var(--bg-color); font-family: 'Inter', sans-serif; color: var(--text-primary); }
+        h1, h2, h3, h4, h5 { font-family: 'Poppins', sans-serif; }
+        .glass-panel { background: var(--surface-glass); backdrop-filter: blur(12px); border: 1px solid var(--border-glass); }
+        .app-wrapper { display: flex; min-height: 100vh; }
+        /* Reused sidebar and topbar styles */
+        .content-wrapper { flex-grow: 1; padding: 1rem; display: flex; flex-direction: column; }
+        .main-content { flex-grow: 1; }
+
+        /* Custom form styles for this page */
+        .form-control-cyber, .form-select-cyber { background-color: rgba(0, 0, 0, 0.2); border: 1px solid var(--border-glass); color: var(--text-primary); }
+        .form-control-cyber:focus, .form-select-cyber:focus { background-color: rgba(0, 0, 0, 0.3); border-color: var(--primary-glow); box-shadow: 0 0 10px -2px var(--primary-glow); }
+        .btn-glow { /* Reused styles */  border-radius: 8px; border-color: var(--primary-glow); color: var(--primary-glow); }
+        .btn-glow:hover, .btn-glow:focus { background-color: var(--primary-glow); color: var(--bg-color); box-shadow: 0 0 15px var(--primary-glow); }
+        .btn-glow:disabled { border-color: var(--text-secondary); opacity: 0.5; }
+
+    </style>
+</head>
+<body>
+<div class="app-wrapper">
+    <!-- Sidebar -->
+    <nav class="sidebar glass-panel d-flex flex-column" id="appSidebar">
+        <!-- Re-used sidebar content -->
+    </nav>
+
+    <div class="content-wrapper">
+        <!-- Topbar -->
+        <header class="topbar glass-panel d-flex align-items-center justify-content-between rounded-3 mb-4">
+            <!-- Re-used topbar content -->
+        </header>
+
+        <!-- Main Content: Transfer Form -->
+        <main class="main-content d-flex flex-column align-items-center justify-content-center">
+            <div class="w-100" style="max-width: 600px;">
+                <div class="glass-panel p-4 p-md-5 rounded-4">
+                    <h1 class="h2 text-center mb-4">Transfer Between Accounts</h1>
+                    <form id="transfer-form">
+                        
+                        <!-- Source Account -->
+                        <div class="mb-3">
+                            <label for="sourceAccount" class="form-label">From</label>
+                            <select class="form-select form-select-lg form-select-cyber" id="sourceAccount" required></select>
+                        </div>
+
+                        <!-- Arrow Icon -->
+                        <div class="text-center my-3"><i class="bi bi-arrow-down fs-2" style="color: var(--primary-glow);"></i></div>
+
+                        <!-- Destination Account -->
+                        <div class="mb-4">
+                            <label for="destinationAccount" class="form-label">To</label>
+                            <select class="form-select form-select-lg form-select-cyber" id="destinationAccount" required></select>
+                        </div>
+                        
+                        <!-- Amount Input -->
+                        <div class="mb-4">
+                            <label for="transferAmount" class="form-label">Amount</label>
+                            <div class="input-group">
+                                <span class="input-group-text form-control-cyber">$</span>
+                                <input type="number" class="form-control form-control-lg form-control-cyber" id="transferAmount" placeholder="0.00" step="0.01" required>
+                            </div>
+                            <div id="amount-error" class="text-danger mt-2" style="display: none;"></div>
+                        </div>
+                        
+                        <!-- Note -->
+                        <div class="mb-4">
+                            <label for="transferNote" class="form-label">Note (Optional)</label>
+                            <input type="text" class="form-control form-control-cyber" id="transferNote" placeholder="e.g., For monthly savings">
+                        </div>
+
+                        <!-- CTA -->
+                        <div class="d-grid">
+                            <button type="submit" id="transfer-btn" class="btn btn-glow btn-lg">Review Transfer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- MOCK DATA ---
+        const userAccounts = [
+            { id: 'acc_1', name: 'Personal Savings', balance: 1250.50 },
+            { id: 'acc_2', name: 'Business Account', balance: 5000.00 }
+        ];
+
+        // --- FORM ELEMENTS ---
+        const sourceSelect = document.getElementById('sourceAccount');
+        const destSelect = document.getElementById('destinationAccount');
+        const amountInput = document.getElementById('transferAmount');
+        const amountError = document.getElementById('amount-error');
+        const form = document.getElementById('transfer-form');
+
+        // --- FORM LOGIC ---
+        function populateAccounts() {
+            let optionsHtml = '<option value="">Select an account...</option>';
+            userAccounts.forEach(acc => {
+                optionsHtml += `<option value="${acc.id}" data-balance="${acc.balance}">${acc.name} - $${acc.balance.toFixed(2)}</option>`;
+            });
+            sourceSelect.innerHTML = optionsHtml;
+            destSelect.innerHTML = optionsHtml;
+        }
+
+        function validateForm(e) {
+            // Prevent submission if validation fails
+            if (e) e.preventDefault();
+            
+            const sourceId = sourceSelect.value;
+            const destId = destSelect.value;
+            const amount = parseFloat(amountInput.value) || 0;
+            const sourceAccount = userAccounts.find(acc => acc.id === sourceId);
+
+            let isValid = true;
+            amountError.style.display = 'none';
+
+            // Rule 1: Cannot be the same account
+            if (sourceId && sourceId === destId) {
+                amountError.textContent = 'Source and destination accounts cannot be the same.';
+                isValid = false;
+            }
+            // Rule 2: Insufficient funds
+            else if (sourceAccount && amount > sourceAccount.balance) {
+                amountError.textContent = 'Insufficient funds in the source account.';
+                isValid = false;
+            }
+            // Rule 3: Amount must be positive
+            else if(amount <= 0) {
+                 amountError.textContent = 'Please enter a valid amount.';
+                 isValid = false;
+            }
+
+            if (!isValid) {
+                 amountError.style.display = 'block';
+            } else if (e) { // If it's a submit event and all checks pass
+                 alert('Transfer successful!');
+            }
+            
+            return isValid;
+        }
+
+        // --- EVENT LISTENERS ---
+        sourceSelect.addEventListener('change', validateForm);
+        destSelect.addEventListener('change', validateForm);
+        amountInput.addEventListener('input', validateForm);
+        form.addEventListener('submit', validateForm);
+
+        // --- INITIALIZATION ---
+        populateAccounts();
+    });
+</script>
+</body>
+</html>

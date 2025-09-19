@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="13.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.7" />
+    <PackageReference Include="AutoMapper" Version="15.0.1" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
+    <PackageReference Include="FluentValidation" Version="12.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Commands\Identity\AdminUserEntity\CreateAdminUser\" />
+    <Folder Include="Commands\Identity\AdminUserEntity\DeleteAdminUser\" />
+    <Folder Include="Commands\Identity\AdminUserEntity\UpdateAdminUser\" />
+    <Folder Include="Commands\Identity\AuthItemEntity\CreateAuthItem\" />
+    <Folder Include="Commands\Identity\AuthItemEntity\DeleteAuthItem\" />
+    <Folder Include="Commands\Identity\AuthItemEntity\UpdateAuthItem\" />
+    <Folder Include="Commands\Identity\AuthItemValueEntity\DeleteAuthItemValue\" />
+    <Folder Include="Commands\Identity\AuthItemValueEntity\UpdateAuthItemValue\" />
+    <Folder Include="Commands\Identity\NaturalUserEntity\DeleteNaturalUser\" />
+    <Folder Include="Commands\Identity\NaturalUserEntity\UpdateNaturalUser\" />
+    <Folder Include="Commands\Report\TransactionEntity\DeleteTransaction\" />
+    <Folder Include="Commands\Report\TransactionEntity\UpdateTransaction\" />
+    <Folder Include="Specification\Identity\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EasyPay.Common\EasyPay.Common.csproj" />
+    <ProjectReference Include="..\EasyPay.Domain\EasyPay.Domain.csproj" />
+    <ProjectReference Include="..\EasyPay.Infrastructure\EasyPay.Infrastructure.csproj" />
+    <ProjectReference Include="..\EasyPay.Shared\EasyPay.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

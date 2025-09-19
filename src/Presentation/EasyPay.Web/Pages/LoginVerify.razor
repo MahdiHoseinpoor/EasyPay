@@ -1,0 +1,92 @@
+﻿@page "/login-verify"
+@layout AuthLayout
+
+@using System.ComponentModel.DataAnnotations
+@using EasyPay.Shared.Models.Identity
+@using EasyPay.Web.Services
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+@inject AuthState AuthState
+
+<PageTitle>Verify Code</PageTitle>
+
+
+<div id="enter-code-state">
+    <h2 class="text-center mb-1">Verify Code</h2>
+    <p class="text-center text-secondary mb-4">A 6-digit code was sent to <strong id="user-mobile-display" class="text-light">@AuthState.PhoneNumber</strong>. <a href="#" id="change-number-link" class="btn-link-cyber">Change</a></p>
+    <EditForm Model="@Model" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+        <div class="mb-3">
+            <InputText id="code" @bind-Value="Model.Code" class="form-control form-control-cyber text-center" placeholder="_ _ _ _ _" />
+            <div id="code-error" class="text-danger mt-2" style="font-size: 0.875rem; display: none;">Invalid verification code.</div>
+        </div>
+        <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-glow" disabled="@isSubmitting">
+                @if (isSubmitting)
+                {
+                    <span class="spinner-border spinner-border-sm"></span>
+                }
+                else
+                {
+                    <span>Verify & Continue</span>
+                }
+            </button>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    // C# code remains the same
+    private VerificationModel Model = new();
+    private bool isSubmitting = false;
+    private string errorMessage;
+
+    protected override void OnInitialized()
+    {
+        if (string.IsNullOrEmpty(AuthState.PhoneNumber))
+        {
+            NavigationManager.NavigateTo("/login-phone");
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        isSubmitting = true;
+        errorMessage = null;
+
+        var request = new AuthenticateWithPhoneRequest(AuthState.PhoneNumber, Model.Code);
+        var response = await AuthService.VerifyPhone(request);
+
+        if (response == null)
+        {
+            errorMessage = "Invalid or expired verification code.";
+            isSubmitting = false;
+            return;
+        }
+
+        switch (response.Status)
+        {
+            case PhoneAuthenticationStatus.LoggedIn:
+                Console.WriteLine("login");
+                NavigationManager.NavigateTo("/");
+                break;
+            case PhoneAuthenticationStatus.NeedsPassword:
+                NavigationManager.NavigateTo("/login-password");
+                break;
+            case PhoneAuthenticationStatus.NeedsRegistration:
+                Console.WriteLine("register-need");
+                NavigationManager.NavigateTo("/complete-profile");
+                break;
+            default:
+                errorMessage = "An unexpected error occurred. Please try again.";
+                isSubmitting = false;
+                break;
+        }
+    }
+
+    public class VerificationModel
+    {
+        [Required]
+        public string Code { get; set; }
+    }
+}

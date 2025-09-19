@@ -1,0 +1,177 @@
+﻿@page "/"
+@attribute [Authorize]
+@implements IDisposable
+
+@using EasyPay.Shared.DTOs.AccountManagement
+@using EasyPay.Shared.DTOs.Report
+@using EasyPay.Shared.Enums.Report
+@using EasyPay.Web.Services
+@inject IProfileService ProfileService
+@inject CurrencyService CurrencyService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Dashboard</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        @if (isLoading)
+        {
+            <LoadingIndicator Message="Loading your dashboard..." />
+        }
+        else if (myAccounts is not { Count: > 0 })
+        {
+            <EmptyState Title="Welcome to EasyPay!"
+                        IconClass="bi bi-wallet2"
+                        Message="Your financial dashboard is ready. Let's get started by creating your first account.">
+                <ActionContent>
+                    <button class="btn btn-glow btn-lg" @onclick='() => NavigationManager.NavigateTo("/accounts/create")'>
+                        Create Your First Account
+                    </button>
+                </ActionContent>
+            </EmptyState>
+        }
+        else
+        {
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-lg-8">
+                    <!-- Balance & Chart Row -->
+                    <div class="row">
+                        <div class="col-lg-12 mb-4">
+                            <div class="glass-panel p-4 h-100 d-flex flex-column">
+                                <h5 class="text-secondary mb-0">Total Balance</h5>
+                                <h1 class="display-5" style="color: var(--primary-glow);">
+                                    @CurrencyService.Format(totalBalance) <span class="h5 text-secondary">@CurrencyService.GetCurrencySymbol()</span>
+                                </h1>
+                                <div class="mt-auto">
+                                    <a href="/accounts" class="btn btn-outline-light">Manage Accounts</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                    <!-- Recent Transactions Widget -->
+                    <div class="glass-panel p-4 mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">Recent Activity</h5>
+                            @if (recentTransactions is { Count: > 0 })
+                            {
+                                <a href="/history" class="text-decoration-none" style="color: var(--text-secondary);">View All</a>
+                            }
+                        </div>
+
+                        @if (recentTransactions is not { Count: > 0 })
+                        {
+                            <p class="text-secondary text-center p-3">No recent transactions found.</p>
+                        }
+                        else
+                        {
+                            @foreach (var tx in recentTransactions)
+                            {
+                                var (icon, color, amountSign) = tx.TransactionType.GetDisplayDetails();
+                                <div class="d-flex align-items-center py-2" style="border-bottom: 1px solid var(--border-glass);">
+                                    <i class="@icon fs-4 me-3" style="color: @color;"></i>
+                                    <div class="flex-grow-1">
+                                        <div class="fw-bold">@tx.Description</div>
+                                        <small class="text-secondary">@tx.TransactionDate.ToString("MMM dd, yyyy")</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="fw-bold" style="color: @color;">@amountSign@CurrencyService.Format(tx.Amount)</div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+
+                <!-- Side Column -->
+                <div class="col-lg-4">
+                    <!-- Quick Actions Widget -->
+                    <div class="glass-panel p-4 mb-4">
+                        <h5 class="mb-3">Quick Actions</h5>
+                        <div class="d-flex justify-content-around gap-2">
+                            <a href="/transfer" class="quick-action-btn flex-fill"><i class="bi bi-send-fill fs-4 mb-2"></i><div>Send</div></a>
+                            <a href="/deposit" class="quick-action-btn flex-fill"><i class="bi bi-plus-circle-fill fs-4 mb-2"></i><div>Deposit</div></a>
+                            <a href="/profile/cards" class="quick-action-btn flex-fill"><i class="bi bi-credit-card-2-front-fill fs-4 mb-2"></i><div>Cards</div></a>
+                        </div>
+                    </div>
+
+                    <!-- Alerts Widget (Placeholder for dynamic alerts) -->
+                    <div class="glass-panel p-4 mb-4">
+                        <h5 class="mb-3">Alerts</h5>
+                        <div class="alert p-3 d-flex" style="background-color: rgba(255,179,0,0.15); border: 1px solid var(--warning-color);">
+                            <i class="bi bi-exclamation-triangle-fill me-3" style="color: var(--warning-color);"></i>
+                            <div>
+                                <h6 class="mb-1" style="color: var(--warning-color);">Address Verification</h6>
+                                <p class="mb-0 small">Your proof of address is currently under review.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </Authorized>
+</AuthorizeView>
+
+<style>
+    .quick-action-btn {
+        background-color: rgba(0,0,0,0.2);
+        border: 1px solid var(--border-glass);
+        color: var(--text-secondary);
+        text-align: center;
+        padding: 1rem;
+        border-radius: 12px;
+        text-decoration: none;
+        transition: all 0.2s ease-in-out;
+    }
+
+        .quick-action-btn:hover {
+            border-color: var(--primary-glow);
+            color: var(--primary-glow);
+            transform: translateY(-4px);
+        }
+</style>
+
+
+@code {
+    private bool isLoading = true;
+    private List<AccountDto> myAccounts = new();
+    private List<TransactionDto> recentTransactions = new();
+    private decimal totalBalance;
+
+    protected override async Task OnInitializedAsync()
+    {
+        CurrencyService.OnCurrencyChange += StateHasChanged;
+        try
+        {
+            myAccounts = await ProfileService.GetMyAccounts();
+            if (myAccounts != null && myAccounts.Any())
+            {
+                totalBalance = myAccounts.Sum(a => a.CurrentBalance);
+                var primaryAccount = myAccounts.OrderByDescending(a => a.CurrentBalance).First();
+                var transactionHistory = await ProfileService.GetTransactionHistory(primaryAccount.Id, 0, 3);
+                if (transactionHistory?.Items != null)
+                {
+                    recentTransactions = transactionHistory.Items.ToList();
+                }
+            }
+        }
+        catch (ApiException)
+        {
+            // Error handling is managed by the delegating handler.
+            // We can set a specific error message here if needed.
+            // For now, let the ErrorBoundary catch it.
+            throw;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    public void Dispose()
+    {
+        CurrencyService.OnCurrencyChange -= StateHasChanged;
+    }
+}

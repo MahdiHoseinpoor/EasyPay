@@ -1,0 +1,40 @@
+﻿using EasyPay.Domain.Entities.AccountManagement;
+using EasyPay.Shared.Enums.Identity;
+using Microsoft.AspNetCore.Identity;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
+namespace EasyPay.Domain.Entities.Identity
+{
+    public class ApplicationUser : IdentityUser, IEntityBase
+    {
+
+        public RegistrationStep CurrentStep { get; set; }
+
+        public string? FirstName { get; set; }
+
+        public string? LastName { get; set; }
+
+        public UserType UserType { get; set; }
+
+        public string? Address { get; set; }
+
+        public bool IsActive { get; set; } = true;
+        public bool IsAuthorized { get; set; } = true;
+        public DateTime RegistrationDate { get; set; } = DateTime.Now;
+        public DateTime? LastVerifyPasswordDate { get; set; }
+
+        public DateTime? PasswordChangeDate { get; set; }
+        public bool ForcePasswordChange { get; set; }
+
+        public virtual ICollection<AuthItemValue> AuthItemValues { get; set; }
+        public virtual ICollection<Account> Accounts { get; set; }
+        public virtual ICollection<VerifyPasswordHistory> VerifyPasswordHistories { get; set; }
+
+        public string FullName => $"{FirstName} {LastName}";
+
+    }
+
+
+}

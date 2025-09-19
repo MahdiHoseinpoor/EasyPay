@@ -1,0 +1,31 @@
+﻿@inherits LayoutComponentBase
+@inject Microsoft.JSInterop.IJSRuntime JSRuntime
+
+<div class="app-wrapper">
+    <SidebarNav />
+
+    <div class="content-wrapper">
+        <Topbar Title="Dashboard" OnToggleSidebar="ToggleSidebar" />
+        <main class="main-content">
+         <ErrorBoundary>
+            <ChildContent>
+                @Body
+            </ChildContent>
+            <ErrorContent Context="ex">
+                <EasyPay.Web.Pages.Errors.InternalServerError Exception="ex" />
+            </ErrorContent>
+        </ErrorBoundary>
+        </main>
+    </div>
+</div>
+
+@code {
+    // This logic is needed if you want the hamburger menu to work on mobile.
+    // It would toggle a class on the sidebar. However, a pure CSS :target solution or minimal JS is often cleaner.
+    // For simplicity, this refactor assumes the CSS handles the toggle via a class.
+    private async Task ToggleSidebar()
+    {
+        // This would require JS Interop to toggle a class on the sidebar element.
+        // A simple implementation would be to create a JS function `toggleSidebarClass` and call it here.
+    }
+}

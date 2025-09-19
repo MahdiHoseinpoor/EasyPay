@@ -1,0 +1,226 @@
+﻿@page "/accounts/{AccountId:guid}/withdraw"
+@attribute [Authorize]
+@implements IDisposable
+
+@using EasyPay.Shared.DTOs.AccountManagement
+@using EasyPay.Shared.DTOs.Report
+@using EasyPay.Shared.Models.Report
+@using EasyPay.Web.Services
+@using System.ComponentModel.DataAnnotations
+
+@inject IProfileService ProfileService
+@inject ITransactionService TransactionService
+@inject NavigationManager NavigationManager
+@inject CurrencyService CurrencyService
+
+<PageTitle>Withdraw Funds</PageTitle>
+
+<div class="main-content d-flex flex-column align-items-center justify-content-center">
+    <div class="w-100" style="max-width: 600px;">
+
+        @if (isLoading)
+        {
+            <div class="text-center mt-5">
+                <div class="spinner-border" style="width: 3rem; height: 3rem; color: var(--primary-glow);" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        }
+        else if (sourceAccount is null || savedCards is null || !savedCards.Any())
+        {
+            <div class="glass-panel p-4 p-md-5 rounded-4 text-center">
+                <i class="bi bi-exclamation-triangle-fill fs-1 text-warning"></i>
+                <h3 class="mt-3">Withdrawal Unavailable</h3>
+                <p class="text-secondary">
+                    @if (sourceAccount is null)
+                    {
+                        <span>We couldn't find the selected account.</span>
+                    }
+                    else
+                    {
+                        <span>You need to add a bank card to your profile before you can withdraw funds.</span>
+                    }
+                </p>
+                <button class="btn btn-glow mt-3" @onclick='() => NavigationManager.NavigateTo("/profile/cards")'>
+                    Manage Bank Cards
+                </button>
+            </div>
+        }
+        else
+        {
+            <div class="glass-panel p-4 p-md-5 rounded-4">
+                <h1 class="h2 text-center mb-4">Withdraw Funds</h1>
+
+                @if (!string.IsNullOrEmpty(successMessage))
+                {
+                    <div class="alert alert-success d-flex align-items-center" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        <div>@successMessage</div>
+                    </div>
+                }
+
+                <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
+                    <DataAnnotationsValidator />
+
+                    <!-- Source Account -->
+                    <div class="mb-4 text-center">
+                        <label class="form-label text-secondary">From Account</label>
+                        <p class="fs-4 mb-0">@sourceAccount.Title</p>
+                        <strong style="color: var(--primary-glow);">@CurrencyService.Format(sourceAccount.CurrentBalance) <span class="text-secondary">@CurrencyService.GetCurrencySymbol()</span></strong>
+                    </div>
+
+                    <!-- Saved Cards Selector -->
+                    <div class="mb-4">
+                        <label class="form-label">Select Destination</label>
+                        <InputRadioGroup @bind-Value="Model.DestinationBankCardId">
+                            @foreach (var card in savedCards)
+                            {
+                                <div class="saved-card p-3 d-flex align-items-center mb-2 @(Model.DestinationBankCardId == card.Id ? "selected" : "")">
+                                    <InputRadio class="form-check-input me-3" Value="card.Id" id="@($"card-{card.Id}")" style="transform: scale(1.5);" />
+                                    <i class="bi bi-credit-card-2-front-fill fs-2 me-3"></i>
+                                    <div>
+                                        <label for="@($"card-{card.Id}")" class="form-check-label fw-bold">@card.Title</label>
+                                        <p class="mb-0 text-secondary">@card.CardNumber</p>
+                                    </div>
+                                </div>
+                            }
+                        </InputRadioGroup>
+                        <ValidationMessage For="@(() => Model.DestinationBankCardId)" />
+                    </div>
+
+                    <!-- Amount Input -->
+                    <div class="mb-3">
+                        <label for="withdrawAmount" class="form-label">Amount (@CurrencyService.GetCurrencySymbol())</label>
+                        <div class="input-group">
+                            <span class="input-group-text form-control-cyber">@CurrencyService.GetCurrencySymbol()</span>
+                            <InputNumber id="withdrawAmount" class="form-control form-control-cyber" @bind-Value="Model.Amount" TValue="decimal" />
+                        </div>
+                        <ValidationMessage For="@(() => Model.Amount)" />
+                    </div>
+
+                    <!-- Fees Summary -->
+                    <div class="p-3 rounded-3 mb-4" style="background-color: rgba(0,0,0,0.2);">
+                        <div class="d-flex justify-content-between text-secondary">
+                            <span>Processing Fee (1.5%):</span>
+                            <span>@CurrencyService.Format(Fee)</span>
+                        </div>
+                        <hr style="border-color: var(--border-glass);">
+                        <div class="d-flex justify-content-between fw-bold fs-5">
+                            <span>You will receive:</span>
+                            <span>@CurrencyService.Format(TotalReceived)</span>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger" style="background-color: rgba(255, 82, 82, 0.15); border-color: var(--error-color); color: var(--text-primary);">
+                            @errorMessage
+                        </div>
+                    }
+
+                    <!-- CTA Button -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-glow btn-lg" disabled="@isSubmitting">
+                            @if (isSubmitting)
+                            {
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                <span class="ms-2">Processing Withdrawal...</span>
+                            }
+                            else
+                            {
+                                <span>Withdraw</span>
+                            }
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
+        }
+    </div>
+</div>
+@code {
+    [Parameter]
+    public Guid AccountId { get; set; }
+
+    private bool isLoading = true;
+    private bool isSubmitting = false;
+    private string? errorMessage;
+    private string? successMessage;
+
+    private AccountDto? sourceAccount;
+    private List<BankCardDto> savedCards = new();
+    private WithdrawModel Model = new();
+
+    private decimal AmountInRial => (CurrencyService.CurrentCurrency == CurrencyDisplay.Toman) ? Model.Amount * 10 : Model.Amount;
+    private decimal Fee => AmountInRial * 0.015m;
+    private decimal TotalReceived => AmountInRial - Fee;
+
+    protected override async Task OnInitializedAsync()
+    {
+        CurrencyService.OnCurrencyChange += StateHasChanged;
+        var allMyAccounts = await ProfileService.GetMyAccounts();
+        sourceAccount = allMyAccounts?.FirstOrDefault(a => a.Id == AccountId);
+
+        savedCards = await ProfileService.GetMyBankCards();
+        isLoading = false;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        isSubmitting = true;
+        errorMessage = null;
+        successMessage = null;
+
+        if (sourceAccount is null)
+        {
+            errorMessage = "Source account could not be found.";
+            isSubmitting = false;
+            return;
+        }
+
+        if (AmountInRial > sourceAccount.CurrentBalance)
+        {
+            errorMessage = "Insufficient funds for this withdrawal.";
+            isSubmitting = false;
+            return;
+        }
+
+        var request = new WithdrawToBankCardRequest(
+            AccountId,
+            Model.DestinationBankCardId,
+            AmountInRial,
+            $"Withdrawal to card"
+        );
+
+        var success = await TransactionService.WithdrawToBankCard(request);
+
+        if (success)
+        {
+            successMessage = $"Successfully initiated withdrawal of {Model.Amount:N0} {CurrencyService.GetCurrencySymbol()}.";
+            Model = new();
+            var allMyAccounts = await ProfileService.GetMyAccounts();
+            sourceAccount = allMyAccounts?.FirstOrDefault(a => a.Id == AccountId);
+        }
+        else
+        {
+            errorMessage = "Withdrawal failed. Please try again later.";
+        }
+
+        isSubmitting = false;
+    }
+
+    public class WithdrawModel
+    {
+        [Required(ErrorMessage = "Please select a destination card.")]
+        [Range(1, int.MaxValue, ErrorMessage = "Please select a destination card.")]
+        public int DestinationBankCardId { get; set; }
+
+        [Required(ErrorMessage = "Please enter an amount.")]
+        [Range(typeof(decimal), "1000", "100000000", ErrorMessage = "Amount is outside the valid range.")]
+        public decimal Amount { get; set; }
+    }
+
+    public void Dispose()
+    {
+        CurrencyService.OnCurrencyChange -= StateHasChanged;
+    }
+}

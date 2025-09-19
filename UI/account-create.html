@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyPay - Create New Account</title>
+    
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+
+    <style>
+        /* --- Base Theme & Typography (Reused from previous pages) --- */
+        :root {
+            --bg-color: #0d0d0d;
+            --surface-glass: rgba(25, 27, 46, 0.5);
+            --primary-glow: #00ffe0;
+            --secondary-glow: #ff007f;
+            --text-primary: #f0f0f0;
+            --text-secondary: #a0a0a0;
+            --border-glass: rgba(255, 255, 255, 0.15);
+            --error-color: #ff5252;
+            --warning-color: #ffb300;
+            --success-color: #4caf50;
+        }
+
+        html, body, .app-wrapper {
+            height: 100%;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at 1% 1%, var(--secondary-glow), transparent 25%), radial-gradient(circle at 99% 99%, var(--primary-glow), transparent 25%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+        }
+
+        h1, h2, h3, h4, h5 { font-family: 'Poppins', sans-serif; font-weight: 700; }
+
+        /* --- Glassmorphism & UI Elements --- */
+        .glass-panel { background: var(--surface-glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--border-glass); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); }
+        .form-select-cyber { background-color: rgba(0, 0, 0, 0.2); border: 1px solid var(--border-glass); color: var(--text-primary); border-radius: 8px; }
+        .form-select-cyber:focus { background-color: rgba(0, 0, 0, 0.3); color: var(--text-primary); border-color: var(--primary-glow); box-shadow: 0 0 10px -2px var(--primary-glow); }
+        
+        .btn-glow {
+            border-radius: 8px; border: 1px solid var(--primary-glow); background-color: transparent; color: var(--primary-glow); transition: all 0.2s ease-in-out; padding: 0.75rem 1.5rem; font-weight: 600;
+        }
+        .btn-glow:hover, .btn-glow:focus { background-color: var(--primary-glow); color: var(--bg-color); box-shadow: 0 0 5px var(--primary-glow), 0 0 15px var(--primary-glow); }
+        .btn-glow:disabled {
+             border-color: var(--text-secondary); color: var(--text-secondary); cursor: not-allowed; opacity: 0.5;
+        }
+        .btn-glow:disabled:hover{ background-color: transparent; box-shadow: none; }
+
+
+        /* --- Main Application Layout --- */
+        .app-wrapper { display: flex; }
+        .sidebar { width: 260px; padding: 1.5rem 1rem; position: fixed; top: 0; left: 0; bottom: 0; transform: translateX(-100%); z-index: 1000; height: 100vh; }
+        .sidebar.is-open { transform: translateX(0); }
+        .sidebar .nav-link { color: var(--text-secondary); display: flex; align-items: center; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 0.5rem; }
+        .sidebar .nav-link i { font-size: 1.25rem; margin-right: 1rem; width: 24px; }
+        .sidebar .nav-link.active, .sidebar .nav-link:hover { background-color: rgba(0, 255, 224, 0.1); color: var(--primary-glow); }
+        .sidebar-brand .nav-link-text { font-size: 1.5rem; font-family: 'Poppins', sans-serif; }
+        .content-wrapper { flex-grow: 1; padding: 1rem; display: flex; flex-direction: column; height: 100vh; overflow-y: auto; }
+        .topbar { padding: 0.75rem 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; }
+        .main-content { flex-grow: 1; }
+
+        @media (min-width: 992px) {
+            .sidebar { position: static; transform: translateX(0); }
+            .content-wrapper { width: calc(100% - 260px); }
+            #sidebar-toggle { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-wrapper">
+    <!-- Sidebar Navigation (Reused) -->
+    <nav class="sidebar glass-panel d-flex flex-column" id="appSidebar">
+        <div>
+           <a href="/dashboard" class="sidebar-brand nav-link text-light mb-4">
+             <i class="bi bi-shield-check"></i>
+             <span class="nav-link-text">EasyPay</span>
+           </a>
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="/dashboard"><i class="bi bi-grid-1x2-fill"></i><span class="nav-link-text">Dashboard</span></a></li>
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="/accounts"><i class="bi bi-wallet2"></i><span class="nav-link-text">Accounts</span></a></li>
+                <li class="nav-item"><a class="nav-link" href="/transfer"><i class="bi bi-arrow-left-right"></i><span class="nav-link-text">Transfer</span></a></li>
+                <li class="nav-item"><a class="nav-link" href="/bills"><i class="bi bi-receipt"></i><span class="nav-link-text">Bills</span></a></li>
+                <li class="nav-item"><a class="nav-link" href="/transactions"><i class="bi bi-clock-history"></i><span class="nav-link-text">History</span></a></li>
+            </ul>
+        </div>
+        <div class="mt-auto">
+             <ul class="nav flex-column"><li class="nav-item"><a class="nav-link" href="/settings"><i class="bi bi-gear-fill"></i><span class="nav-link-text">Settings</span></a></li><li class="nav-item"><a class="nav-link" href="/auth/logout"><i class="bi bi-box-arrow-right"></i><span class="nav-link-text">Logout</span></a></li></ul>
+        </div>
+    </nav>
+    
+    <!-- Main Content Area -->
+    <div class="content-wrapper">
+        <!-- Topbar (Reused) -->
+        <header class="topbar glass-panel d-flex align-items-center justify-content-between">
+            <button class="btn btn-dark d-lg-none" id="sidebar-toggle" aria-controls="appSidebar" aria-expanded="false" aria-label="Toggle navigation"><i class="bi bi-list"></i></button>
+            <h4 class="d-none d-lg-block m-0">Create Account</h4>
+            <div class="d-flex align-items-center"><span class="me-3 d-none d-md-inline">Alex Example</span><img src="https://i.pravatar.cc/40" class="rounded-circle" alt="User Avatar"></div>
+        </header>
+
+        <!-- Page Content: Centered Create Account Wizard -->
+        <main class="main-content d-flex flex-column">
+            <h1 class="h2 mb-4 text-center">Create New Account</h1>
+            
+            <!-- This wrapper div will grow to fill space and center the card -->
+            <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+                <div class="w-100" style="max-width: 700px;">
+                    <div class="glass-panel p-4 p-md-5">
+                        <form id="create-account-form">
+                            <!-- Step 1: Select Account Type -->
+                            <div class="mb-4">
+                                <label for="accountTypeSelect" class="form-label fs-5">1. Choose an Account Type</label>
+                                <select class="form-select form-select-lg form-select-cyber" id="accountTypeSelect" aria-describedby="accountTypeHelp">
+                                    <option value="savings" selected>Personal Savings</option>
+                                    <option value="business">Business Account</option>
+                                    <option value="student">Student Checking</option>
+                                </select>
+                                <div id="accountTypeHelp" class="form-text mt-2 text-secondary">Each account type has different features and requirements.</div>
+                            </div>
+
+                            <!-- Step 2: Show Requirements (Dynamically Populated) -->
+                            <div class="mb-5">
+                                <h3 class="fs-5">2. Fulfill Requirements</h3>
+                                <p class="text-secondary">Your current status for the selected account type is shown below. You must complete all items to continue.</p>
+                                <div id="requirements-container" aria-live="polite">
+                                    <!-- Auth Items Status List will be rendered here by JavaScript -->
+                                </div>
+                            </div>
+                            
+                            <!-- Step 3: Create Account CTA -->
+                            <div class="d-grid">
+                                <button type="submit" id="create-account-btn" class="btn btn-glow btn-lg" disabled>Create Account</button>
+                                <p id="cta-helper-text" class="text-center text-warning mt-3" style="display: none;">Please complete all required items before creating the account.</p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    // --- Minimal Vanilla JS, identical to the previous version ---
+    document.addEventListener('DOMContentLoaded', function() {
+        const userAuthItems = {
+            phone_verified: { status: 'completed', title: 'Phone Verified' },
+            id_uploaded: { status: 'completed', title: 'ID Document Uploaded' },
+            address_confirmed: { status: 'pending', title: 'Address Confirmation' },
+            business_registration: { status: 'missing', title: 'Business Registration Uploaded' },
+            student_id: { status: 'missing', title: 'Valid Student ID' }
+        };
+        const accountTypeRequirements = {
+            'savings': ['phone_verified', 'id_uploaded'],
+            'business': ['phone_verified', 'id_uploaded', 'address_confirmed', 'business_registration'],
+            'student': ['phone_verified', 'id_uploaded', 'student_id']
+        };
+        const accountSelect = document.getElementById('accountTypeSelect');
+        const requirementsContainer = document.getElementById('requirements-container');
+        const createBtn = document.getElementById('create-account-btn');
+        const ctaHelperText = document.getElementById('cta-helper-text');
+        const icons = {
+            completed: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle-fill me-3 text-success" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg>`,
+            missing: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle-fill me-3 text-danger" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/></svg>`,
+            pending: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-clock-fill me-3 text-warning" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/></svg>`
+        };
+        function renderAuthItems(accountTypeId) {
+            const requirements = accountTypeRequirements[accountTypeId];
+            if (!requirements) { requirementsContainer.innerHTML = '<p class="text-danger">Invalid account type selected.</p>'; return; }
+            let html = '<ul class="list-group list-group-flush">';
+            requirements.forEach(reqId => {
+                const item = userAuthItems[reqId];
+                if (!item) return;
+                const status = item.status || 'missing';
+                let statusBadge = '';
+                switch (status) {
+                    case 'completed': statusBadge = `<span class="badge bg-success bg-opacity-25 text-success border border-success">Completed</span>`; break;
+                    case 'pending': statusBadge = `<span class="badge bg-warning bg-opacity-25 text-warning border border-warning">Pending</span>`; break;
+                    case 'missing': default: statusBadge = `<a href="/auth-items" class="btn btn-outline-danger btn-sm">Complete Now</a>`; break;
+                }
+                html += `<li class="list-group-item d-flex justify-content-between align-items-center bg-transparent border-secondary px-0 py-3"><div class="d-flex align-items-center">${icons[status]}<span class="text-light">${item.title}</span></div>${statusBadge}</li>`;
+            });
+            html += '</ul>'; requirementsContainer.innerHTML = html;
+        }
+        function checkCompletionStatus(accountTypeId) {
+            const requirements = accountTypeRequirements[accountTypeId];
+            const allCompleted = requirements.every(reqId => userAuthItems[reqId]?.status === 'completed');
+            createBtn.disabled = !allCompleted;
+            ctaHelperText.style.display = allCompleted ? 'none' : 'block';
+        }
+        function handleAccountTypeChange() {
+            const selectedType = accountSelect.value;
+            renderAuthItems(selectedType);
+            checkCompletionStatus(selectedType);
+        }
+        accountSelect.addEventListener('change', handleAccountTypeChange);
+        handleAccountTypeChange();
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebar = document.getElementById('appSidebar');
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', () => sidebar.classList.toggle('is-open'));
+        }
+    });
+</script>
+
+</body>
+</html>

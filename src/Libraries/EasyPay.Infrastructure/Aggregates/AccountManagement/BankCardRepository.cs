@@ -1,0 +1,19 @@
+﻿using EasyPay.Common;
+using EasyPay.Domain.Entities.AccountManagement;
+using EasyPay.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EasyPay.Infrastructure.Aggregates.AccountManagement
+{
+    public class BankCardRepository : RepositoryBase<BankCard, int> , IBankCardRepository
+    {
+        public BankCardRepository(ApplicationDbContext context) : base(context)
+        {
+        }
+    }
+}

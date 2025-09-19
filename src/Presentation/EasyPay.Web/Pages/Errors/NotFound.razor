@@ -1,0 +1,30 @@
+﻿@page "/404"
+@layout Layout.ErrorLayout
+
+<PageTitle>Page Not Found</PageTitle>
+
+<div class="glass-panel">
+    <i class="bi bi-compass fs-1" style="color: var(--primary-glow);"></i>
+    <h1 class="error-code mt-3">404</h1>
+    <h2 class="h3">Page Not Found</h2>
+    <p class="text-secondary mt-3 mb-4">
+        The page you're looking for might have been moved, deleted, or perhaps never existed.
+    </p>
+    <a href="/" class="btn btn-glow"><i class="bi bi-house-door-fill me-2"></i>Go to Dashboard</a>
+</div>
+
+<style>
+    .glass-panel {
+        text-align: center;
+        max-width: 500px;
+        width: 100%;
+        padding: 2.5rem;
+    }
+
+    .error-code {
+        font-size: 5rem;
+        font-weight: 700;
+        color: var(--primary-glow);
+        text-shadow: 0 0 15px var(--primary-glow);
+    }
+</style>

@@ -1,0 +1,157 @@
+﻿@page "/verification-center/submit/{AuthItemId:int}"
+@attribute [Authorize]
+
+@using EasyPay.Shared.DTOs.Identity
+@using EasyPay.Shared.Models.Identity
+@using EasyPay.Web.Services
+@using System.ComponentModel.DataAnnotations
+@inject IAuthItemsService AuthItemsService
+@inject IProfileService ProfileService
+@inject IFileService FileService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Submit: @(authItem?.Title ?? "...")</PageTitle>
+
+<div class="main-content d-flex flex-column align-items-center justify-content-center">
+    <div class="w-100" style="max-width: 600px;">
+        @if (isLoading)
+        {
+            <div class="text-center p-5">
+                <div class="spinner-border" style="width: 3rem; height: 3rem; color: var(--primary-glow);" role="status"></div>
+            </div>
+        }
+        else if (authItem is null)
+        {
+            <div class="glass-panel p-5 text-center">
+                <h3 class="text-danger">Item Not Found</h3>
+                <p class="text-secondary">The verification item you requested could not be found.</p>
+                <button class="btn btn-outline-light mt-2" @onclick='() => NavigationManager.NavigateTo("/verification-center")'>Back to Center</button>
+            </div>
+        }
+        else
+        {
+            <div class="glass-panel p-4 p-md-5 rounded-4">
+
+                <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
+                    <DataAnnotationsValidator />
+                    
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger">@errorMessage</div>
+                    }
+
+                    <div class="mb-4">
+                        @if (authItem.AuthItemType == EasyPay.Shared.Enums.Identity.AuthItemType.Document)
+                        {
+
+                            <ValidationMessage For="() => Model.File" />
+                                <div class="mb-4 p-4 text-center rounded-3" style="border: 2px dashed var(--border-glass);">
+                            <i class="bi bi-file-earmark-arrow-up-fill fs-2"></i>
+                            <h5 class="mt-2">Submit: @authItem.Title</h5>
+                            <p class="text-secondary small">@authItem.Description</p>
+                              <InputFile id="fileUpload" class="form-control form-control-cyber" OnChange="HandleFileSelected" />
+                        </div>
+                        }
+                        else
+                        {
+                            <label for="stringValue" class="form-label">Value</label>
+                            <InputText id="stringValue" class="form-control form-control-cyber" @bind-Value="Model.Value" />
+                            <ValidationMessage For="() => Model.Value" />
+                        }
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-glow btn-lg" disabled="@isSubmitting">
+                            @if (isSubmitting)
+                            {
+                                <span class="spinner-border spinner-border-sm"></span> <span class="ms-2">Submitting...</span>
+                            }
+                            else
+                            {
+                                <span>Submit for Verification</span>
+                            }
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int AuthItemId { get; set; }
+
+    private bool isLoading = true;
+    private bool isSubmitting = false;
+    private string? errorMessage;
+    private AuthItemDto? authItem;
+    private SubmissionModel Model = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var allItems = await AuthItemsService.getAllAuthItems();
+        authItem = allItems?.FirstOrDefault(i => i.Id == AuthItemId);
+        isLoading = false;
+    }
+
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        Model.File = e.File;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        isSubmitting = true;
+        errorMessage = null;
+
+        string submissionValue = Model.Value;
+
+        if (authItem.AuthItemType == EasyPay.Shared.Enums.Identity.AuthItemType.Document)
+        {
+            if (Model.File is null)
+            {
+                errorMessage = "Please select a file to upload.";
+                isSubmitting = false;
+                return;
+            }
+
+            try
+            {
+                submissionValue = await FileService.UploadFileAsync(Model.File, "user-documents");
+                if (string.IsNullOrEmpty(submissionValue))
+                {
+                    errorMessage = "File upload failed. Please try again.";
+                    isSubmitting = false;
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                errorMessage = $"Upload Error: {ex.Message}";
+                isSubmitting = false;
+                return;
+            }
+        }
+
+        var request = new SubmitAuthItemValueRequset(this.AuthItemId, submissionValue);
+
+        var success = await ProfileService.SubmitAuthItemValue(request);
+
+        if (success)
+        {
+            NavigationManager.NavigateTo("/verification-center");
+        }
+        else
+        {
+            errorMessage = "Failed to submit for verification. Please try again.";
+            isSubmitting = false;
+        }
+    }
+
+    public class SubmissionModel
+    {
+        public string? Value { get; set; }
+        public IBrowserFile? File { get; set; }
+    }
+}

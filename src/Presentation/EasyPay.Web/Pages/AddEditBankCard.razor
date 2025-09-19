@@ -1,0 +1,150 @@
+﻿@page "/profile/cards/add"
+@page "/profile/cards/edit/{CardId:int}"
+
+@using EasyPay.Shared.DTOs.AccountManagement
+@using EasyPay.Web.Services
+@using System.ComponentModel.DataAnnotations
+@attribute [Authorize]
+
+@inject IBankCardService BankCardService
+@inject NavigationManager NavigationManager
+
+<PageTitle>@(IsEditMode ? "Edit Card" : "Add New Card")</PageTitle>
+
+<div class="d-flex flex-column min-vh-100">
+    <header class="p-3"><button class="btn btn-outline-light" @onclick='() => NavigationManager.NavigateTo("/profile/cards")'><i class="bi bi-arrow-left me-2"></i>Back to Saved Cards</button></header>
+    <main class="flex-grow-1 d-flex align-items-center justify-content-center">
+        <div class="w-100" style="max-width: 600px;">
+            @if (isLoading)
+            {
+                <div class="text-center mt-5"><div class="spinner-border text-info" role="status"></div></div>
+            }
+            else
+            {
+                <div class="glass-panel p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <i class="bi bi-credit-card-2-front-fill fs-1" style="color: var(--primary-glow);"></i>
+                        <h1 class="h2 mt-2">@(IsEditMode ? "Edit Card" : "Add a New Card")</h1>
+                        <p class="text-secondary">This card can be used for future withdrawals.</p>
+                    </div>
+
+                    <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+
+                        <div class="mb-3">
+                            <label for="cardTitle" class="form-label">Card Nickname (Title)</label>
+                            <InputText id="cardTitle" class="form-control form-control-cyber" @bind-Value="Model.Title" />
+                            <ValidationMessage For="@(() => Model.Title)" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="cardNumber" class="form-label">Card Number</label>
+                            <InputText id="cardNumber" class="form-control form-control-cyber" @bind-Value="Model.CardNumber" placeholder="0000 0000 0000 0000" />
+                            <ValidationMessage For="@(() => Model.CardNumber)" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="accountNumber" class="form-label">Bank Account Number (10 Digits)</label>
+                            <InputText id="accountNumber" class="form-control form-control-cyber" @bind-Value="Model.AccountNumber" />
+                            <ValidationMessage For="@(() => Model.AccountNumber)" />
+                        </div>
+                        <div class="mb-4">
+                            <label for="iban" class="form-label">IBAN (34 Characters)</label>
+                            <InputText id="iban" class="form-control form-control-cyber" @bind-Value="Model.InternationalBankAccountNumber" />
+                            <ValidationMessage For="@(() => Model.InternationalBankAccountNumber)" />
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-danger">@errorMessage</div>
+                        }
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-glow btn-lg" disabled="@isSubmitting">
+                                @(isSubmitting ? "Saving..." : "Save Card")
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            }
+        </div>
+    </main>
+</div>
+
+
+@code {
+    [Parameter]
+    public int? CardId { get; set; }
+
+    private bool IsEditMode => CardId.HasValue;
+    private bool isLoading = true;
+    private bool isSubmitting = false;
+    private string? errorMessage;
+    private BankCardModel Model = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsEditMode)
+        {
+            var card = await BankCardService.GetCardByIdAsync(CardId.Value);
+            if (card != null)
+            {
+                Model = new BankCardModel
+                {
+                    Title = card.Title,
+                    CardNumber = card.CardNumber,
+                    AccountNumber = card.AccountNumber,
+                    InternationalBankAccountNumber = card.InternationalBankAccountNumber
+                };
+            }
+            else
+            {
+                NavigationManager.NavigateTo("/profile/cards"); 
+            }
+        }
+        isLoading = false;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        isSubmitting = true;
+        errorMessage = null;
+
+        bool success = false;
+        if (IsEditMode)
+        {
+            //success = await BankCardService.UpdateCardAsync(CardId.Value, Model);
+        }
+        else
+        {
+            success = await BankCardService.CreateCardAsync(new EasyPay.Shared.Models.AccountManagement.CreateBankCardRequest(Model.Title, Model.CardNumber, Model.AccountNumber, Model.InternationalBankAccountNumber));
+        }
+
+        if (success)
+        {
+            NavigationManager.NavigateTo("/profile/cards");
+        }
+        else
+        {
+            errorMessage = "There was an error saving the card. Please check the details and try again.";
+            isSubmitting = false;
+        }
+    }
+
+    public class BankCardModel
+    {
+        [Required]
+        [StringLength(100)]
+        public string Title { get; set; }
+
+        [Required]
+        [StringLength(16, MinimumLength = 16, ErrorMessage = "Card number must be 16 digits.")]
+        [RegularExpression("^[0-9]*$", ErrorMessage = "Card number must only contain digits.")]
+        public string CardNumber { get; set; }
+
+        [StringLength(10, MinimumLength = 10, ErrorMessage = "Account number must be 10 digits.")]
+        [RegularExpression("^[0-9]*$", ErrorMessage = "Account number must only contain digits.")]
+        public string? AccountNumber { get; set; }
+
+        [StringLength(34, MinimumLength = 34, ErrorMessage = "IBAN must be 34 characters.")]
+        public string? InternationalBankAccountNumber { get; set; }
+    }
+}
