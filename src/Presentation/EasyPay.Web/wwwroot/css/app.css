@@ -195,33 +195,38 @@ h1, h2, h3, h4, h5 {
     }
 }
 
-/* CHANGED: Pseudo-elements are now on .app-wrapper */
-.app-wrapper::before,
-.app-wrapper::after {
-    content: '';
-    position: absolute;
+#background-glows {
+    position: fixed;
+    inset: 0; /* shorthand for top: 0, right: 0, bottom: 0, left: 0 */
     z-index: -1;
-    border-radius: 50%;
-    filter: blur(100px);
+    overflow: hidden; /* This is crucial to contain the glows */
 }
 
-.app-wrapper::before {
-    background: var(--secondary-glow);
-    width: 350px;
-    height: 350px;
-    top: -150px;
-    left: -150px;
-    animation: floatGlow1 20s ease-in-out infinite;
-}
+    #background-glows::before,
+    #background-glows::after {
+        content: '';
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(100px);
+    }
 
-.app-wrapper::after {
-    background: var(--primary-glow);
-    width: 400px;
-    height: 400px;
-    bottom: -200px;
-    right: -200px;
-    animation: floatGlow2 25s ease-in-out infinite;
-}
+    #background-glows::before {
+        background: var(--secondary-glow);
+        width: 350px;
+        height: 350px;
+        top: -150px;
+        left: -150px;
+        animation: floatGlow1 20s ease-in-out infinite;
+    }
+
+    #background-glows::after {
+        background: var(--primary-glow);
+        width: 400px;
+        height: 400px;
+        bottom: -200px;
+        right: -200px;
+        animation: floatGlow2 25s ease-in-out infinite;
+    }
 
 @keyframes floatGlow1 {
     0%, 100% {
