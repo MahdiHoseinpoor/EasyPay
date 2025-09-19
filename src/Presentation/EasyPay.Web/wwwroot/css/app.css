@@ -1,6 +1,4 @@
-/* src/Presentation/EasyPay.Web/wwwroot/css/app.css */
 
-/* --- Base Theme & Typography --- */
 :root {
     --bg-color: #0F172A; /* Dark Slate Blue */
     --surface-glass: rgba(30, 41, 59, 0.5); /* Semi-transparent Darker Slate */
@@ -14,13 +12,13 @@
     --success-color: #2fdcc4; /* Vibrant Cool Green */
     --border-color: rgba(148, 163, 184, 0.15);
 }
+
 body {
-    background-color: var(--bg-color); /* This is now the static, solid background */
+    background-color: var(--bg-color); 
     color: var(--text-primary);
     font-family: 'Inter', sans-serif;
     min-height: 100vh;
-    position: relative; /* Required for positioning pseudo-elements */
-    overflow-x: hidden; /* Prevents scrollbars from animated glows */
+    overflow-x: hidden; 
 }
 
 h1, h2, h3, h4, h5 {
@@ -29,7 +27,7 @@ h1, h2, h3, h4, h5 {
     color: var(--text-primary);
 }
 
-/* --- Custom Scrollbar --- */
+
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -48,7 +46,6 @@ h1, h2, h3, h4, h5 {
         background-color: var(--text-secondary);
     }
 
-/* --- Reusable Components & Effects --- */
 .glass-panel {
     background: var(--surface-glass);
     backdrop-filter: blur(14px);
@@ -108,35 +105,27 @@ h1, h2, h3, h4, h5 {
         color: var(--text-secondary);
     }
 
-/* --- Custom Dropdown Styling --- */
 .form-select-cyber {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    padding-right: 2.5rem; /* Make space for the custom arrow */
+    padding-right: 2.5rem; 
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2394A3B8' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
     background-repeat: no-repeat;
     background-position: right 0.75rem center;
     background-size: 16px 12px;
 }
 
-    /* Change arrow color on focus to match the glow effect */
     .form-select-cyber:focus {
         background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%230CF2B1' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
     }
 
-    /* Hide the dropdown arrow in Microsoft Edge */
     .form-select-cyber::-ms-expand {
         display: none;
     }
 
-    /*
- * --- Styling for <option> elements ---
- * NOTE: This is not supported in all browsers (e.g., Safari).
- * It provides a better experience in browsers that do support it (e.g., Chrome, Firefox).
-*/
     .form-select-cyber option {
-        background-color: #1E293B; /* Slightly lighter slate for contrast */
+        background-color: #1E293B; 
         color: var(--text-primary);
     }
 
@@ -147,10 +136,13 @@ h1, h2, h3, h4, h5 {
     margin-top: .25rem;
 }
 
-/* --- Layout Structure --- */
+
 .app-wrapper {
     display: flex;
-    min-height: 100vh;
+    height: 100vh; 
+    overflow: hidden;
+    position: relative; 
+    z-index: 0; 
 }
 
 .sidebar {
@@ -158,23 +150,21 @@ h1, h2, h3, h4, h5 {
     padding: 1.5rem 1rem;
     z-index: 1000;
     flex-shrink: 0;
+    border-radius: 0;
 }
 
 .content-wrapper {
     flex-grow: 1;
-    padding: 1rem;
     display: flex;
     flex-direction: column;
-}
-
-.topbar {
-    padding: 0.75rem 1.5rem;
-    margin-bottom: 1.5rem;
+    overflow-y: auto;
 }
 
 .main-content {
     flex-grow: 1;
+    padding: 1.5rem; 
 }
+
 
 @media (max-width: 991.98px) {
     .content-wrapper {
@@ -205,8 +195,9 @@ h1, h2, h3, h4, h5 {
     }
 }
 
-body::before,
-body::after {
+/* CHANGED: Pseudo-elements are now on .app-wrapper */
+.app-wrapper::before,
+.app-wrapper::after {
     content: '';
     position: absolute;
     z-index: -1;
@@ -214,7 +205,7 @@ body::after {
     filter: blur(100px);
 }
 
-body::before {
+.app-wrapper::before {
     background: var(--secondary-glow);
     width: 350px;
     height: 350px;
@@ -223,7 +214,7 @@ body::before {
     animation: floatGlow1 20s ease-in-out infinite;
 }
 
-body::after {
+.app-wrapper::after {
     background: var(--primary-glow);
     width: 400px;
     height: 400px;
