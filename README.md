@@ -1,3 +1,5 @@
+![EasyPay Header Image](/images/Header.png)
+
 # EasyPay: Modern Financial Platform API
 
 [![.NET](https://img.shields.io/badge/.NET-9-blueviolet.svg)](https://dotnet.microsoft.com/en/download/dotnet/9.0)
@@ -6,8 +8,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 EasyPay is a showcase project demonstrating a robust, scalable, and maintainable financial application backend. It is built using modern .NET technologies and adheres strictly to **Domain-Driven Design (DDD)**, **CQRS**, and **Clean Architecture** principles. This project serves as a testament to my expertise in building enterprise-grade systems with a focus on code quality and architectural integrity.
-
-`![EasyPay Dashboard](./docs/images/dashboard.gif)`
 
 ---
 
